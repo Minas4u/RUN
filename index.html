@@ -3,448 +3,350 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>RNApace</title>
+    <title>Helios Running Team - Calculator</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
     <style>
         body {
             font-family: 'Inter', sans-serif;
-            background-color: #f3f4f6; /* Tailwind gray-100 */
+            background-color: #f3f4f6;
         }
-        .container {
-            max-width: 580px; /* Slightly reduced max-width */
-            margin: 25px auto; /* Adjusted margin */
-            padding: 20px;
-            background-color: white;
-            border-radius: 12px;
-            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        input[type="text"]:focus, input[type="number"]:focus {
+            outline: 2px solid transparent;
+            outline-offset: 2px;
         }
-        .input-group, .mode-selection-group {
-            margin-bottom: 16px; /* Adjusted margin */
+        input#lt2speed:focus {
+            border-color: #2563eb;
+            box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.5);
         }
-        /* Remove margin for the mode selection if it has no visible label */
-        .mode-selection-group.no-label {
-            margin-bottom: 12px; /* Further reduce if no explicit label text */
+        input#baseKilometers:focus, input#totalWeeks:focus, input#kPercentage:focus {
+            border-color: #16a34a;
+            box-shadow: 0 0 0 3px rgba(22, 163, 74, 0.5);
         }
-        .input-group label, .mode-selection-group label {
-            display: block;
-            margin-bottom: 4px; /* Adjusted margin */
-            font-weight: 500;
-            color: #374151; /* Tailwind gray-700 */
+        .result-item {
+            background-color: #e5e7eb;
+            padding: 0.75rem 1rem;
+            border-radius: 0.375rem;
+            margin-bottom: 0.5rem;
         }
-        .input-group input, .input-group select, .mode-selection-group select {
+        .result-item strong {
+             font-weight: 600;
+        }
+        .plan-result-item {
+            background-color: #e0e7ff;
+            padding: 0.5rem 1rem;
+            border-radius: 0.375rem;
+            margin-bottom: 0.25rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .plan-result-item .low-high-values strong {
+            font-weight: 600;
+        }
+        .data-table {
             width: 100%;
-            padding: 10px;
-            border: 1px solid #d1d5db; /* Tailwind gray-300 */
-            border-radius: 8px;
-            box-sizing: border-box;
-            transition: border-color 0.3s;
+            margin-top: 0.5rem;
+            border-collapse: collapse;
+            font-size: 0.875rem;
         }
-        .input-group input:focus, .input-group select:focus, .mode-selection-group select:focus {
-            outline: none;
-            border-color: #6366f1; /* Tailwind indigo-500 */
-            box-shadow: 0 0 0 2px rgba(99, 102, 241, 0.2);
+        .data-table th, .data-table td {
+            border: 1px solid #d1d5db;
+            padding: 0.5rem;
+            text-align: left;
         }
-        .time-inputs, .pace-inputs {
-            display: flex;
-            gap: 10px;
-        }
-        .time-inputs input, .pace-inputs input {
-            text-align: center;
-        }
-        .button-group {
-            display: flex;
-            gap: 10px;
-            justify-content: flex-end;
-            margin-top: 20px; /* Adjusted margin */
-        }
-        .button {
-            padding: 10px 20px;
-            border: none;
-            border-radius: 8px;
-            font-weight: 500;
-            cursor: pointer;
-            transition: background-color 0.3s;
-        }
-        .button-primary {
-            background-color: #6366f1; /* Tailwind indigo-500 */
-            color: white;
-        }
-        .button-primary:hover {
-            background-color: #4f46e5; /* Tailwind indigo-600 */
-        }
-        .button-secondary {
-            background-color: #e5e7eb; /* Tailwind gray-200 */
-            color: #374151; /* Tailwind gray-700 */
-        }
-        .button-secondary:hover {
-            background-color: #d1d5db; /* Tailwind gray-300 */
-        }
-        .result-area {
-            margin-top: 20px;
-            padding: 15px;
-            background-color: #eef2ff; /* Tailwind indigo-50 */
-            border: 1px solid #c7d2fe; /* Tailwind indigo-200 */
-            border-radius: 8px;
-            text-align: center;
-            font-size: 1.1rem;
-            color: #3730a3; /* Tailwind indigo-800 */
-        }
-        .result-area p {
-            margin: 0;
-        }
-        .error-message {
-            color: #ef4444; /* Tailwind red-500 */
-            font-size: 0.85rem;
-            margin-top: 4px;
-            min-height: 1.2em;
-        }
-        /* Responsive adjustments */
-        @media (max-width: 480px) {
-            .time-inputs, .pace-inputs {
-                flex-direction: column;
-            }
-            .button-group {
-                flex-direction: column;
-            }
-            .button {
-                width: 100%;
-            }
-            .container {
-                margin: 20px auto;
-            }
+        .data-table th {
+            font-weight: 600;
         }
     </style>
 </head>
-<body>
-    <div class="container">
-        <h1 class="text-2xl font-bold text-center text-gray-800 mb-6">RNApace</h1>
+<body class="min-h-screen flex items-center justify-center p-4 py-8">
+    <div class="bg-white p-6 sm:p-8 rounded-xl shadow-2xl w-full max-w-3xl">
+        <header class="mb-6 sm:mb-8 text-center">
+            <h1 class="text-3xl sm:text-4xl font-bold text-gray-800">Helios Running Team</h1>
+            <p class="text-gray-600 mt-2">Calculate your running training zones & mileage.</p>
+        </header>
 
-        <div class="mode-selection-group no-label">
-            <select id="calculationMode" aria-label="Calculation Mode">
-                <option value="pace">Pace</option> <option value="time">Time</option> <option value="distance">Distance</option> </select>
+        <div class="mb-6">
+            <label for="lt2speed" class="block text-sm font-medium text-gray-700 mb-1">Enter LT2 Speed:</label>
+            <input type="text" id="lt2speed" name="lt2speed" placeholder="e.g., 4:30"
+                   class="mt-1 block w-full px-4 py-3 border border-gray-300 rounded-lg shadow-sm sm:text-sm transition duration-150 ease-in-out">
+            <div id="error-message" class="text-red-500 text-sm mt-2 h-5"></div>
         </div>
 
-        <div class="input-group">
-            <label for="distance">Distance</label>
-            <div class="flex items-center gap-2">
-                <input type="number" id="distance" placeholder="e.g., 10 or 5000" class="flex-grow">
-                <select id="distanceUnit" class="w-1/3">
-                    <option value="km">km</option>
-                    <option value="m">m</option>
-                </select>
+        <button onclick="calculatePaces()"
+                class="w-full bg-blue-600 hover:bg-blue-700 text-white font-semibold py-3 px-4 rounded-lg shadow-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-opacity-50 transition duration-150 ease-in-out transform hover:scale-105">
+            Calculate Zones & Repeats Paces
+        </button>
+
+        <div class="mt-8 md:flex md:space-x-6">
+            <div id="zones-section" class="flex-1">
+                <h2 class="text-xl sm:text-2xl font-semibold text-gray-700 mb-2 border-b pb-2">Training Zones:</h2>
+                <div id="zones-content">
+                     <p class="text-gray-500 italic">Enter your LT2 speed and click calculate to see your zones.</p>
+                </div>
             </div>
-            <p id="distanceError" class="error-message"></p>
-        </div>
 
-        <div class="input-group">
-            <label for="hours">Time</label>
-            <div class="time-inputs">
-                <input type="number" id="hours" placeholder="HH" min="0" aria-label="Hours">
-                <input type="number" id="minutes" placeholder="MM" min="0" max="59" aria-label="Minutes">
-                <input type="number" id="seconds" placeholder="SS" min="0" max="59" aria-label="Seconds">
+            <div id="repeats-section" class="flex-1 mt-8 md:mt-0">
+                <h2 class="text-xl sm:text-2xl font-semibold text-gray-700 mb-2 border-b pb-2">Repeats:</h2>
+                <div id="repeats-content">
+                     <p class="text-gray-500 italic">Calculated based on your LT2 speed.</p>
+                </div>
             </div>
-            <p id="timeError" class="error-message"></p>
         </div>
 
-        <div class="input-group">
-            <label for="paceMinutes">Pace</label>
-            <div class="pace-inputs">
-                <input type="number" id="paceMinutes" placeholder="MM" min="0" aria-label="Pace Minutes">
-                <input type="number" id="paceSeconds" placeholder="SS" min="0" max="59" aria-label="Pace Seconds">
+        <div class="mt-12 pt-8 border-t border-gray-300">
+            <header class="mb-6 text-center">
+                <h2 class="text-2xl sm:text-3xl font-bold text-gray-800">Mileage</h2>
+            </header>
+
+            <div class="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-6">
+                <div>
+                    <label for="baseKilometers" class="block text-sm font-medium text-gray-700 mb-1">Base Kilometers:</label>
+                    <input type="number" id="baseKilometers" name="baseKilometers" placeholder="e.g., 20" min="0.1" step="0.1"
+                           class="mt-1 block w-full px-4 py-3 border border-gray-300 rounded-lg shadow-sm sm:text-sm transition duration-150 ease-in-out">
+                </div>
+                <div>
+                    <label for="totalWeeks" class="block text-sm font-medium text-gray-700 mb-1">Total Weeks:</label>
+                    <input type="number" id="totalWeeks" name="totalWeeks" placeholder="e.g., 12" min="1" step="1"
+                           class="mt-1 block w-full px-4 py-3 border border-gray-300 rounded-lg shadow-sm sm:text-sm transition duration-150 ease-in-out">
+                </div>
+                <div>
+                    <label for="kPercentage" class="block text-sm font-medium text-gray-700 mb-1">K (% increase):</label>
+                    <input type="number" id="kPercentage" name="kPercentage" placeholder="e.g., 10" min="0" step="1"
+                           class="mt-1 block w-full px-4 py-3 border border-gray-300 rounded-lg shadow-sm sm:text-sm transition duration-150 ease-in-out">
+                </div>
             </div>
-            <p id="paceError" class="error-message"></p>
-        </div>
+            <div id="plan-error-message" class="text-red-500 text-sm mb-4 h-5"></div>
+            <button onclick="calculateWeeklyPlan()"
+                    class="w-full bg-green-600 hover:bg-green-700 text-white font-semibold py-3 px-4 rounded-lg shadow-md focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-opacity-50 transition duration-150 ease-in-out transform hover:scale-105">
+                Calculate Weekly Plan
+            </button>
 
-        <div class="button-group">
-            <button id="clearButton" class="button button-secondary">Clear</button>
-            <button id="calculateButton" class="button button-primary">Calculate</button>
-        </div>
-
-        <div id="resultArea" class="result-area" style="display: none;">
-            <p id="resultText"></p>
+            <div id="planResults" class="mt-8">
+                <h3 class="text-xl sm:text-2xl font-semibold text-gray-700 mb-4 border-b pb-2">Your Plan:</h3>
+                <div id="plan-results-content" class="space-y-1 text-sm max-h-60 overflow-y-auto">
+                     <p class="text-gray-500 italic">Enter details above and click calculate to see your weekly plan.</p>
+                </div>
+            </div>
         </div>
     </div>
 
     <script>
-        // DOM Elements
-        const calculationModeSelect = document.getElementById('calculationMode');
-        const distanceInput = document.getElementById('distance');
-        const distanceUnitSelect = document.getElementById('distanceUnit');
-        const hoursInput = document.getElementById('hours');
-        const minutesInput = document.getElementById('minutes');
-        const secondsInput = document.getElementById('seconds');
-        const paceMinutesInput = document.getElementById('paceMinutes');
-        const paceSecondsInput = document.getElementById('paceSeconds');
-        const calculateButton = document.getElementById('calculateButton');
-        const clearButton = document.getElementById('clearButton');
-        const resultArea = document.getElementById('resultArea');
-        const resultText = document.getElementById('resultText');
-        const distanceError = document.getElementById('distanceError');
-        const timeError = document.getElementById('timeError');
-        const paceError = document.getElementById('paceError');
-
-        // --- Event Listeners ---
-        calculateButton.addEventListener('click', handleCalculation);
-        clearButton.addEventListener('click', clearAllFields);
-        calculationModeSelect.addEventListener('change', handleModeChange);
-
-        // Initial setup
-        handleModeChange(); // Set initial input field states
-
-        // --- Functions ---
-
-        /**
-         * Handles changes in the calculation mode.
-         * Disables/enables input fields based on the selected mode.
-         */
-        function handleModeChange() {
-            const mode = calculationModeSelect.value;
-            clearErrors(); 
-
-            distanceInput.disabled = false;
-            distanceUnitSelect.disabled = false; 
-            hoursInput.disabled = false;
-            minutesInput.disabled = false;
-            secondsInput.disabled = false;
-            paceMinutesInput.disabled = false;
-            paceSecondsInput.disabled = false;
-
-            if (mode === 'pace') {
-                paceMinutesInput.disabled = true;
-                paceSecondsInput.disabled = true;
-            } else if (mode === 'time') {
-                hoursInput.disabled = true;
-                minutesInput.disabled = true;
-                secondsInput.disabled = true;
-            } else if (mode === 'distance') {
-                distanceInput.disabled = true;
-            }
+        function parsePaceToSeconds(paceString) {
+            if (!paceString || typeof paceString !== 'string') return NaN;
+            const parts = paceString.trim().split(':');
+            if (parts.length !== 2) return NaN;
+            const minutes = parseInt(parts[0], 10);
+            const seconds = parseInt(parts[1], 10);
+            if (isNaN(minutes) || isNaN(seconds) || minutes < 0 || seconds < 0 || seconds >= 60) return NaN;
+            return (minutes * 60) + seconds;
         }
 
-
-        /**
-         * Validates a single numeric input field.
-         * @param {HTMLInputElement} inputElement - The input element.
-         * @param {string} fieldName - Name of the field for error messages.
-         * @param {number} min - Minimum allowed value.
-         * @param {number} max - Maximum allowed value.
-         * @param {boolean} allowZero - Whether zero is an allowed value.
-         * @returns {number|object} - The parsed value if valid, or an object with an error message.
-         */
-        function validateNumericInput(inputElement, fieldName, min, max, allowZero = false) {
-            const valueStr = inputElement.value.trim();
-            if (valueStr === '') return { error: `${fieldName} is required.`}; 
-
-            const value = parseFloat(valueStr);
-            if (isNaN(value)) {
-                return { error: `${fieldName} must be a valid number.` };
-            }
-            if (!allowZero && value <= 0) {
-                 if (value < min || value > max) { 
-                    return { error: `${fieldName} must be between ${min} and ${max}.` };
-                 }
-                 return { error: `${fieldName} must be greater than 0.` };
-            }
-             if (value < min || value > max) {
-                return { error: `${fieldName} must be between ${min} and ${max}.` };
-            }
-            return value; 
+        function formatSecondsToPace(totalSeconds) {
+            if (isNaN(totalSeconds) || totalSeconds < 0) return "N/A";
+            const minutes = Math.floor(totalSeconds / 60);
+            const seconds = Math.round(totalSeconds % 60);
+            return `${minutes}:${seconds < 10 ? '0' : ''}${seconds}`;
         }
 
+        function calculatePaces() {
+            const lt2SpeedInput = document.getElementById('lt2speed').value;
+            const zonesContentDiv = document.getElementById('zones-content');
+            const repeatsContentDiv = document.getElementById('repeats-content');
+            const errorMessageDiv = document.getElementById('error-message');
 
-        /**
-         * Validates all inputs based on the current calculation mode.
-         * @returns {object|null} - An object with parsed values if valid, or null if validation fails.
-         */
-        function validateAllInputs() {
-            clearErrors();
-            const mode = calculationModeSelect.value;
-            let isValid = true;
-            const values = {};
+            zonesContentDiv.innerHTML = '<p class="text-gray-500 italic">Calculating...</p>';
+            repeatsContentDiv.innerHTML = '<p class="text-gray-500 italic">Calculating...</p>';
+            errorMessageDiv.textContent = '';
 
-            // --- Validate Distance ---
-            if (mode === 'pace' || mode === 'time') {
-                const distValidationResult = validateNumericInput(distanceInput, 'Distance', 0.01, 10000);
-                if (typeof distValidationResult === 'object' && distValidationResult.error) {
-                    distanceError.textContent = distValidationResult.error;
-                    isValid = false;
-                } else {
-                    values.distance = distValidationResult;
-                }
-                values.distanceUnit = distanceUnitSelect.value;
-            }
+            const lt2SpeedInSeconds = parsePaceToSeconds(lt2SpeedInput);
 
-            // --- Validate Time ---
-            if (mode === 'pace' || mode === 'distance') {
-                const hStr = hoursInput.value.trim();
-                const mStr = minutesInput.value.trim();
-                const sStr = secondsInput.value.trim();
-
-                const h = hStr === '' ? 0 : parseInt(hStr);
-                const m = mStr === '' ? 0 : parseInt(mStr);
-                const s = sStr === '' ? 0 : parseInt(sStr);
-
-                if ( (hStr !== '' && isNaN(h)) || (mStr !== '' && isNaN(m)) || (sStr !== '' && isNaN(s)) ||
-                     h < 0 || m < 0 || m > 59 || s < 0 || s > 59 || h > 99 ) {
-                    timeError.textContent = 'Valid HH (0-99), MM (0-59), SS (0-59) required.';
-                    isValid = false;
-                } else if (h === 0 && m === 0 && s === 0 && (hStr || mStr || sStr)) { 
-                     timeError.textContent = 'Total time must be greater than zero if entered.';
-                     isValid = false;
-                } else if (!hStr && !mStr && !sStr) { 
-                    timeError.textContent = 'Time is required.';
-                    isValid = false;
-                }
-                values.totalTimeInSeconds = (h * 3600) + (m * 60) + s;
-                if (values.totalTimeInSeconds <= 0 && (hStr || mStr || sStr) ) { 
-                    timeError.textContent = 'Total time must be greater than zero.';
-                    isValid = false;
-                }
-            }
-
-            // --- Validate Pace ---
-            if (mode === 'time' || mode === 'distance') {
-                const pmStr = paceMinutesInput.value.trim();
-                const psStr = paceSecondsInput.value.trim();
-
-                const pm = pmStr === '' ? 0 : parseInt(pmStr);
-                const ps = psStr === '' ? 0 : parseInt(psStr);
-
-                if ( (pmStr !== '' && isNaN(pm)) || (psStr !== '' && isNaN(ps)) ||
-                     pm < 0 || ps < 0 || ps > 59 || pm > 599 ) { 
-                    paceError.textContent = 'Valid Pace MM (0-599), SS (0-59) required.';
-                    isValid = false;
-                } else if (pm === 0 && ps === 0 && (pmStr || psStr) ) {
-                    paceError.textContent = 'Pace must be greater than zero if entered.';
-                    isValid = false;
-                } else if (!pmStr && !psStr) { 
-                    paceError.textContent = 'Pace is required.';
-                    isValid = false;
-                }
-                values.paceInSecondsPerUnit = (pm * 60) + ps;
-                 if (values.paceInSecondsPerUnit <= 0 && (pmStr || psStr) ) { 
-                    paceError.textContent = 'Pace must be greater than zero.';
-                    isValid = false;
-                }
-            }
-            return isValid ? values : null;
-        }
-
-        /**
-         * Formats total seconds into HH:MM:SS string.
-         */
-        function formatTime(totalSeconds) {
-            const h = Math.floor(totalSeconds / 3600);
-            const m = Math.floor((totalSeconds % 3600) / 60);
-            const s = Math.round(totalSeconds % 60); 
-            return `${String(h).padStart(2, '0')}:${String(m).padStart(2, '0')}:${String(s).padStart(2, '0')}`;
-        }
-
-        /**
-         * Formats pace (seconds per unit) into MM:SS string.
-         */
-        function formatPace(secondsPerUnit) {
-            const m = Math.floor(secondsPerUnit / 60);
-            const s = Math.round(secondsPerUnit % 60); 
-            return `${String(m).padStart(2, '0')}:${String(s).padStart(2, '0')}`;
-        }
-
-
-        /**
-         * Handles the primary calculation logic based on the selected mode.
-         */
-        function handleCalculation() {
-            const validatedInputs = validateAllInputs();
-            if (!validatedInputs) {
-                resultArea.style.display = 'none';
+            if (isNaN(lt2SpeedInSeconds) || lt2SpeedInSeconds <= 0) {
+                errorMessageDiv.textContent = 'Invalid LT2 speed. Use mm:ss format (e.g., 4:30). Pace must be positive.';
+                zonesContentDiv.innerHTML = '<p class="text-red-500 italic">Could not calculate zones due to invalid input.</p>';
+                repeatsContentDiv.innerHTML = '<p class="text-red-500 italic">Could not calculate repeats paces due to invalid LT2 input.</p>';
                 return;
             }
 
-            const mode = calculationModeSelect.value;
-            const unit = distanceUnitSelect.value;
-            let resultString = '';
+            const zonesData = [
+                { name: "Zone 1", descriptor: "Easy", lowPercent: 60, highPercent: 75, colorClass: "text-green-500" },
+                { name: "Zone 2", descriptor: "Base", lowPercent: 76, highPercent: 86, colorClass: "text-blue-500" },
+                { name: "Zone 3", descriptor: "Aerobic", lowPercent: 87, highPercent: 99, colorClass: "text-green-700" },
+                { name: "Zone 4", descriptor: "Threshold", lowPercent: 100, highPercent: 115, colorClass: "text-amber-500" },
+                { name: "Zone 5", descriptor: "Max", lowPercent: 116, highPercent: 145, colorClass: "text-red-600" }
+            ];
+            const racePaceInfo = { name: "Race Pace", descriptor: "", lowPercent: 90, highPercent: 92, colorClass: "text-purple-600" };
 
-            try {
-                if (mode === 'pace') {
-                    if (validatedInputs.distance === 0) { 
-                        distanceError.textContent = "Distance cannot be zero for pace calculation.";
-                        resultArea.style.display = 'none'; return;
-                    }
-                    const paceSecPerUnit = validatedInputs.totalTimeInSeconds / validatedInputs.distance;
-                    if (!isFinite(paceSecPerUnit) || paceSecPerUnit <= 0) throw new Error("Calculated pace is invalid (e.g., zero or negative).");
-                    resultString = `Pace: ${formatPace(paceSecPerUnit)} per ${unit}`;
-                    paceMinutesInput.value = String(Math.floor(paceSecPerUnit / 60)).padStart(2, '0');
-                    paceSecondsInput.value = String(Math.round(paceSecPerUnit % 60)).padStart(2, '0');
+            zonesContentDiv.innerHTML = '';
+            const zonesTable = document.createElement('table');
+            zonesTable.classList.add('data-table');
+            const zonesThead = zonesTable.createTHead();
+            zonesThead.innerHTML = `<tr>
+                                      <th class="bg-gray-100">Zone</th>
+                                      <th class="bg-gray-100">Pace Range</th>
+                                    </tr>`;
+            const zonesTbody = zonesTable.createTBody();
 
-                } else if (mode === 'time') {
-                     if (validatedInputs.distance === 0) { 
-                        distanceError.textContent = "Distance cannot be zero for time calculation.";
-                        resultArea.style.display = 'none'; return;
-                    }
-                    const totalSeconds = validatedInputs.paceInSecondsPerUnit * validatedInputs.distance;
-                    if (!isFinite(totalSeconds) || totalSeconds <= 0) throw new Error("Calculated time is invalid (e.g., zero or negative).");
-                    resultString = `Time: ${formatTime(totalSeconds)}`;
-                    hoursInput.value = String(Math.floor(totalSeconds / 3600)).padStart(2, '0');
-                    minutesInput.value = String(Math.floor((totalSeconds % 3600) / 60)).padStart(2, '0');
-                    secondsInput.value = String(Math.round(totalSeconds % 60)).padStart(2, '0');
+            [...zonesData, racePaceInfo].forEach(zone => {
+                const fasterPaceSeconds = lt2SpeedInSeconds / (zone.highPercent / 100);
+                const slowerPaceSeconds = lt2SpeedInSeconds / (zone.lowPercent / 100);
+                
+                const row = zonesTbody.insertRow();
+                const cellName = row.insertCell();
+                cellName.innerHTML = `<strong class="${zone.colorClass}">${zone.name} ${zone.descriptor ? '['+zone.descriptor+']' : ''}</strong>`;
+                
+                const cellPace = row.insertCell();
+                cellPace.textContent = `${formatSecondsToPace(slowerPaceSeconds)} - ${formatSecondsToPace(fasterPaceSeconds)}`;
+            });
+            zonesContentDiv.appendChild(zonesTable);
 
-                } else if (mode === 'distance') {
-                    if (validatedInputs.paceInSecondsPerUnit === 0) {
-                         paceError.textContent = 'Pace cannot be zero for distance calculation.';
-                         resultArea.style.display = 'none';
-                         return;
-                    }
-                    const calculatedDistance = validatedInputs.totalTimeInSeconds / validatedInputs.paceInSecondsPerUnit;
-                    if (!isFinite(calculatedDistance) || calculatedDistance <= 0) throw new Error("Calculated distance is invalid (e.g., zero or negative).");
-                    resultString = `Distance: ${calculatedDistance.toFixed(2)} ${unit}`;
-                    distanceInput.value = calculatedDistance.toFixed(2);
-                }
+            const repeatDistances = [
+                { distance: "1000m", lowPercent: 99, highPercent: 101 },
+                { distance: "800m",  lowPercent: 101, highPercent: 102 },
+                { distance: "400m",  lowPercent: 104, highPercent: 106 },
+                { distance: "300m",  lowPercent: 110, highPercent: 112 }
+            ];
 
-                resultText.textContent = resultString;
-                resultArea.style.display = 'block';
+            repeatsContentDiv.innerHTML = '';
 
-            } catch (error) {
-                resultText.textContent = `Error: ${error.message || 'Could not perform calculation.'}`;
-                resultArea.style.display = 'block';
-                if (mode === 'pace' && !timeError.textContent && !distanceError.textContent) timeError.textContent = "Check time/distance inputs.";
-                else if (mode === 'time' && !paceError.textContent && !distanceError.textContent) paceError.textContent = "Check pace/distance inputs.";
-                else if (mode === 'distance' && !timeError.textContent && !paceError.textContent) timeError.textContent = "Check time/pace inputs.";
+            const repeatsTable = document.createElement('table');
+            repeatsTable.id = 'repeats-table';
+            repeatsTable.classList.add('data-table');
+
+            const repeatsThead = repeatsTable.createTHead();
+            repeatsThead.innerHTML = `<tr>
+                                 <th class="bg-blue-100">Distance</th>
+                                 <th class="bg-blue-100">Target Time for Distance</th>
+                               </tr>`;
+            
+            const repeatsTbody = repeatsTable.createTBody();
+            repeatDistances.forEach(item => {
+                const fasterPaceTotalSeconds = lt2SpeedInSeconds / (item.highPercent / 100);
+                const slowerPaceTotalSeconds = lt2SpeedInSeconds / (item.lowPercent / 100);
+
+                let distanceMultiplier = 1; 
+                if (item.distance === "800m") distanceMultiplier = 0.8;
+                else if (item.distance === "400m") distanceMultiplier = 0.4;
+                else if (item.distance === "300m") distanceMultiplier = 0.3;
+
+                const fasterTimeForDistance = fasterPaceTotalSeconds * distanceMultiplier;
+                const slowerTimeForDistance = slowerPaceTotalSeconds * distanceMultiplier;
+
+                const row = repeatsTbody.insertRow();
+                const cellDistance = row.insertCell();
+                cellDistance.textContent = item.distance;
+                cellDistance.classList.add('font-medium');
+
+                const cellPace = row.insertCell();
+                cellPace.textContent = `${formatSecondsToPace(slowerTimeForDistance)} - ${formatSecondsToPace(fasterTimeForDistance)}`;
+            });
+            repeatsContentDiv.appendChild(repeatsTable);
+        }
+
+        document.getElementById('lt2speed').addEventListener('keypress', function(event) {
+            if (event.key === 'Enter') {
+                event.preventDefault();
+                calculatePaces();
             }
+        });
+
+        function calculateWeeklyPlan() {
+            const baseKmInput = document.getElementById('baseKilometers').value;
+            const totalWeeksInput = document.getElementById('totalWeeks').value;
+            const kPercentInput = document.getElementById('kPercentage').value;
+
+            const planResultsContentDiv = document.getElementById('plan-results-content');
+            const planErrorMessageDiv = document.getElementById('plan-error-message');
+
+            planResultsContentDiv.innerHTML = '<p class="text-gray-500 italic">Calculating plan...</p>';
+            planErrorMessageDiv.textContent = '';
+
+            const baseKm = parseFloat(baseKmInput);
+            const totalWeeks = parseInt(totalWeeksInput, 10);
+            const kPercent = parseFloat(kPercentInput);
+
+            let errors = [];
+            if (isNaN(baseKm) || baseKm <= 0) errors.push("Base Kilometers must be a positive number.");
+            if (isNaN(totalWeeks) || totalWeeks <= 0 || !Number.isInteger(totalWeeks)) errors.push("Total Weeks must be a positive integer.");
+            if (isNaN(kPercent) || kPercent < 0) errors.push("K Percentage must be a non-negative number.");
+
+            if (errors.length > 0) {
+                planErrorMessageDiv.textContent = errors.join(' ');
+                planResultsContentDiv.innerHTML = `<p class="text-red-500 italic">Could not calculate plan due to invalid input(s).</p>`;
+                return;
+            }
+            
+            if (totalWeeks > 200) { 
+                 planErrorMessageDiv.textContent = "Plans over 200 weeks are not supported to prevent browser slowdown.";
+                 planResultsContentDiv.innerHTML = `<p class="text-red-500 italic">Plan too long.</p>`;
+                 return;
+            }
+
+            const weeklyKms = []; 
+            if (totalWeeks === 0) { 
+                planResultsContentDiv.innerHTML = '<p class="text-gray-500 italic">Please enter a valid number of weeks.</p>';
+                return;
+            }
+
+            weeklyKms[0] = baseKm; 
+
+            for (let i = 1; i < totalWeeks; i++) { 
+                const currentWeekNumber = i + 1; 
+                const kmFromPreviousWeek = weeklyKms[i-1]; 
+                const weekInFiveCycle = (currentWeekNumber - 1) % 5;
+
+                if (weekInFiveCycle === 4) { 
+                    if (i >=2) { 
+                        weeklyKms[i] = weeklyKms[i-2];
+                    } else { 
+                        weeklyKms[i] = kmFromPreviousWeek * (1 + kPercent / 100); 
+                    }
+                } else if (weekInFiveCycle === 3) { 
+                    weeklyKms[i] = kmFromPreviousWeek * (1 - (5 * kPercent) / 100);
+                } else { 
+                    weeklyKms[i] = kmFromPreviousWeek * (1 + kPercent / 100);
+                }
+                if (weeklyKms[i] < 0) weeklyKms[i] = 0;
+            }
+
+            planResultsContentDiv.innerHTML = ''; 
+            if (weeklyKms.length === 0 && totalWeeks > 0) { 
+                 planResultsContentDiv.innerHTML = '<p class="text-red-500 italic">An error occurred calculating the plan.</p>';
+                 return;
+            }
+
+            weeklyKms.forEach((km, index) => {
+                const weekNumber = index + 1; 
+                const mainKmFormatted = km.toFixed(0); 
+                const lowKm = (km * 0.80).toFixed(0);   
+                const highKm = (km * 0.20).toFixed(0);  
+
+                const p = document.createElement('p');
+                p.classList.add('plan-result-item');
+                
+                const mainKmSpan = document.createElement('span');
+                mainKmSpan.classList.add('font-medium'); 
+                mainKmSpan.textContent = `Week ${weekNumber}: ${mainKmFormatted} km`;
+
+                const lowHighSpan = document.createElement('span');
+                lowHighSpan.classList.add('low-high-values'); 
+                lowHighSpan.innerHTML = `<strong class="text-blue-500">Low: ${lowKm}</strong> <strong class="text-orange-500 ml-2">High: ${highKm}</strong>`;
+                
+                p.appendChild(mainKmSpan);
+                p.appendChild(lowHighSpan);
+                planResultsContentDiv.appendChild(p);
+            });
         }
 
-        /**
-         * Clears all error messages.
-         */
-        function clearErrors() {
-            distanceError.textContent = '';
-            timeError.textContent = '';
-            paceError.textContent = '';
-        }
-
-        /**
-         * Clears all input fields, results, and errors. Resets mode.
-         */
-        function clearAllFields() {
-            distanceInput.value = '';
-            hoursInput.value = '';
-            minutesInput.value = '';
-            secondsInput.value = '';
-            paceMinutesInput.value = '';
-            paceSecondsInput.value = '';
-
-            distanceUnitSelect.value = 'km'; 
-            calculationModeSelect.value = 'pace'; 
-
-            handleModeChange(); 
-
-            resultArea.style.display = 'none';
-            resultText.textContent = '';
-            clearErrors();
-        }
-
-        // Initial call to set things up
-        clearAllFields(); 
+        ['baseKilometers', 'totalWeeks', 'kPercentage'].forEach(id => {
+            document.getElementById(id).addEventListener('keypress', function(event) {
+                if (event.key === 'Enter') {
+                    event.preventDefault(); 
+                    calculateWeeklyPlan();
+                }
+            });
+        });
     </script>
 </body>
 </html>
