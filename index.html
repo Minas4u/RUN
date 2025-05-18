@@ -58,13 +58,28 @@
         .data-table th {
             font-weight: 600;
         }
+        .header-logo-container { /* Style for the div wrapping the logo */
+            display: inline-block; /* To keep it centered with text-center on parent */
+            padding: 0.75rem; /* p-3 */
+            background-color: #2563eb; /* bg-blue-600 */
+            border-radius: 0.5rem; /* rounded-lg */
+        }
+        .header-logo {
+            max-height: 50px; /* Adjusted slightly to account for padding */
+            display: block; /* Ensures it behaves well within the padded container */
+        }
     </style>
 </head>
 <body class="min-h-screen flex items-center justify-center p-4 py-8">
     <div class="bg-white p-6 sm:p-8 rounded-xl shadow-2xl w-full max-w-3xl">
         <header class="mb-6 sm:mb-8 text-center">
-            <h1 class="text-3xl sm:text-4xl font-bold text-gray-800">Helios Running Team</h1>
-            <p class="text-gray-600 mt-2">Calculate your running training zones & mileage.</p>
+            <div class="header-logo-container">
+                <img src="https://iliosports.com/wp-content/uploads/2021/03/logo-13.png" 
+                     alt="Helios Running Team Logo" 
+                     class="header-logo"
+                     onerror="this.parentElement.outerHTML='<h1 class=\'text-3xl sm:text-4xl font-bold text-gray-800\'>Helios Running Team</h1>'">
+            </div>
+            <p class="text-gray-600 mt-3">Calculate your running training zones & mileage.</p>
         </header>
 
         <div class="mb-6">
