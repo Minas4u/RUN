@@ -3,365 +3,619 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Helios Running Team - Calculator</title>
+    <title>Helios Marathon Plan & Tools</title>
     <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@3.9.1/dist/chart.min.js"></script>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
     <style>
         body {
             font-family: 'Inter', sans-serif;
-            background-color: #f3f4f6;
+            background-color: #f5f5f4; /* stone-100 */
+            color: #292524; /* stone-800 */
         }
-        input[type="text"]:focus, input[type="number"]:focus {
-            outline: 2px solid transparent;
-            outline-offset: 2px;
+        .main-container {
+            background-color: #ffffff; /* white */
+            border-radius: 0.75rem; /* rounded-xl */
+            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04); /* shadow-2xl */
         }
-        input#lt2speed:focus {
-            border-color: #2563eb;
-            box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.5);
-        }
-        input#baseKilometers:focus, input#totalWeeks:focus, input#kPercentage:focus {
-            border-color: #16a34a;
-            box-shadow: 0 0 0 3px rgba(22, 163, 74, 0.5);
-        }
-        .result-item {
-            background-color: #e5e7eb;
-            padding: 0.75rem 1rem;
-            border-radius: 0.375rem;
-            margin-bottom: 0.5rem;
-        }
-        .result-item strong {
-             font-weight: 600;
-        }
-        .plan-result-item {
-            background-color: #e0e7ff;
+        .nav-button {
             padding: 0.5rem 1rem;
-            border-radius: 0.375rem;
-            margin-bottom: 0.25rem;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
+            border-radius: 0.375rem; /* rounded-md */
+            transition: background-color 0.2s ease-in-out, color 0.2s ease-in-out;
+            font-weight: 500;
         }
-        .plan-result-item .low-high-values strong {
-            font-weight: 600;
+        .nav-button.active {
+            background-color: #0284c7; /* sky-600 */
+            color: white;
+        }
+        .nav-button:not(.active):hover {
+            background-color: #e0f2fe; /* sky-100 */
+            color: #0369a1; /* sky-700 */
+        }
+        .phase-button {
+            padding: 0.5rem 1rem;
+            border-radius: 0.375rem; /* rounded-md */
+            border: 1px solid #0ea5e9; /* sky-500 */
+            color: #0369a1; /* sky-700 */
+            transition: background-color 0.2s ease-in-out, color 0.2s ease-in-out;
+            font-weight: 500;
+        }
+        .phase-button.active {
+            background-color: #0ea5e9; /* sky-500 */
+            color: white;
+        }
+        .phase-button:not(.active):hover {
+            background-color: #e0f2fe; /* sky-100 */
+        }
+        .week-button {
+            padding: 0.5rem 0.75rem;
+            border-radius: 0.375rem;
+            border: 1px solid #9ca3af; /* gray-400 */
+            color: #374151; /* gray-700 */
+            transition: background-color 0.2s ease-in-out, color 0.2s ease-in-out, border-color 0.2s ease-in-out;
+            font-weight: 500;
+            text-align: center;
+        }
+        .week-button.active {
+            background-color: #0d9488; /* teal-600 */
+            color: white;
+            border-color: #0d9488; /* teal-600 */
+        }
+        .week-button:not(.active):hover {
+            background-color: #f0fdfa; /* teal-50 */
+            border-color: #14b8a6; /* teal-500 */
+        }
+        .content-card {
+            background-color: #fafaf9; /* stone-50 */
+            padding: 1rem; /* p-4 */
+            border-radius: 0.5rem; /* rounded-lg */
+            border: 1px solid #e7e5e4; /* stone-200 */
+        }
+        .content-card h3 {
+            color: #0d9488; /* teal-600 */
+        }
+        .chart-container {
+            position: relative;
+            width: 100%;
+            max-width: 800px; /* Increased max-width for better readability on wider screens */
+            margin-left: auto;
+            margin-right: auto;
+            height: 300px;
+            max-height: 400px;
+        }
+        @media (min-width: 768px) {
+            .chart-container {
+                height: 350px;
+            }
         }
         .data-table {
-            width: 100%;
-            margin-top: 0.5rem;
-            border-collapse: collapse;
-            font-size: 0.875rem;
-        }
-        .data-table th, .data-table td {
-            border: 1px solid #d1d5db;
-            padding: 0.5rem;
-            text-align: left;
-        }
-        .data-table th {
+             width: 100%;
+             margin-top: 0.5rem;
+             border-collapse: collapse;
+             font-size: 0.875rem;
+         }
+         .data-table th, .data-table td {
+             border: 1px solid #d1d5db;
+             padding: 0.5rem;
+             text-align: left;
+         }
+         .data-table th {
             font-weight: 600;
+            background-color: #f3f4f6; /* gray-100 */
+         }
+         input[type="text"]:focus, input[type="number"]:focus {
+             outline: 2px solid transparent;
+             outline-offset: 2px;
+             border-color: #0ea5e9; /* sky-500 */
+             box-shadow: 0 0 0 3px rgba(14, 165, 233, 0.3); /* sky-500 with opacity */
+         }
+         .header-logo-container {
+             display: inline-block;
+             padding: 0.75rem;
+             background-color: #0284c7; /* sky-600 */
+             border-radius: 0.5rem;
+         }
+         .header-logo {
+             max-height: 50px;
+             display: block;
+         }
+         ::-webkit-scrollbar {
+            width: 8px;
         }
-        .header-logo-container { /* Style for the div wrapping the logo */
-            display: inline-block; /* To keep it centered with text-center on parent */
-            padding: 0.75rem; /* p-3 */
-            background-color: #2563eb; /* bg-blue-600 */
-            border-radius: 0.5rem; /* rounded-lg */
+        ::-webkit-scrollbar-track {
+            background: #f1f1f1;
+            border-radius: 10px;
         }
-        .header-logo {
-            max-height: 50px; /* Adjusted slightly to account for padding */
-            display: block; /* Ensures it behaves well within the padded container */
+        ::-webkit-scrollbar-thumb {
+            background: #cbd5e1; /* slate-300 */
+            border-radius: 10px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: #94a3b8; /* slate-500 */
         }
     </style>
 </head>
-<body class="min-h-screen flex items-center justify-center p-4 py-8">
-    <div class="bg-white p-6 sm:p-8 rounded-xl shadow-2xl w-full max-w-3xl">
+<body class="min-h-screen p-4 py-8">
+    <div class="main-container w-full max-w-5xl mx-auto p-6 sm:p-8">
         <header class="mb-6 sm:mb-8 text-center">
             <div class="header-logo-container">
-                <img src="https://iliosports.com/wp-content/uploads/2021/03/logo-13.png" 
-                     alt="Helios Running Team Logo" 
+                <img src="https://iliosports.com/wp-content/uploads/2021/03/logo-13.png"
+                     alt="Helios Running Team Logo"
                      class="header-logo"
-                     onerror="this.parentElement.outerHTML='<h1 class=\'text-3xl sm:text-4xl font-bold text-gray-800\'>Helios Running Team</h1>'">
+                     onerror="this.parentElement.innerHTML='<h1 class=\'text-2xl sm:text-3xl font-bold text-white\'>Helios Running</h1>'">
             </div>
-            <p class="text-gray-600 mt-3">Calculate your running training zones & mileage.</p>
+            <h1 class="text-2xl sm:text-3xl font-bold text-stone-800 mt-4">Marathon Plan & Training Tools</h1>
+            <p class="text-stone-600">Your interactive guide to a sub-2:35 marathon and pace utilities.</p>
         </header>
 
-        <div class="mb-6">
-            <label for="lt2speed" class="block text-sm font-medium text-gray-700 mb-1">Enter LT2 Speed:</label>
-            <input type="text" id="lt2speed" name="lt2speed" placeholder="e.g., 4:30"
-                   class="mt-1 block w-full px-4 py-3 border border-gray-300 rounded-lg shadow-sm sm:text-sm transition duration-150 ease-in-out">
-            <div id="error-message" class="text-red-500 text-sm mt-2 h-5"></div>
-        </div>
+        <nav class="mb-8 flex flex-wrap justify-center gap-2 sm:gap-4 border-b border-stone-300 pb-4">
+            <button id="nav-overview" class="nav-button active">Plan Overview</button>
+            <button id="nav-plan" class="nav-button">Training Plan</button>
+            <button id="nav-utils" class="nav-button">Pace Utilities</button>
+        </nav>
 
-        <button onclick="calculatePaces()"
-                class="w-full bg-blue-600 hover:bg-blue-700 text-white font-semibold py-3 px-4 rounded-lg shadow-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-opacity-50 transition duration-150 ease-in-out transform hover:scale-105">
-            Calculate Zones & Repeats Paces
-        </button>
-
-        <div class="mt-8 md:flex md:space-x-6">
-            <div id="zones-section" class="flex-1">
-                <h2 class="text-xl sm:text-2xl font-semibold text-gray-700 mb-2 border-b pb-2">Training Zones:</h2>
-                <div id="zones-content">
-                     <p class="text-gray-500 italic">Enter your LT2 speed and click calculate to see your zones.</p>
-                </div>
-            </div>
-
-            <div id="repeats-section" class="flex-1 mt-8 md:mt-0">
-                <h2 class="text-xl sm:text-2xl font-semibold text-gray-700 mb-2 border-b pb-2">Repeats:</h2>
-                <div id="repeats-content">
-                     <p class="text-gray-500 italic">Calculated based on your LT2 speed.</p>
-                </div>
-            </div>
-        </div>
-
-        <div class="mt-12 pt-8 border-t border-gray-300">
-            <header class="mb-6 text-center">
-                <h2 class="text-2xl sm:text-3xl font-bold text-gray-800">Mileage</h2>
-            </header>
-
-            <div class="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-6">
-                <div>
-                    <label for="baseKilometers" class="block text-sm font-medium text-gray-700 mb-1">Base Kilometers:</label>
-                    <input type="number" id="baseKilometers" name="baseKilometers" placeholder="e.g., 20" min="0.1" step="0.1"
-                           class="mt-1 block w-full px-4 py-3 border border-gray-300 rounded-lg shadow-sm sm:text-sm transition duration-150 ease-in-out">
-                </div>
-                <div>
-                    <label for="totalWeeks" class="block text-sm font-medium text-gray-700 mb-1">Total Weeks:</label>
-                    <input type="number" id="totalWeeks" name="totalWeeks" placeholder="e.g., 12" min="1" step="1"
-                           class="mt-1 block w-full px-4 py-3 border border-gray-300 rounded-lg shadow-sm sm:text-sm transition duration-150 ease-in-out">
-                </div>
-                <div>
-                    <label for="kPercentage" class="block text-sm font-medium text-gray-700 mb-1">K (% increase):</label>
-                    <input type="number" id="kPercentage" name="kPercentage" placeholder="e.g., 10" min="0" step="1"
-                           class="mt-1 block w-full px-4 py-3 border border-gray-300 rounded-lg shadow-sm sm:text-sm transition duration-150 ease-in-out">
-                </div>
-            </div>
-            <div id="plan-error-message" class="text-red-500 text-sm mb-4 h-5"></div>
-            <button onclick="calculateWeeklyPlan()"
-                    class="w-full bg-green-600 hover:bg-green-700 text-white font-semibold py-3 px-4 rounded-lg shadow-md focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-opacity-50 transition duration-150 ease-in-out transform hover:scale-105">
-                Calculate Weekly Plan
-            </button>
-
-            <div id="planResults" class="mt-8">
-                <h3 class="text-xl sm:text-2xl font-semibold text-gray-700 mb-4 border-b pb-2">Your Plan:</h3>
-                <div id="plan-results-content" class="space-y-1 text-sm max-h-60 overflow-y-auto">
-                     <p class="text-gray-500 italic">Enter details above and click calculate to see your weekly plan.</p>
-                </div>
-            </div>
-        </div>
+        <main id="app-content">
+        </main>
     </div>
 
-    <script>
-        function parsePaceToSeconds(paceString) {
-            if (!paceString || typeof paceString !== 'string') return NaN;
-            const parts = paceString.trim().split(':');
-            if (parts.length !== 2) return NaN;
-            const minutes = parseInt(parts[0], 10);
-            const seconds = parseInt(parts[1], 10);
-            if (isNaN(minutes) || isNaN(seconds) || minutes < 0 || seconds < 0 || seconds >= 60) return NaN;
-            return (minutes * 60) + seconds;
+<script>
+const marathonPlan = {
+    philosophy: {
+        title: "Training Philosophy: The 80/20 Approach",
+        content: [
+            "This plan is built on a polarized training model, often referred to as the <strong>80/20 rule</strong>.",
+            "<strong>80% of your weekly running volume</strong> will be at a <strong>low intensity</strong> (easy, conversational pace). This builds your aerobic base, endurance, and resilience with lower injury risk.",
+            "<strong>20% of your weekly running volume</strong> will be at <strong>moderate to high intensity</strong> (tempo runs, interval training, marathon pace efforts). These sessions are key for improving speed, efficiency, and race-specific fitness.",
+            "<strong>Key Benefits:</strong> Maximizes aerobic development, minimizes risk of overtraining and injury, promotes sustainable long-term improvement."
+        ]
+    },
+    paceGuide: {
+        title: "Pace Guide (Approximate for a 2:35 Marathoner)",
+        paces: [
+            "<strong>Easy Pace (E):</strong> 4:45 - 5:15/km (7:40 - 8:25/mile). Should feel comfortable and conversational.",
+            "<strong>Marathon Pace (MP):</strong> 3:40/km (5:54/mile). This is your target race pace.",
+            "<strong>Tempo Pace (T):</strong> 3:25 - 3:35/km (5:30 - 5:45/mile). Comfortably hard, sustainable for 20-60 minutes.",
+            "<strong>Interval Paces (I):</strong>",
+            "&nbsp;&nbsp;&nbsp;&nbsp;<strong>5k Pace:</strong> ~3:10 - 3:15/km (5:05 - 5:15/mile)",
+            "&nbsp;&nbsp;&nbsp;&nbsp;<strong>10k Pace:</strong> ~3:20 - 3:25/km (5:20 - 5:30/mile)",
+            "&nbsp;&nbsp;&nbsp;&nbsp;<em>Note: Interval paces will vary based on the length and purpose of the interval.</em>",
+            "<strong>Recovery Jog (RJ):</strong> Very slow, active recovery between intervals.",
+            "<strong>Strides:</strong> Short accelerations (e.g., 4-6 x 100m or 20-30 seconds) after easy runs, focusing on good form and quick leg turnover. Not all-out sprints."
+        ]
+    },
+    generalNotes: {
+        title: "Important Notes Before You Start",
+        notes: [
+            "<strong>Listen to Your Body:</strong> This is a template. Adjust based on how you feel. If you're overly fatigued, take an extra rest day or reduce mileage.",
+            "<strong>Warm-up (WU) & Cool-down (CD):</strong> Always perform a 10-15 minute WU (easy jogging, dynamic stretches) before quality workouts and long runs, and a 10-15 minute CD (easy jogging, static stretches) afterwards.",
+            "<strong>Strength Training:</strong> Incorporate 2-3 sessions per week focusing on core strength, glute activation, and running-specific exercises. This is vital for injury prevention and maintaining form.",
+            "<strong>Nutrition & Hydration:</strong> Fuel your body appropriately. Practice your race day nutrition and hydration strategy during long runs in the specific phase.",
+            "<strong>Sleep:</strong> Aim for 7-9 hours of quality sleep per night. Recovery is when you get stronger.",
+            "<strong>Flexibility:</strong> Don't be afraid to swap days around to fit your schedule, but try to keep a similar pattern of hard/easy days."
+        ]
+    },
+    phases: [
+        {
+            name: "Preseason",
+            duration: "~5 Weeks (June 1 - July 6)",
+            goal: "Re-establish consistency, build an initial aerobic foundation, and prepare for increased training load. Focus on enjoying the runs and building good habits.",
+            mileageRange: "Gradually increasing from ~60km to ~75km.",
+            weeks: [
+                { weekNum: "June 1-2", totalKm: "~18-22 (Sat/Sun)", days: ["Sat: Easy Run 8-10km", "Sun: Easy Run 10-12km"], notes: "Starting the plan." },
+                { weekNum: 1, totalKm: "~60-65km", days: ["Mon: Rest or Active Recovery (30 min very easy jog or cross-train)", "Tue: Easy Run 10km + 4-6 x 80m Strides", "Wed: Easy Run 12km", "Thu: Fartlek: 10km total. WU, then 6 x (2 min moderate effort, 2 min easy jog), CD.", "Fri: Easy Run 8km", "Sat: Rest or Cross-Train", "Sun: Long Run 15km (easy pace)"], notes: "Focus on consistency. Add 1-2 light strength sessions." },
+                { weekNum: 2, totalKm: "~65-70km", days: ["Mon: Rest or Active Recovery", "Tue: Easy Run 10km. Towards the end, include 6 x 30 sec pick-ups / 90 sec easy.", "Wed: Easy Run 12km", "Thu: Easy Run 10km + 4-6 x 100m Strides", "Fri: Easy Run 8km", "Sat: Cross-Train or Rest", "Sun: Long Run 18km (easy pace)"], notes: "Continue with strength work." },
+                { weekNum: 3, totalKm: "~70-75km", days: ["Mon: Rest or Active Recovery", "Tue: Hills: 10km total. WU, then 6-8 x 45-60 sec hill repeats at a hard but controlled effort (jog down recovery), CD. If no hills, 6-8 x 200m @ 5k-10k effort on flat.", "Wed: Easy Run 12-14km", "Thu: Easy Run 10km + 4-6 x 100m Strides", "Fri: Easy Run 8km", "Sat: Rest", "Sun: Long Run 20km (easy pace)"], notes: "First taste of slightly more structured intensity." },
+                { weekNum: 4, totalKm: "~70km", days: ["Mon: Rest or Active Recovery", "Tue: Easy Run 10km + 4-6 x 80m Strides", "Wed: Easy Run 12km", "Thu: Fartlek: 10km total. WU, then 5 x (3 min moderate, 2 min easy), CD.", "Fri: Easy Run 8km", "Sat: Cross-Train or Rest", "Sun: Long Run 18km (easy pace)"], notes: "Slight down week. Absorb the training. Ensure good recovery." },
+                { weekNum: 5, totalKm: "~75km", days: ["Mon: Rest or Active Recovery", "Tue: Easy Run 12km", "Wed: Light Interval: 12km total. WU, then 8 x 400m @ 5k-10k pace with 400m jog recovery, CD.", "Thu: Easy Run 10km + 4-6 x 100m Strides", "Fri: Easy Run 8km", "Sat (Preseason): Rest", "Sun (Base Starts): Long Run 22km (easy pace)"], notes: "Transitioning into base building. Preseason ends July 6, Base begins July 7." }
+            ]
+        },
+        {
+            name: "Base Building",
+            duration: "~8 Weeks (July 7 - August 31)",
+            goal: "Significantly build aerobic capacity, increase weekly mileage (from 75km to 120km), and lengthen long runs. Introduce tempo runs and longer intervals.",
+            mileageRange: "75km gradually increasing to 120km.",
+            weeks: [
+                { weekNum: 6, totalKm: "~80km", days: ["Mon: Rest or Active Recovery (40 min very easy jog or XT)", "Tue: Intervals: 14km total. WU, 5 x 1000m @ 10k pace (or slightly faster) with 400-600m jog recovery, CD.", "Wed: Easy Run 12km", "Thu: Tempo Run: 14km total. WU, 20-25 min @ Tempo Pace (T), CD.", "Fri: Easy Run 10km + 4-6 Strides", "Sat: Easy Run 8km", "Sun: Long Run 24km (easy pace)"], notes: "First week of true base building. Focus on quality recovery. 2-3 strength sessions." },
+                { weekNum: 7, totalKm: "~85km", days: ["Mon: Rest or Active Recovery", "Tue: Intervals: 15km total. WU, 6-7 x 800m @ 5k-10k pace with 400m jog recovery, CD.", "Wed: Easy Run 14km", "Thu: Easy Run 10km + 4-6 Strides", "Fri: Easy Run 10km", "Sat: Easy Run 8km or Rest", "Sun: Long Run 26km (easy pace)"], notes: "Mileage building steadily." },
+                { weekNum: 8, totalKm: "~90km", days: ["Mon: Rest or Active Recovery", "Tue: Tempo Run: 16km total. WU, 2 x 15 min @ Tempo Pace (T) with 5 min jog recovery between, CD.", "Wed: Easy Run 14km", "Thu: Easy Run 12km + 4-6 Strides", "Fri: Easy Run 10km", "Sat: Rest", "Sun: Long Run 28km (easy pace)"], notes: "Solid week of volume." },
+                { weekNum: 9, totalKm: "~80km", days: ["Mon: Rest or Active Recovery", "Tue: Intervals: 12km total. WU, 4 x 1000m @ 10k pace with 400m jog recovery, CD.", "Wed: Easy Run 12km", "Thu: Easy Run 10km + 4-6 Strides", "Fri: Easy Run 8km", "Sat: Cross-Train or Rest", "Sun: Long Run 22km (easy pace)"], notes: "Down Week. Recovery week to absorb training." },
+                { weekNum: 10, totalKm: "~95km", days: ["Mon: Rest or Active Recovery", "Tue: Intervals: 16km total. WU, 4 x 1200m @ 10k pace (or slightly faster than T) with 600m jog recovery, CD.", "Wed: Easy Run 15km", "Thu: Tempo Run: 16km total. WU, 30 min @ Tempo Pace (T), CD.", "Fri: Easy Run 10km + 4-6 Strides", "Sat: Easy Run 8km", "Sun: Long Run 30km (easy pace)"], notes: "Hitting higher mileage. Ensure good fueling for long runs." },
+                { weekNum: 11, totalKm: "~105km", days: ["Mon: Rest or Active Recovery", "Tue: Intervals: 17km total. WU, 3 x 1600m (1 mile) @ slightly faster than 10k pace with 800m jog recovery, CD.", "Wed: Easy Run 16km", "Thu: Easy Run 12km + 4-6 Strides", "Fri: Easy Run 10km", "Sat: Easy Run 10km or Rest", "Sun: Long Run 32km (easy pace, consider adding a few km @ MP in the middle if feeling good, e.g., last 5-8km)"], notes: "Longest run so far." },
+                { weekNum: 12, totalKm: "~115-120km", days: ["Mon: Rest or Active Recovery", "Tue: Tempo Run: 18km total. WU, 20 min @ T, 5 min RJ, 15 min @ T, CD.", "Wed: Easy Run 18km", "Thu: Easy Run 14km + 4-6 Strides", "Fri: Easy Run 10km", "Sat: Easy Run 10km", "Sun: Long Run 28km (pull back slightly on distance, but good quality effort)"], notes: "Peak Base Week. Peak mileage for the base phase. Focus on recovery." },
+                { weekNum: 13, totalKm: "~110km", days: ["Mon: Rest or Active Recovery", "Tue: Intervals: 16km total. WU, 5-6 x 1000m @ 10k pace with 400m jog recovery, CD.", "Wed: Easy Run 16km", "Thu: Easy Run 12km + 4-6 Strides", "Fri: Easy Run 10km", "Sat (Base Ends): Easy Run 8km", "Sun (Specific Starts): Long Run 30km with 10km @ MP in the second half."], notes: "Transition Week. Base phase ends Aug 31st, Marathon Specific begins Sep 1st." }
+            ]
+        },
+        {
+            name: "Marathon Specific",
+            duration: "~7.5 Weeks (September 1 - October 22)",
+            goal: "Peak weekly mileage (up to 140km), focus on marathon pace workouts and simulations. Sharpen race fitness.",
+            mileageRange: "110km building up to 140km, then slight reduction.",
+            weeks: [
+                { weekNum: 14, totalKm: "~120km", days: ["Mon: Rest or Active Recovery", "Tue: MP Intervals: 18km total. WU, 3 x 3km @ MP with 1km easy jog recovery, CD.", "Wed: Easy Run 18km", "Thu: Tempo Run: 16km total. WU, 8km @ T (continuous), CD.", "Fri: Easy Run 12km + 4-6 Strides", "Sat: Easy Run 10km", "Sun: Long Run 32km with 12-14km @ MP (e.g., middle 14k or last 12k)"], notes: "Introducing more marathon pace work." },
+                { weekNum: 15, totalKm: "~125km", days: ["Mon: Rest or Active Recovery", "Tue: Intervals: 18km total. WU, 6 x 1km @ 10k pace, then 4 x 400m @ 5k pace. (Recovery 400m jog / 200m jog), CD.", "Wed: Easy Run 18km", "Thu: MP Progression Run: 16km total. WU, 6km E, 6km @ MP, 2km @ T, CD.", "Fri: Easy Run 12km + 4-6 Strides", "Sat: Easy Run 10km", "Sun: Long Run 34km with 16km @ MP (can be continuous or broken e.g. 2 x 8km @ MP)"], notes: "Practice race day fueling on long runs." },
+                { weekNum: 16, totalKm: "~130km", days: ["Mon: Rest or Active Recovery", "Tue: MP Intervals: 20km total. WU, 2 x 5km @ MP with 1km easy jog recovery, CD.", "Wed: Easy Run 20km", "Thu: Tempo Run: 18km total. WU, 3 x 3km @ T with 5 min jog recovery, CD.", "Fri: Easy Run 12km + 4-6 Strides", "Sat: Easy Run 10km", "Sun: Long Run 30km (slightly less distance, but good effort, maybe some MP miles if feeling good, e.g. 8-10km)"], notes: "High volume, ensure adequate recovery." },
+                { weekNum: 17, totalKm: "~135km", days: ["Mon: Rest or Active Recovery", "Tue: Key Workout: 20km total. WU, 10km @ MP, 5 min RJ, then 5 x 1km @ 10k pace (400m RJ), CD.", "Wed: Easy Run 20km", "Thu: Easy Run 15km", "Fri: Easy Run 12km + 4-6 Strides", "Sat: Easy Run 10km", "Sun: Long Run 35-37km with 18-20km @ MP (major race simulation)."], notes: "Peak Week 1. Test your race day gear, nutrition, and hydration." },
+                { weekNum: 18, totalKm: "~140km", days: ["Mon: Rest or Active Recovery", "Tue: MP Intervals: 20km total. WU, 4 x 3km @ MP with 1km easy jog recovery, CD.", "Wed: Easy Run 20km", "Thu: Medium Long Run with MP: 18km total. WU, 10km E, then 6km @ MP, CD.", "Fri: Easy Run 12km + 4-6 Strides", "Sat: Easy Run 10km", "Sun: Long Run 25km (reduced distance, mostly easy, maybe last 5km @ MP if feeling good)"], notes: "Peak Week 2. Max volume week. Recovery is paramount." },
+                { weekNum: 19, totalKm: "~125km", days: ["Mon: Rest or Active Recovery", "Tue: Tempo Run: 16km total. WU, 25 min @ T, CD.", "Wed: Easy Run 18km", "Thu: Easy Run 12km + 4-6 Strides", "Fri: Easy Run 10km", "Sat: Rest or very short Easy Run 6-8km", "Sun: Long Run 28-30km with 10-12km @ MP."], notes: "Down Week. Mileage drops a bit to absorb the peak weeks." },
+                { weekNum: 20, totalKm: "~110-115km", days: ["Mon: Rest or Active Recovery", "Tue: MP Workout: 16km total. WU, 8km @ MP continuous, CD.", "Wed: Easy Run 16km", "Thu: Intervals: 14km total. WU, 8 x 800m @ 10k pace (400m RJ), CD.", "Fri: Easy Run 10km + 4-6 Strides", "Sat: Easy Run 8km", "Sun: Long Run 20-22km (last run over 20km, mostly easy, maybe 5km @ MP)"], notes: "Last Big Week. Starting to reduce volume, but maintain some quality." },
+                { weekNum: 21, totalKm: "~80-90km", days: ["Mon (Specific): Easy Run 12km", "Tue (Specific): Short MP: 10km total. WU, 3-4km @ MP, CD.", "Wed (Taper Starts): Rest or Very Easy Run 6-8km", "Thu: Easy Run 10km + 4 Strides", "Fri: Light Intervals: 8km total. WU, 6 x 400m @ 10k pace (400m RJ), CD.", "Sat: Easy Run 8km", "Sun: Long Run 15-16km (easy pace)"], notes: "Transition Week. Specific phase ends Oct 22nd, Taper begins Oct 23rd. Taper begins! Focus on feeling fresh." }
+            ]
+        },
+        {
+            name: "Taper",
+            duration: "~2.5 Weeks (October 23 - November 9)",
+            goal: "Reduce training volume significantly while maintaining some intensity to stay sharp. Allow the body to fully recover and store energy for race day.",
+            mileageRange: "Race Day: November 9th (Saturday)",
+            weeks: [
+                { weekNum: 22, totalKm: "~60km", days: ["Mon: Rest or Active Recovery (30 min very easy jog or XT)", "Tue: Short Tempo: 8km total. WU, 10-15 min @ T, CD.", "Wed: Easy Run 8km", "Thu: Easy Run 6km + 4 Strides", "Fri: Rest", "Sat: Easy Run 10km (gentle, feel-good pace)", "Sun: Easy Run 6-8km"], notes: "Significant reduction in volume. Trust the taper. Focus on sleep, nutrition, hydration." },
+                { weekNum: 23, totalKm: "~40-50km + Race", days: ["Mon: Rest", "Tue: Very Short Intervals: 6km total. WU, 3-4 x 400m @ 10k pace (or slightly faster, but controlled), long recovery, CD. (Shakeout, stay sharp)", "Wed: Easy Run 5-6km + 2-3 Strides", "Thu: Rest or Very Easy Run 3-4km (shakeout)", "Fri: Rest (prepare gear, hydrate, relax)", "Sat: RACE DAY! Sub-2:35! Pre-race routine (WU, drills). Execute your race plan!", "Sun: CELEBRATE! (Very light active recovery if desired, like a short walk)"], notes: "Race Week!" }
+            ]
         }
+    ]
+};
 
-        function formatSecondsToPace(totalSeconds) {
-            if (isNaN(totalSeconds) || totalSeconds < 0) return "N/A";
-            const minutes = Math.floor(totalSeconds / 60);
-            const seconds = Math.round(totalSeconds % 60);
-            return `${minutes}:${seconds < 10 ? '0' : ''}${seconds}`;
+const appContent = document.getElementById('app-content');
+let mileageChartInstance = null;
+
+function setActiveNav(activeId) {
+    document.querySelectorAll('.nav-button').forEach(btn => {
+        btn.classList.remove('active');
+        if (btn.id === activeId) {
+            btn.classList.add('active');
         }
+    });
+}
 
-        function calculatePaces() {
-            const lt2SpeedInput = document.getElementById('lt2speed').value;
-            const zonesContentDiv = document.getElementById('zones-content');
-            const repeatsContentDiv = document.getElementById('repeats-content');
-            const errorMessageDiv = document.getElementById('error-message');
+function createHtmlList(items) {
+    return `<ul class="list-disc list-inside space-y-1 text-stone-700">${items.map(item => `<li>${item}</li>`).join('')}</ul>`;
+}
 
-            zonesContentDiv.innerHTML = '<p class="text-gray-500 italic">Calculating...</p>';
-            repeatsContentDiv.innerHTML = '<p class="text-gray-500 italic">Calculating...</p>';
-            errorMessageDiv.textContent = '';
+function renderOverview() {
+    setActiveNav('nav-overview');
+    appContent.innerHTML = `
+        <section id="overview-content" class="space-y-6">
+            <div class="content-card">
+                <h2 class="text-xl sm:text-2xl font-semibold text-sky-700 mb-3">${marathonPlan.philosophy.title}</h2>
+                ${createHtmlList(marathonPlan.philosophy.content)}
+            </div>
 
-            const lt2SpeedInSeconds = parsePaceToSeconds(lt2SpeedInput);
+            <div class="content-card">
+                <h2 class="text-xl sm:text-2xl font-semibold text-sky-700 mb-3">Overall Mileage Progression</h2>
+                <div class="chart-container bg-white p-2 rounded-md shadow">
+                    <canvas id="mileageChart"></canvas>
+                </div>
+                <p class="text-xs text-stone-500 mt-2 text-center">Hover over points to see weekly mileage. Note: 'June 1-2' is introductory, actual Week 1 starts after.</p>
+            </div>
 
-            if (isNaN(lt2SpeedInSeconds) || lt2SpeedInSeconds <= 0) {
-                errorMessageDiv.textContent = 'Invalid LT2 speed. Use mm:ss format (e.g., 4:30). Pace must be positive.';
-                zonesContentDiv.innerHTML = '<p class="text-red-500 italic">Could not calculate zones due to invalid input.</p>';
-                repeatsContentDiv.innerHTML = '<p class="text-red-500 italic">Could not calculate repeats paces due to invalid LT2 input.</p>';
-                return;
+            <div class="content-card">
+                <h2 class="text-xl sm:text-2xl font-semibold text-sky-700 mb-3">${marathonPlan.paceGuide.title}</h2>
+                ${createHtmlList(marathonPlan.paceGuide.paces)}
+            </div>
+
+            <div class="content-card">
+                <h2 class="text-xl sm:text-2xl font-semibold text-sky-700 mb-3">${marathonPlan.generalNotes.title}</h2>
+                ${createHtmlList(marathonPlan.generalNotes.notes)}
+            </div>
+        </section>
+    `;
+    renderMileageChart();
+}
+
+function renderMileageChart() {
+    const chartCanvas = document.getElementById('mileageChart');
+    if (!chartCanvas) return;
+
+    const labels = [];
+    const dataPoints = [];
+    
+    marathonPlan.phases.forEach(phase => {
+        phase.weeks.forEach(week => {
+            labels.push(`W${week.weekNum}`);
+            let kmValue = 0;
+            if (typeof week.totalKm === 'string') {
+                const match = week.totalKm.match(/~(\d+)/); // Extracts first number after ~
+                if (match) kmValue = parseInt(match[1], 10);
+            } else {
+                kmValue = week.totalKm; 
             }
-
-            const zonesData = [
-                { name: "Zone 1", descriptor: "Easy", lowPercent: 60, highPercent: 75, colorClass: "text-green-500" },
-                { name: "Zone 2", descriptor: "Base", lowPercent: 76, highPercent: 86, colorClass: "text-blue-500" },
-                { name: "Zone 3", descriptor: "Aerobic", lowPercent: 87, highPercent: 99, colorClass: "text-green-700" },
-                { name: "Zone 4", descriptor: "Threshold", lowPercent: 100, highPercent: 115, colorClass: "text-amber-500" },
-                { name: "Zone 5", descriptor: "Max", lowPercent: 116, highPercent: 145, colorClass: "text-red-600" }
-            ];
-            const racePaceInfo = { name: "Race Pace", descriptor: "", lowPercent: 90, highPercent: 92, colorClass: "text-purple-600" };
-
-            zonesContentDiv.innerHTML = '';
-            const zonesTable = document.createElement('table');
-            zonesTable.classList.add('data-table');
-            const zonesThead = zonesTable.createTHead();
-            zonesThead.innerHTML = `<tr>
-                                      <th class="bg-gray-100">Zone</th>
-                                      <th class="bg-gray-100">Pace Range</th>
-                                    </tr>`;
-            const zonesTbody = zonesTable.createTBody();
-
-            [...zonesData, racePaceInfo].forEach(zone => {
-                const fasterPaceSeconds = lt2SpeedInSeconds / (zone.highPercent / 100);
-                const slowerPaceSeconds = lt2SpeedInSeconds / (zone.lowPercent / 100);
-                
-                const row = zonesTbody.insertRow();
-                const cellName = row.insertCell();
-                cellName.innerHTML = `<strong class="${zone.colorClass}">${zone.name} ${zone.descriptor ? '['+zone.descriptor+']' : ''}</strong>`;
-                
-                const cellPace = row.insertCell();
-                cellPace.textContent = `${formatSecondsToPace(slowerPaceSeconds)} - ${formatSecondsToPace(fasterPaceSeconds)}`;
-            });
-            zonesContentDiv.appendChild(zonesTable);
-
-            const repeatDistances = [
-                { distance: "1000m", lowPercent: 99, highPercent: 101 },
-                { distance: "800m",  lowPercent: 101, highPercent: 102 },
-                { distance: "400m",  lowPercent: 104, highPercent: 106 },
-                { distance: "300m",  lowPercent: 110, highPercent: 112 }
-            ];
-
-            repeatsContentDiv.innerHTML = '';
-
-            const repeatsTable = document.createElement('table');
-            repeatsTable.id = 'repeats-table';
-            repeatsTable.classList.add('data-table');
-
-            const repeatsThead = repeatsTable.createTHead();
-            repeatsThead.innerHTML = `<tr>
-                                 <th class="bg-blue-100">Distance</th>
-                                 <th class="bg-blue-100">Target Time for Distance</th>
-                               </tr>`;
-            
-            const repeatsTbody = repeatsTable.createTBody();
-            repeatDistances.forEach(item => {
-                const fasterPaceTotalSeconds = lt2SpeedInSeconds / (item.highPercent / 100);
-                const slowerPaceTotalSeconds = lt2SpeedInSeconds / (item.lowPercent / 100);
-
-                let distanceMultiplier = 1; 
-                if (item.distance === "800m") distanceMultiplier = 0.8;
-                else if (item.distance === "400m") distanceMultiplier = 0.4;
-                else if (item.distance === "300m") distanceMultiplier = 0.3;
-
-                const fasterTimeForDistance = fasterPaceTotalSeconds * distanceMultiplier;
-                const slowerTimeForDistance = slowerPaceTotalSeconds * distanceMultiplier;
-
-                const row = repeatsTbody.insertRow();
-                const cellDistance = row.insertCell();
-                cellDistance.textContent = item.distance;
-                cellDistance.classList.add('font-medium');
-
-                const cellPace = row.insertCell();
-                cellPace.textContent = `${formatSecondsToPace(slowerTimeForDistance)} - ${formatSecondsToPace(fasterTimeForDistance)}`;
-            });
-            repeatsContentDiv.appendChild(repeatsTable);
-        }
-
-        document.getElementById('lt2speed').addEventListener('keypress', function(event) {
-            if (event.key === 'Enter') {
-                event.preventDefault();
-                calculatePaces();
-            }
+            dataPoints.push(kmValue);
         });
+    });
 
-        function calculateWeeklyPlan() {
-            const baseKmInput = document.getElementById('baseKilometers').value;
-            const totalWeeksInput = document.getElementById('totalWeeks').value;
-            const kPercentInput = document.getElementById('kPercentage').value;
+    if (mileageChartInstance) {
+        mileageChartInstance.destroy();
+    }
 
-            const planResultsContentDiv = document.getElementById('plan-results-content');
-            const planErrorMessageDiv = document.getElementById('plan-error-message');
-
-            planResultsContentDiv.innerHTML = '<p class="text-gray-500 italic">Calculating plan...</p>';
-            planErrorMessageDiv.textContent = '';
-
-            const baseKm = parseFloat(baseKmInput);
-            const totalWeeks = parseInt(totalWeeksInput, 10);
-            const kPercent = parseFloat(kPercentInput);
-
-            let errors = [];
-            if (isNaN(baseKm) || baseKm <= 0) errors.push("Base Kilometers must be a positive number.");
-            if (isNaN(totalWeeks) || totalWeeks <= 0 || !Number.isInteger(totalWeeks)) errors.push("Total Weeks must be a positive integer.");
-            if (isNaN(kPercent) || kPercent < 0) errors.push("K Percentage must be a non-negative number.");
-
-            if (errors.length > 0) {
-                planErrorMessageDiv.textContent = errors.join(' ');
-                planResultsContentDiv.innerHTML = `<p class="text-red-500 italic">Could not calculate plan due to invalid input(s).</p>`;
-                return;
-            }
-            
-            if (totalWeeks > 200) { 
-                 planErrorMessageDiv.textContent = "Plans over 200 weeks are not supported to prevent browser slowdown.";
-                 planResultsContentDiv.innerHTML = `<p class="text-red-500 italic">Plan too long.</p>`;
-                 return;
-            }
-
-            const weeklyKms = []; 
-            if (totalWeeks === 0) { 
-                planResultsContentDiv.innerHTML = '<p class="text-gray-500 italic">Please enter a valid number of weeks.</p>';
-                return;
-            }
-
-            weeklyKms[0] = baseKm; 
-
-            for (let i = 1; i < totalWeeks; i++) { 
-                const currentWeekNumber = i + 1; 
-                const kmFromPreviousWeek = weeklyKms[i-1]; 
-                const weekInFiveCycle = (currentWeekNumber - 1) % 5;
-
-                if (weekInFiveCycle === 4) { 
-                    if (i >=2) { 
-                        weeklyKms[i] = weeklyKms[i-2];
-                    } else { 
-                        weeklyKms[i] = kmFromPreviousWeek * (1 + kPercent / 100); 
+    mileageChartInstance = new Chart(chartCanvas.getContext('2d'), {
+        type: 'line',
+        data: {
+            labels: labels,
+            datasets: [{
+                label: 'Planned Weekly Kilometers',
+                data: dataPoints,
+                borderColor: '#0d9488', // teal-600
+                backgroundColor: 'rgba(13, 148, 136, 0.1)', // teal-600 with alpha
+                tension: 0.1,
+                fill: true,
+                pointBackgroundColor: '#0d9488', // teal-600
+                pointBorderColor: '#fff',
+                pointHoverRadius: 7,
+                pointHoverBackgroundColor: '#0d9488' // teal-600
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            scales: {
+                y: {
+                    beginAtZero: true,
+                    title: { display: true, text: 'Kilometers (km)', font: { weight: '500' } }
+                },
+                x: {
+                    title: { display: true, text: 'Training Week', font: { weight: '500' } },
+                    ticks: {
+                        autoSkip: true,
+                        maxTicksLimit: 20, // Adjust for better readability
+                        callback: function(value, index, values) {
+                            const label = this.getLabelForValue(value);
+                            if (label.length > 16) { // Wrap label logic (not perfect for all cases)
+                                return label.substring(0,15) + '...';
+                            }
+                            return label;
+                        }
                     }
-                } else if (weekInFiveCycle === 3) { 
-                    weeklyKms[i] = kmFromPreviousWeek * (1 - (5 * kPercent) / 100);
-                } else { 
-                    weeklyKms[i] = kmFromPreviousWeek * (1 + kPercent / 100);
                 }
-                if (weeklyKms[i] < 0) weeklyKms[i] = 0;
+            },
+            plugins: {
+                tooltip: {
+                    enabled: true,
+                    mode: 'index',
+                    intersect: false,
+                    backgroundColor: 'rgba(0,0,0,0.8)',
+                    titleFont: { weight: 'bold' },
+                    callbacks: {
+                        label: function(context) {
+                            return `${context.dataset.label}: ${context.parsed.y} km`;
+                        }
+                    }
+                },
+                legend: {
+                    labels: { font: { weight: '500' } }
+                }
             }
-
-            planResultsContentDiv.innerHTML = ''; 
-            if (weeklyKms.length === 0 && totalWeeks > 0) { 
-                 planResultsContentDiv.innerHTML = '<p class="text-red-500 italic">An error occurred calculating the plan.</p>';
-                 return;
-            }
-
-            weeklyKms.forEach((km, index) => {
-                const weekNumber = index + 1; 
-                const mainKmFormatted = km.toFixed(0); 
-                const lowKm = (km * 0.80).toFixed(0);   
-                const highKm = (km * 0.20).toFixed(0);  
-
-                const p = document.createElement('p');
-                p.classList.add('plan-result-item');
-                
-                const mainKmSpan = document.createElement('span');
-                mainKmSpan.classList.add('font-medium'); 
-                mainKmSpan.textContent = `Week ${weekNumber}: ${mainKmFormatted} km`;
-
-                const lowHighSpan = document.createElement('span');
-                lowHighSpan.classList.add('low-high-values'); 
-                lowHighSpan.innerHTML = `<strong class="text-blue-500">Low: ${lowKm}</strong> <strong class="text-orange-500 ml-2">High: ${highKm}</strong>`;
-                
-                p.appendChild(mainKmSpan);
-                p.appendChild(lowHighSpan);
-                planResultsContentDiv.appendChild(p);
-            });
         }
+    });
+}
 
-        ['baseKilometers', 'totalWeeks', 'kPercentage'].forEach(id => {
-            document.getElementById(id).addEventListener('keypress', function(event) {
-                if (event.key === 'Enter') {
-                    event.preventDefault(); 
-                    calculateWeeklyPlan();
-                }
-            });
+function renderTrainingPlan() {
+    setActiveNav('nav-plan');
+    const phaseButtonsHtml = marathonPlan.phases.map((phase, index) =>
+        `<button class="phase-button" data-phase-index="${index}">${phase.name}</button>`
+    ).join('');
+
+    appContent.innerHTML = `
+        <section id="training-plan-content" class="space-y-6">
+            <div>
+                <h2 class="text-xl sm:text-2xl font-semibold text-sky-700 mb-4">Select Training Phase:</h2>
+                <div id="phase-navigation" class="flex flex-wrap gap-2 mb-6">
+                    ${phaseButtonsHtml}
+                </div>
+                <div id="phase-details" class="space-y-4">
+                    <p class="text-stone-600 italic">Select a phase to see its details and weekly breakdown.</p>
+                </div>
+            </div>
+            <div id="week-details-container" class="mt-6">
+                </div>
+        </section>
+    `;
+
+    document.querySelectorAll('#phase-navigation .phase-button').forEach(button => {
+        button.addEventListener('click', (e) => {
+            document.querySelectorAll('#phase-navigation .phase-button').forEach(btn => btn.classList.remove('active'));
+            e.target.classList.add('active');
+            const phaseIndex = parseInt(e.target.dataset.phaseIndex);
+            renderPhaseDetails(phaseIndex);
         });
-    </script>
+    });
+}
+
+function renderPhaseDetails(phaseIndex) {
+    const phase = marathonPlan.phases[phaseIndex];
+    const phaseDetailsDiv = document.getElementById('phase-details');
+    document.getElementById('week-details-container').innerHTML = ''; // Clear previous week details
+
+    const weekButtonsHtml = phase.weeks.map((week, index) =>
+        `<button class="week-button" data-phase-index="${phaseIndex}" data-week-index="${index}">Week ${week.weekNum}</button>`
+    ).join('');
+
+    phaseDetailsDiv.innerHTML = `
+        <div class="content-card">
+            <h3 class="text-lg sm:text-xl font-semibold mb-2">${phase.name} (${phase.duration})</h3>
+            <p class="text-sm text-stone-600 mb-1"><strong>Goal:</strong> ${phase.goal}</p>
+            <p class="text-sm text-stone-600 mb-3"><strong>Mileage:</strong> ${phase.mileageRange}</p>
+            <h4 class="text-md font-medium text-stone-700 mb-2">Select a Week:</h4>
+            <div id="week-navigation-${phaseIndex}" class="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-5 lg:grid-cols-6 gap-2">
+                ${weekButtonsHtml}
+            </div>
+        </div>
+    `;
+
+    document.querySelectorAll(`#week-navigation-${phaseIndex} .week-button`).forEach(button => {
+        button.addEventListener('click', (e) => {
+            document.querySelectorAll(`#week-navigation-${phaseIndex} .week-button`).forEach(btn => btn.classList.remove('active'));
+            e.target.classList.add('active');
+            const pIdx = parseInt(e.target.dataset.phaseIndex);
+            const wIdx = parseInt(e.target.dataset.weekIndex);
+            renderWeekDetails(pIdx, wIdx);
+        });
+    });
+}
+
+function renderWeekDetails(phaseIndex, weekIndex) {
+    const week = marathonPlan.phases[phaseIndex].weeks[weekIndex];
+    const weekDetailsContainer = document.getElementById('week-details-container');
+
+    const dailyScheduleHtml = week.days.map(day => {
+        const parts = day.split(':');
+        return `<li class="py-1"><strong class="text-teal-700">${parts[0]}:</strong> ${parts.slice(1).join(':').trim()}</li>`;
+    }).join('');
+
+    weekDetailsContainer.innerHTML = `
+        <div class="content-card mt-4">
+            <h4 class="text-lg font-semibold text-sky-700 mb-2">Schedule for Week ${week.weekNum}</h4>
+            <p class="text-sm text-stone-600 mb-1"><strong>Total Mileage:</strong> ${week.totalKm}</p>
+            <ul class="list-none space-y-1 text-sm text-stone-700 mb-2">
+                ${dailyScheduleHtml}
+            </ul>
+            ${week.notes ? `<p class="text-sm text-stone-600 italic mt-2"><strong>Notes:</strong> ${week.notes}</p>` : ''}
+        </div>
+    `;
+}
+
+function renderPaceUtilities() {
+    setActiveNav('nav-utils');
+    appContent.innerHTML = `
+        <section id="pace-utils-content" class="space-y-6">
+            <div class="content-card">
+                <h2 class="text-xl sm:text-2xl font-semibold text-sky-700 mb-4">Training Zone & Repeats Pace Calculator</h2>
+                <div class="mb-6">
+                    <label for="lt2speed" class="block text-sm font-medium text-stone-700 mb-1">Enter LT2 Speed (per km):</label>
+                    <input type="text" id="lt2speed" name="lt2speed" placeholder="e.g., 4:30"
+                           class="mt-1 block w-full px-4 py-3 border border-stone-300 rounded-lg shadow-sm sm:text-sm transition duration-150 ease-in-out">
+                    <div id="error-message-calc" class="text-red-500 text-sm mt-2 h-5"></div>
+                </div>
+
+                <button onclick="calculatePacesFromUtil()"
+                        class="w-full bg-sky-600 hover:bg-sky-700 text-white font-semibold py-3 px-4 rounded-lg shadow-md focus:outline-none focus:ring-2 focus:ring-sky-500 focus:ring-opacity-50 transition duration-150 ease-in-out transform hover:scale-105">
+                    Calculate Zones & Repeats Paces
+                </button>
+
+                <div class="mt-8 md:flex md:space-x-6">
+                    <div id="zones-section-util" class="flex-1">
+                        <h3 class="text-lg font-semibold text-stone-700 mb-2 border-b border-stone-300 pb-2">Training Zones:</h3>
+                        <div id="zones-content-util">
+                            <p class="text-stone-500 italic text-sm">Enter your LT2 speed and click calculate.</p>
+                        </div>
+                    </div>
+
+                    <div id="repeats-section-util" class="flex-1 mt-8 md:mt-0">
+                        <h3 class="text-lg font-semibold text-stone-700 mb-2 border-b border-stone-300 pb-2">Repeats Paces:</h3>
+                        <div id="repeats-content-util">
+                            <p class="text-stone-500 italic text-sm">Calculated based on your LT2 speed.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+    `;
+     document.getElementById('lt2speed').addEventListener('keypress', function(event) {
+        if (event.key === 'Enter') {
+            event.preventDefault();
+            calculatePacesFromUtil();
+        }
+    });
+}
+
+function parsePaceToSeconds(paceString) {
+    if (!paceString || typeof paceString !== 'string') return NaN;
+    const parts = paceString.trim().split(':');
+    if (parts.length !== 2) return NaN;
+    const minutes = parseInt(parts[0], 10);
+    const seconds = parseInt(parts[1], 10);
+    if (isNaN(minutes) || isNaN(seconds) || minutes < 0 || seconds < 0 || seconds >= 60) return NaN;
+    return (minutes * 60) + seconds;
+}
+
+function formatSecondsToPace(totalSeconds) {
+    if (isNaN(totalSeconds) || totalSeconds < 0) return "N/A";
+    const minutes = Math.floor(totalSeconds / 60);
+    const seconds = Math.round(totalSeconds % 60);
+    return `${minutes}:${seconds < 10 ? '0' : ''}${seconds}`;
+}
+
+function calculatePacesFromUtil() {
+    const lt2SpeedInput = document.getElementById('lt2speed').value;
+    const zonesContentDiv = document.getElementById('zones-content-util');
+    const repeatsContentDiv = document.getElementById('repeats-content-util');
+    const errorMessageDiv = document.getElementById('error-message-calc');
+
+    zonesContentDiv.innerHTML = '<p class="text-stone-500 italic text-sm">Calculating...</p>';
+    repeatsContentDiv.innerHTML = '<p class="text-stone-500 italic text-sm">Calculating...</p>';
+    errorMessageDiv.textContent = '';
+
+    const lt2SpeedInSeconds = parsePaceToSeconds(lt2SpeedInput);
+
+    if (isNaN(lt2SpeedInSeconds) || lt2SpeedInSeconds <= 0) {
+        errorMessageDiv.textContent = 'Invalid LT2 speed. Use mm:ss format (e.g., 4:30). Pace must be positive.';
+        zonesContentDiv.innerHTML = '<p class="text-red-500 italic text-sm">Could not calculate zones due to invalid input.</p>';
+        repeatsContentDiv.innerHTML = '<p class="text-red-500 italic text-sm">Could not calculate repeats paces due to invalid LT2 input.</p>';
+        return;
+    }
+
+    const zonesData = [
+        { name: "Zone 1", descriptor: "Easy", lowPercent: 60, highPercent: 75, colorClass: "text-green-600" },
+        { name: "Zone 2", descriptor: "Base", lowPercent: 76, highPercent: 86, colorClass: "text-sky-600" },
+        { name: "Zone 3", descriptor: "Aerobic", lowPercent: 87, highPercent: 99, colorClass: "text-lime-600" },
+        { name: "Zone 4", descriptor: "Threshold", lowPercent: 100, highPercent: 115, colorClass: "text-amber-500" },
+        { name: "Zone 5", descriptor: "Max", lowPercent: 116, highPercent: 145, colorClass: "text-red-600" }
+    ];
+    const racePaceInfo = { name: "Race Pace", descriptor: "", lowPercent: 90, highPercent: 92, colorClass: "text-purple-600" };
+
+    zonesContentDiv.innerHTML = '';
+    const zonesTable = document.createElement('table');
+    zonesTable.classList.add('data-table', 'text-sm');
+    zonesTable.innerHTML = `<thead><tr><th class="bg-stone-100">Zone</th><th class="bg-stone-100">Pace Range (/km)</th></tr></thead><tbody></tbody>`;
+    const zonesTbody = zonesTable.querySelector('tbody');
+
+    [...zonesData, racePaceInfo].forEach(zone => {
+        const fasterPaceSeconds = lt2SpeedInSeconds / (zone.highPercent / 100);
+        const slowerPaceSeconds = lt2SpeedInSeconds / (zone.lowPercent / 100);
+        
+        const row = zonesTbody.insertRow();
+        row.insertCell().innerHTML = `<strong class="${zone.colorClass}">${zone.name} ${zone.descriptor ? '['+zone.descriptor+']' : ''}</strong>`;
+        row.insertCell().textContent = `${formatSecondsToPace(slowerPaceSeconds)} - ${formatSecondsToPace(fasterPaceSeconds)}`;
+    });
+    zonesContentDiv.appendChild(zonesTable);
+
+    const repeatDistances = [
+        { distance: "1000m", lowPercent: 99, highPercent: 101 },
+        { distance: "800m",  lowPercent: 101, highPercent: 102 },
+        { distance: "400m",  lowPercent: 104, highPercent: 106 },
+        { distance: "300m",  lowPercent: 110, highPercent: 112 }
+    ];
+
+    repeatsContentDiv.innerHTML = '';
+    const repeatsTable = document.createElement('table');
+    repeatsTable.classList.add('data-table', 'text-sm');
+    repeatsTable.innerHTML = `<thead><tr><th class="bg-stone-100">Distance</th><th class="bg-stone-100">Target Time</th></tr></thead><tbody></tbody>`;
+    const repeatsTbody = repeatsTable.querySelector('tbody');
+
+    repeatDistances.forEach(item => {
+        const fasterPaceTotalSeconds = lt2SpeedInSeconds / (item.highPercent / 100);
+        const slowerPaceTotalSeconds = lt2SpeedInSeconds / (item.lowPercent / 100);
+
+        let distanceMultiplier = 1;  
+        if (item.distance === "800m") distanceMultiplier = 0.8;
+        else if (item.distance === "400m") distanceMultiplier = 0.4;
+        else if (item.distance === "300m") distanceMultiplier = 0.3;
+
+        const fasterTimeForDistance = fasterPaceTotalSeconds * distanceMultiplier;
+        const slowerTimeForDistance = slowerPaceTotalSeconds * distanceMultiplier;
+
+        const row = repeatsTbody.insertRow();
+        row.insertCell().innerHTML = `<strong class="text-teal-700">${item.distance}</strong>`;
+        row.insertCell().textContent = `${formatSecondsToPace(slowerTimeForDistance)} - ${formatSecondsToPace(fasterTimeForDistance)}`;
+    });
+    repeatsContentDiv.appendChild(repeatsTable);
+}
+
+
+document.getElementById('nav-overview').addEventListener('click', renderOverview);
+document.getElementById('nav-plan').addEventListener('click', renderTrainingPlan);
+document.getElementById('nav-utils').addEventListener('click', renderPaceUtilities);
+
+renderOverview(); // Initial view
+
+</script>
 </body>
 </html>
