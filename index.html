@@ -184,22 +184,6 @@
         #todays-training-card { border-left: 4px solid #0ea5e9; } 
         #this-weeks-plan-card { border-left: 4px solid #10b981; } 
         
-        .gemini-response-area {
-            margin-top: 1rem; padding: 0.75rem; background-color: #e0f2fe; 
-            border-radius: 0.375rem; border: 1px solid #bae6fd; 
-            font-size: 0.875rem; color: #0c4a6e; 
-            max-height: 200px; overflow-y: auto;
-        }
-        .gemini-response-area p { margin-bottom: 0.5rem;}
-        .gemini-response-area strong { color: #0369a1; } 
-        .gemini-response-area ul { margin-left: 1.25rem; } 
-        .gemini-loading-spinner {
-            display: inline-block; width: 1rem; height: 1rem; border-radius: 50%;
-            border: 2px solid currentColor; border-top-color: transparent;
-            animation: spin 1s linear infinite; margin-left: 0.5rem; vertical-align: middle;
-        }
-        @keyframes spin { to { transform: rotate(360deg); } }
-
         /* Title Styling */
         .main-title {
             font-weight: 800; 
@@ -247,11 +231,6 @@
             color: #7f1d1d; 
         }
         
-        #cardiacDriftAiResponseArea { 
-            background-color: #f9fafb; 
-            border: 1px solid #e5e7eb; 
-            color: #374151; 
-        }
         .loader {
             border: 4px solid #f3f3f3; 
             border-top: 4px solid #3b82f6; 
@@ -287,11 +266,10 @@
             body * {
                 visibility: hidden;
             }
-            #this-weeks-plan-printable-area, #this-weeks-plan-printable-area *,
-            #calendar-day-details-printable-area, #calendar-day-details-printable-area * {
+            .printable-area, .printable-area * { /* More generic printable area class */
                 visibility: visible;
             }
-            #this-weeks-plan-printable-area, #calendar-day-details-printable-area {
+            .printable-area {
                 position: absolute;
                 left: 0;
                 top: 0;
@@ -300,10 +278,10 @@
                 background-color: white !important; 
                 font-size: 12pt !important; 
             }
-             #this-weeks-plan-printable-area .schedule-table,
-             #this-weeks-plan-printable-area .schedule-table th,
-             #this-weeks-plan-printable-area .schedule-table td,
-             #this-weeks-plan-printable-area p {
+             .printable-area .schedule-table,
+             .printable-area .schedule-table th,
+             .printable-area .schedule-table td,
+             .printable-area p {
                 font-size: inherit !important; 
              }
 
@@ -315,14 +293,14 @@
                 border: 1px solid #ccc !important; 
                 padding: 0.4rem !important; 
             }
-             #this-weeks-plan-printable-area .schedule-table {
+             .printable-area .schedule-table {
                 page-break-inside: avoid; 
             }
-             #this-weeks-plan-printable-area .schedule-table tr {
+             .printable-area .schedule-table tr {
                 page-break-inside: avoid;
                 page-break-after: auto;
             }
-            .pdf-button, .nav-button, header, nav, #calendar-controls, .calendar-grid, #pace-utils-content, #todays-training-card, #mileageChart, .chart-container p, #calendar-selected-day-header, #raceDateInputContainer, #raceElevationChartContainer, #login-container, #main-app-wrapper header, #main-app-wrapper nav { 
+            .no-print, .pdf-button, .nav-button, header, nav, #calendar-controls, .calendar-grid, #pace-utils-content, #todays-training-card, #mileageChart, .chart-container p, #calendar-selected-day-header, #raceDateInputContainer, #raceElevationChartContainer, #login-container, #main-app-wrapper header, #main-app-wrapper nav { 
                 display: none !important; 
             }
         }
@@ -331,11 +309,11 @@
             width: 100%;
             margin-top: 0.5rem; 
             border-collapse: collapse;
-            font-size: 0.75rem; 
+            font-size: 0.875rem; /* Increased from 0.75rem */
         }
         .today-pace-table th, .today-pace-table td {
             border: 1px solid #000000; 
-            padding: 0.25rem 0.4rem; 
+            padding: 0.3rem 0.5rem; /* Adjusted padding */
             text-align: left;
         }
         .today-pace-table th {
@@ -361,7 +339,7 @@
         .todays-activity-box p strong.activity-text { 
             font-weight: 600; 
             color: #0369a1; 
-            font-size: 1.25rem; 
+            font-size: 1.25rem; /* text-xl */
             line-height: 1.6; 
         }
         .todays-weekly-notes-box {
@@ -478,6 +456,8 @@
             <div id="error-message" class="hidden"></div>
         </main>
     </div>
+    <div id="print-section-container" class="hidden print-this-section"></div>
+
 
 <script>
 const DEFAULT_RACE_DATE_STRING = '2025-11-09'; 
@@ -488,7 +468,7 @@ const userSpecificDataSources = {
     "USER_HELIOS": "https://script.google.com/macros/s/AKfycbwcdAtQXpojQk4_jtn4pHoZm2JQihJaYMogcJZJNJLX46ILP0zODpuPyVi0b5n9wLeG7w/exec", 
     "USER_APOLLO": "YOUR_APPS_SCRIPT_URL_FOR_APOLLO_SHEET_HERE", 
     "USER_NEW": "https://script.google.com/macros/s/AKfycbwUkgEWQtG-pIvKw4lBiL9QgSRQfU5ZPbs4RUX9g6RRza-WYEAhAOI2Z5WfjPb_5lqKNA/exec",
-    "ADMINX": "https://script.google.com/macros/s/AKfycbxSrukKPx9UVVcfw7imohgoZ3RqNSJI-lQcnVTqVD107On2VYZ84uM_bztKdxslXlkpBw/exec" // New user and URL
+    "ADMINX": "https://script.google.com/macros/s/AKfycbxSrukKPx9UVVcfw7imohgoZ3RqNSJI-lQcnVTqVD107On2VYZ84uM_bztKdxslXlkpBw/exec"
 };
 
 for (let i = 1; i <= 50; i++) {
@@ -511,84 +491,6 @@ const loginErrorMessageDiv = document.getElementById('login-error-message');
 const loginLoadingMessageDiv = document.getElementById('login-loading-message');
 
 let mileageChartInstance = null; 
-
-async function callGeminiApi(prompt, targetElementId, loadingElementId) {
-    const targetElement = document.getElementById(targetElementId);
-    const loadingIndicator = document.getElementById(loadingElementId);
-    if (!targetElement || !loadingIndicator) {
-        if (targetElement) {
-             targetElement.innerHTML = "<p>Error: UI element missing for Gemini response.</p>";
-             targetElement.classList.remove('hidden');
-        }
-        console.error("Gemini API: Target or loading element not found for ID:", targetElementId, loadingElementId);
-        return;
-    }
-    loadingIndicator.classList.remove('hidden');
-    targetElement.innerHTML = ''; 
-    targetElement.classList.add('hidden');
-    const payloadToAppsScript = { action: "callGemini", prompt: prompt };
-    try {
-        const response = await fetch(currentWebAppUrl, {
-            method: 'POST', mode: 'cors', cache: 'no-cache',
-            headers: { 'Content-Type': 'application/json', },
-            redirect: 'follow', body: JSON.stringify(payloadToAppsScript)
-        });
-        if (!response.ok) {
-            const errorTextFromServer = await response.text();
-            console.error("Error response from Apps Script proxy:", response.status, response.statusText, errorTextFromServer);
-            targetElement.innerHTML = `<p>Error from server proxy (Status: ${response.status} ${response.statusText}). Server response: <pre>${errorTextFromServer.substring(0, 500)}...</pre> Check Apps Script logs.</p>`;
-            targetElement.classList.remove('hidden'); loadingIndicator.classList.add('hidden'); return;
-        }
-        const resultText = await response.text();
-        let resultFromProxy;
-        try { resultFromProxy = JSON.parse(resultText); } catch (parseError) {
-            console.error("Failed to parse response from Apps Script proxy as JSON:", resultText);
-            targetElement.innerHTML = `<p>Error: Invalid response from server. Server said: <pre>${resultText.substring(0, 500)}...</pre> Check Apps Script logs.</p>`;
-            targetElement.classList.remove('hidden'); loadingIndicator.classList.add('hidden'); return; 
-        }
-        if (resultFromProxy.error) {
-             console.error("Error from Apps Script proxy:", resultFromProxy.error);
-             targetElement.innerHTML = `<p>Server Error: ${typeof resultFromProxy.error === 'object' ? JSON.stringify(resultFromProxy.error) : resultFromProxy.error}. Check Apps Script logs.</p>`;
-             targetElement.classList.remove('hidden'); loadingIndicator.classList.add('hidden'); return;
-        }
-        const geminiResult = resultFromProxy; 
-        const candidate = geminiResult.candidates && geminiResult.candidates[0];
-        if (candidate) {
-            if (candidate.content && candidate.content.parts && candidate.content.parts.length > 0 && candidate.content.parts[0].text) {
-                let text = candidate.content.parts[0].text;
-                text = text.replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>'); 
-                text = text.replace(/\n\s*[\*-]\s(.*?)(?=\n\s*[\*-]|\n\n|$)/g, '<li>$1</li>'); 
-                text = text.replace(/(\<li>.*?<\/li>)+/gs, '<ul>$1</ul>'); 
-                text = text.replace(/\n/g, '<br>'); 
-                targetElement.innerHTML = text;
-                targetElement.classList.remove('hidden');
-            } else if (candidate.finishReason && candidate.finishReason !== "STOP") {
-                console.error(`Gemini API (via Proxy): Generation stopped due to ${candidate.finishReason}. Full Gemini response:`, JSON.stringify(geminiResult,null,2));
-                let finishReasonMessage = `The AI couldn't provide a response. Reason: ${candidate.finishReason}.`;
-                if (candidate.safetyRatings) finishReasonMessage += ` Safety ratings: ${JSON.stringify(candidate.safetyRatings)}`;
-                targetElement.innerHTML = `<p>${finishReasonMessage} Please try rephrasing.</p>`;
-                targetElement.classList.remove('hidden');
-            } else {
-                console.error("Gemini API (via Proxy): Response structure missing text.", JSON.stringify(geminiResult, null, 2));
-                targetElement.innerHTML = "<p>AI response format error.</p>";
-                targetElement.classList.remove('hidden');
-            }
-        } else {
-            console.error("Gemini API (via Proxy): No candidates.", JSON.stringify(geminiResult, null, 2));
-            targetElement.innerHTML = "<p>No AI response generated.</p>";
-            targetElement.classList.remove('hidden');
-        }
-    } catch (error) { 
-        console.error('Network/other error calling Apps Script proxy for Gemini:', error);
-        let errorMessageText = "Error communicating with server proxy.";
-        if (error.message) errorMessageText += ` Details: ${error.message}.`;
-        else try { errorMessageText += ` Details: ${JSON.stringify(error)}.`; } catch (e) { errorMessageText += " No further details."; }
-        targetElement.innerHTML = `<p>${errorMessageText} Check connection, Apps Script URL, console (CORS), and Apps Script logs.</p>`;
-        targetElement.classList.remove('hidden');
-    } finally {
-        loadingIndicator.classList.add('hidden');
-    }
-}
 
 function updateStaticUIText() {
     if (!marathonPlan || !marathonPlan.uiText) {
@@ -874,7 +776,7 @@ function renderTodaysTraining() {
         return isSameDay(itemDate, today);
     });
     let activityContentHtml = '';
-    let titleHtml = `<h3 class="text-xl font-semibold text-sky-700 mb-1 text-center">Today</h3>
+    let titleHtml = `<h3 class="text-2xl font-semibold text-sky-700 mb-1 text-center">Today</h3>
                        <p class="text-xs text-stone-500 text-center mb-3">${formatDate(today, { weekday: 'long', month: 'long', day: 'numeric' })}</p>`;
     let notesBoxHtml = '';
     if (todaysActivity) { 
@@ -943,33 +845,31 @@ function renderThisWeeksPlan() {
         });
         
         let displayDayName = dayInWeek.toLocaleDateString(undefined, { weekday: 'short' });
-        let activityDescription; // This will hold the activity text to be processed
+        let activityDescription; 
 
         if (activityForDay) {
             if (!weekInfoFound) { 
                 weekNotes = activityForDay.notes || "";
                 weekInfoFound = true;
             }
-            // Prioritize the day name from the activity string if it's in "Day: Activity" format
             const activityString = activityForDay.activity;
             const dayPrefixMatch = activityString.match(/^(\w{3,4}(\s\d{1,2})?):\s*(.*)/s); 
             if (dayPrefixMatch && dayPrefixMatch[1] && dayPrefixMatch[3]) {
-                displayDayName = dayPrefixMatch[1].trim(); // e.g., "Mon", "Tue 15"
-                activityDescription = dayPrefixMatch[3].trim(); // The actual activity
+                displayDayName = dayPrefixMatch[1].trim(); 
+                activityDescription = dayPrefixMatch[3].trim(); 
             } else {
-                activityDescription = activityString.trim(); // No "Day:" prefix, use whole string
+                activityDescription = activityString.trim(); 
             }
         } else {
             activityDescription = "Rest or Unscheduled";
         }
         
-        // Format the activityDescription for display (bold part before colon)
-        const activityParts = activityDescription.split(/:(.*)/s); // Split only on the first colon
+        const activityParts = activityDescription.split(/:(.*)/s); 
         let formattedActivity;
         if (activityParts.length > 1 && activityParts[0].trim() !== "") {
             formattedActivity = `<strong>${activityParts[0].trim()}</strong>: ${activityParts[1] ? activityParts[1].trim() : ''}`;
         } else {
-            formattedActivity = activityDescription; // No colon or nothing before it
+            formattedActivity = activityDescription; 
         }
 
         currentWeekActivities.push({
@@ -982,7 +882,6 @@ function renderThisWeeksPlan() {
         const dayColors = ['bg-red-50', 'bg-orange-50', 'bg-amber-50', 'bg-yellow-50', 'bg-lime-50', 'bg-green-50', 'bg-emerald-50']; 
         let tableRowsHtml = currentWeekActivities.map((dayEntry, index) => {
             const bgColor = dayColors[index % dayColors.length];
-            // Day name in the first column is already bold due to table cell class or this logic
             return `<tr class="${bgColor}">
                         <td class="p-3 font-bold text-stone-800">${dayEntry.dayName}</td>
                         <td class="p-3 text-stone-700">${dayEntry.activity}</td>
@@ -991,14 +890,14 @@ function renderThisWeeksPlan() {
         container.innerHTML = `
             <div class="flex items-center mb-2">
                 <div class="flex-grow text-center"> 
-                     <h3 class="text-lg font-semibold text-green-700">${thisWeeksPlanTitle}</h3>
+                     <h3 class="text-2xl font-semibold text-green-700">${thisWeeksPlanTitle}</h3>
                 </div>
-                <button id="printWeekPdfBtn" class="pdf-button ml-auto"> 
+                <button id="printWeekPdfBtn" class="pdf-button ml-auto no-print"> 
                     <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" class="w-4 h-4"><path fill-rule="evenodd" d="M5 2.5A2.5 2.5 0 0 1 7.5 0h5A2.5 2.5 0 0 1 15 2.5V5h-2.55a3 3 0 0 0-4.9 0H5V2.5zM10 6a2 2 0 0 0-1.936 1.5H5V15a2 2 0 0 0 2 2h6a2 2 0 0 0 2-2V7.5h-3.064A2 2 0 0 0 10 6zm0 2a.75.75 0 0 1 .75.75v.032l1.533.306a.75.75 0 0 1-.293 1.455l-1.68-.335a.75.75 0 0 1-.59-.518L9.25 8.75A.75.75 0 0 1 10 8z" clip-rule="evenodd" /></svg>
                     PDF
                 </button>
             </div>
-            <div id="this-weeks-plan-printable-area">
+            <div id="this-weeks-plan-printable-area" class="printable-area">
                 <div class="overflow-x-auto rounded-lg border border-stone-200">
                     <table class="schedule-table min-w-full">
                         <thead>
@@ -1016,16 +915,30 @@ function renderThisWeeksPlan() {
             </div>
         `;
         const pdfBtn = document.getElementById('printWeekPdfBtn');
-        if (pdfBtn) pdfBtn.addEventListener('click', printWeekToPdf); 
+        if (pdfBtn) pdfBtn.addEventListener('click', () => printSelectedWeekToPdf('this-weeks-plan-printable-area')); 
     } else { 
-        container.innerHTML = `<h3 class="text-lg font-semibold text-green-700 mb-1 text-center">${thisWeeksPlanTitle}</h3><p class="text-stone-600 text-center">No training scheduled for this week or plan not loaded.</p>`;
+        container.innerHTML = `<h3 class="text-2xl font-semibold text-green-700 mb-1 text-center">${thisWeeksPlanTitle}</h3><p class="text-stone-600 text-center">No training scheduled for this week or plan not loaded.</p>`;
     }
 }
 
-function printWeekToPdf() {
-    const printContent = document.getElementById('this-weeks-plan-printable-area');
-    if (printContent) window.print(); 
+function printSelectedWeekToPdf(printableAreaId) {
+    const printContainer = document.getElementById('print-section-container');
+    const contentToPrint = document.getElementById(printableAreaId);
+
+    if (printContainer && contentToPrint) {
+        // Clone the content to avoid modifying the original
+        const clonedContent = contentToPrint.cloneNode(true);
+        printContainer.innerHTML = ''; // Clear previous print content
+        printContainer.appendChild(clonedContent);
+        
+        // Temporarily make the hidden div visible for printing, then hide it again
+        // This is handled by CSS @media print rules by targeting .printable-area
+        window.print();
+    } else {
+        console.error("Printable area or container not found for ID:", printableAreaId);
+    }
 }
+
 
 function renderOverview() {
     if (!marathonPlan || !marathonPlan.uiText || !marathonPlan.uiText.overview) return; 
@@ -1268,15 +1181,33 @@ function renderWeekDetails(phaseIndex, weekIndex) {
     }
     const weekDetailsContainer = document.getElementById('week-details-container');
     const dayColors = ['bg-red-50', 'bg-orange-50', 'bg-amber-50', 'bg-yellow-50', 'bg-lime-50', 'bg-green-50', 'bg-emerald-50']; 
+    
     let tableRowsHtml = (week.days && Array.isArray(week.days)) ? week.days.map((day, index) => {
-        const parts = day.split(/:(.*)/s); 
+        const parts = day.split(/:(.*)/s); // Split only on the first colon
         const dayName = parts[0] ? parts[0].trim() : ""; 
-        const activity = parts[1] ? parts[1].trim() : day; 
-        return `<tr class="${dayColors[index % dayColors.length]}"><td class="p-3 font-medium text-stone-800">${dayName}</td><td class="p-3 text-stone-700">${activity}</td></tr>`;
+        let activityText = parts[1] ? parts[1].trim() : day; 
+        
+        // Bold the part before a colon within the activity text itself
+        const activityParts = activityText.split(/:(.*)/s);
+        if (activityParts.length > 1 && activityParts[0].trim() !== "") {
+             activityText = `<strong>${activityParts[0].trim()}</strong>: ${activityParts[1] ? activityParts[1].trim() : ''}`;
+        } else {
+            activityText = `<strong>${activityText}</strong>`; // Bold the whole activity if no colon
+        }
+
+        return `<tr class="${dayColors[index % dayColors.length]}"><td class="p-3 font-medium text-stone-800">${dayName}</td><td class="p-3 text-stone-700">${activityText}</td></tr>`;
     }).join('') : '<tr><td colspan="2" class="p-3 text-stone-500">No daily schedule available.</td></tr>';
+    
+    const weekDetailsId = `week-details-printable-${phaseIndex}-${weekIndex}`;
+
     if(weekDetailsContainer) weekDetailsContainer.innerHTML = `
-        <div class="content-card mt-4">
-            <h4 class="text-lg font-semibold text-sky-700 mb-2">Week ${week.weekNum} (Total: ${getDisplayKm(week.totalKm)})</h4>
+        <div class="content-card mt-4" id="${weekDetailsId}"> <div class="flex justify-between items-center mb-2">
+                <h4 class="text-lg font-semibold text-sky-700">Week ${week.weekNum} (Total: ${getDisplayKm(week.totalKm)})</h4>
+                <button onclick="printSelectedWeekToPdf('${weekDetailsId}')" class="pdf-button no-print"> 
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" class="w-4 h-4"><path fill-rule="evenodd" d="M5 2.5A2.5 2.5 0 0 1 7.5 0h5A2.5 2.5 0 0 1 15 2.5V5h-2.55a3 3 0 0 0-4.9 0H5V2.5zM10 6a2 2 0 0 0-1.936 1.5H5V15a2 2 0 0 0 2 2h6a2 2 0 0 0 2-2V7.5h-3.064A2 2 0 0 0 10 6zm0 2a.75.75 0 0 1 .75.75v.032l1.533.306a.75.75 0 0 1-.293 1.455l-1.68-.335a.75.75 0 0 1-.59-.518L9.25 8.75A.75.75 0 0 1 10 8z" clip-rule="evenodd" /></svg>
+                    PDF
+                </button>
+            </div>
             <div class="overflow-x-auto rounded-lg border border-stone-200">
                 <table class="schedule-table min-w-full">
                     <thead><tr><th class="p-3 text-left text-xs font-semibold uppercase tracking-wider text-stone-600 bg-stone-100">Day</th><th class="p-3 text-left text-xs font-semibold uppercase tracking-wider text-stone-600 bg-stone-100">Activity</th></tr></thead>
@@ -1393,7 +1324,7 @@ function renderSelectedCalendarDayDetails(date) {
     if (activityDetails) { 
         let activityText = activityDetails.activity.replace(/^[^:]+:\s*/, ''); 
         detailsContainer.innerHTML = `
-            <div class="content-card mt-0" id="calendar-day-details-printable-area"> 
+            <div class="content-card mt-0 printable-area" id="calendar-day-details-printable-area"> 
                 <p class="mb-1">
                     <strong class="text-sky-600">Activity:</strong> 
                     <span class="text-amber-500">${activityText}</span>
@@ -1520,7 +1451,10 @@ function renderRaceElevationChart() {
                 },
                 x: {
                     title: { display: true, text: 'Kilometer of Race', font: { weight: '500' } },
-                    ticks: { autoSkip: true, maxTicksLimit: Math.ceil((marathonPlan.settings.raceDistanceKm || 21) / 2) } 
+                    ticks: { 
+                        autoSkip: true, 
+                        maxTicksLimit: Math.ceil((marathonPlan.settings.raceDistanceKm || 21) / 5) // Adjusted for ~5km intervals
+                    } 
                 }
             },
             plugins: {
