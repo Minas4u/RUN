@@ -298,13 +298,13 @@
                 width: 100%;
                 padding: 20px; 
                 background-color: white !important; 
-                font-size: 12pt !important; /* Increased base font for print */
+                font-size: 12pt !important; 
             }
              #this-weeks-plan-printable-area .schedule-table,
              #this-weeks-plan-printable-area .schedule-table th,
              #this-weeks-plan-printable-area .schedule-table td,
              #this-weeks-plan-printable-area p {
-                font-size: inherit !important; /* Ensure children inherit the increased font size */
+                font-size: inherit !important; 
              }
 
             .main-container, .content-card {
@@ -313,7 +313,7 @@
             }
             .schedule-table th, .schedule-table td {
                 border: 1px solid #ccc !important; 
-                padding: 0.4rem !important; /* Adjusted padding for print */
+                padding: 0.4rem !important; 
             }
              #this-weeks-plan-printable-area .schedule-table {
                 page-break-inside: avoid; 
@@ -334,7 +334,7 @@
             font-size: 0.75rem; 
         }
         .today-pace-table th, .today-pace-table td {
-            border: 1px solid #000000; /* UPDATED: Black lines */
+            border: 1px solid #000000; 
             padding: 0.25rem 0.4rem; 
             text-align: left;
         }
@@ -358,10 +358,10 @@
             border-radius: 0.375rem; 
             margin-top: 0.5rem; 
         }
-        .todays-activity-box p strong.activity-text { /* Class for main activity text */
+        .todays-activity-box p strong.activity-text { 
             font-weight: 600; 
             color: #0369a1; 
-            font-size: 1.25rem; /* text-xl - Increased font size */
+            font-size: 1.25rem; 
             line-height: 1.6; 
         }
         .todays-weekly-notes-box {
@@ -488,6 +488,7 @@ const userSpecificDataSources = {
     "USER_HELIOS": "https://script.google.com/macros/s/AKfycbwcdAtQXpojQk4_jtn4pHoZm2JQihJaYMogcJZJNJLX46ILP0zODpuPyVi0b5n9wLeG7w/exec", 
     "USER_APOLLO": "YOUR_APPS_SCRIPT_URL_FOR_APOLLO_SHEET_HERE", 
     "USER_NEW": "https://script.google.com/macros/s/AKfycbwUkgEWQtG-pIvKw4lBiL9QgSRQfU5ZPbs4RUX9g6RRza-WYEAhAOI2Z5WfjPb_5lqKNA/exec",
+    "ADMINX": "https://script.google.com/macros/s/AKfycbxSrukKPx9UVVcfw7imohgoZ3RqNSJI-lQcnVTqVD107On2VYZ84uM_bztKdxslXlkpBw/exec" // New user and URL
 };
 
 for (let i = 1; i <= 50; i++) {
@@ -931,6 +932,7 @@ function renderThisWeeksPlan() {
     const currentWeekActivities = [];
     let weekNotes = ""; 
     let weekInfoFound = false;
+
     for (let i = 0; i < 7; i++) {
         const dayInWeek = addDays(monday, i);
         dayInWeek.setHours(0,0,0,0); 
@@ -939,33 +941,50 @@ function renderThisWeeksPlan() {
             itemDate.setHours(0,0,0,0); 
             return isSameDay(itemDate, dayInWeek);
         });
-        let dayNameForTable;
-        let activityTextForTable;
+        
+        let displayDayName = dayInWeek.toLocaleDateString(undefined, { weekday: 'short' });
+        let activityDescription; // This will hold the activity text to be processed
+
         if (activityForDay) {
             if (!weekInfoFound) { 
                 weekNotes = activityForDay.notes || "";
                 weekInfoFound = true;
             }
-            const parts = activityForDay.activity.split(':');
-            dayNameForTable = parts[0].trim(); 
-            activityTextForTable = parts.slice(1).join(':').trim(); 
+            // Prioritize the day name from the activity string if it's in "Day: Activity" format
+            const activityString = activityForDay.activity;
+            const dayPrefixMatch = activityString.match(/^(\w{3,4}(\s\d{1,2})?):\s*(.*)/s); 
+            if (dayPrefixMatch && dayPrefixMatch[1] && dayPrefixMatch[3]) {
+                displayDayName = dayPrefixMatch[1].trim(); // e.g., "Mon", "Tue 15"
+                activityDescription = dayPrefixMatch[3].trim(); // The actual activity
+            } else {
+                activityDescription = activityString.trim(); // No "Day:" prefix, use whole string
+            }
         } else {
-            dayNameForTable = dayInWeek.toLocaleDateString(undefined, { weekday: 'short' }); 
-            activityTextForTable = "Rest or Unscheduled";
+            activityDescription = "Rest or Unscheduled";
         }
+        
+        // Format the activityDescription for display (bold part before colon)
+        const activityParts = activityDescription.split(/:(.*)/s); // Split only on the first colon
+        let formattedActivity;
+        if (activityParts.length > 1 && activityParts[0].trim() !== "") {
+            formattedActivity = `<strong>${activityParts[0].trim()}</strong>: ${activityParts[1] ? activityParts[1].trim() : ''}`;
+        } else {
+            formattedActivity = activityDescription; // No colon or nothing before it
+        }
+
         currentWeekActivities.push({
-            dayName: dayNameForTable,
-            activity: activityTextForTable
+            dayName: displayDayName,
+            activity: formattedActivity
         });
     }
+    
     if (currentWeekActivities.length > 0) {
         const dayColors = ['bg-red-50', 'bg-orange-50', 'bg-amber-50', 'bg-yellow-50', 'bg-lime-50', 'bg-green-50', 'bg-emerald-50']; 
         let tableRowsHtml = currentWeekActivities.map((dayEntry, index) => {
             const bgColor = dayColors[index % dayColors.length];
-             // Make the day name bold
-            const dayNamePart = dayEntry.dayName ? `<strong>${dayEntry.dayName}</strong>` : "";
+            // Day name in the first column is already bold due to table cell class or this logic
             return `<tr class="${bgColor}">
-                        <td class="p-3 font-medium text-stone-800">${dayNamePart}</td>
+                        <td class="p-3 font-bold text-stone-800">${dayEntry.dayName}</td>
                         <td class="p-3 text-stone-700">${dayEntry.activity}</td>
                     </tr>`;
         }).join('');
@@ -1146,19 +1165,6 @@ function renderTrainingPlan() {
     renderMileageChart(); 
 }
 
-function formatPhaseDuration(durationString) {
-    if (!durationString || typeof durationString !== 'string') return 'N/A';
-    const dateMatch = durationString.match(/\(([^)]+)\)/); 
-    let datePart = "";
-    if (dateMatch) {
-        let dates = dateMatch[1];
-        const monthReplacements = {"January":"Jan", "February":"Feb", "March":"Mar", "April":"Apr", "May":"May", "June":"Jun", "July":"Jul", "August":"Aug", "September":"Sep", "October":"Oct", "November":"Nov", "December":"Dec"};
-        for (const longMonth in monthReplacements) dates = dates.replace(new RegExp(longMonth, "g"), monthReplacements[longMonth]);
-        datePart = `(${dates})`;
-    }
-    return datePart.trim();
-}
-
 function getPhaseTitleTextColorClass(phaseName) {
     const nameLower = phaseName.toLowerCase();
     if (nameLower.includes("preseason")) return "text-gray-600"; 
@@ -1263,7 +1269,9 @@ function renderWeekDetails(phaseIndex, weekIndex) {
     const weekDetailsContainer = document.getElementById('week-details-container');
     const dayColors = ['bg-red-50', 'bg-orange-50', 'bg-amber-50', 'bg-yellow-50', 'bg-lime-50', 'bg-green-50', 'bg-emerald-50']; 
     let tableRowsHtml = (week.days && Array.isArray(week.days)) ? week.days.map((day, index) => {
-        const parts = day.split(':'); const dayName = parts[0].trim(); const activity = parts.slice(1).join(':').trim();
+        const parts = day.split(/:(.*)/s); 
+        const dayName = parts[0] ? parts[0].trim() : ""; 
+        const activity = parts[1] ? parts[1].trim() : day; 
         return `<tr class="${dayColors[index % dayColors.length]}"><td class="p-3 font-medium text-stone-800">${dayName}</td><td class="p-3 text-stone-700">${activity}</td></tr>`;
     }).join('') : '<tr><td colspan="2" class="p-3 text-stone-500">No daily schedule available.</td></tr>';
     if(weekDetailsContainer) weekDetailsContainer.innerHTML = `
@@ -1757,4 +1765,3 @@ document.addEventListener('DOMContentLoaded', () => {
 </script>
 </body>
 </html>
-
