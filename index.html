@@ -36,7 +36,7 @@
             font-weight: 600; 
             box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.05); 
         }
-        .nav-button:hover:not(.active-overview):not(.active-plan):not(.active-calendar):not(.active-race):not(.active-news):not(.active-companion):not(.active-updates) { 
+        .nav-button:hover:not(.active-overview):not(.active-plan):not(.active-calendar):not(.active-race):not(.active-info):not(.active-companion) { 
             background-color: #f3f4f6; 
             color: #1f2937; 
         }
@@ -53,8 +53,8 @@
         .nav-button.active-race { background-color: #7c3aed; color: white; } 
         .nav-button.active-race:hover { background-color: #6d28d9; }
         
-        .nav-button.active-updates { background-color: #6366f1; color: white; } 
-        .nav-button.active-updates:hover { background-color: #4f46e5; }
+        .nav-button.active-info { background-color: #6366f1; color: white; } 
+        .nav-button.active-info:hover { background-color: #4f46e5; }
 
         .nav-button.active-companion { background-color: #10b981; color: white; } 
         .nav-button.active-companion:hover { background-color: #047857; }
@@ -371,29 +371,6 @@
         }
 
         /* --- Companion App Styles --- */
-        .app-logo {
-            font-family: 'Ubuntu', sans-serif;
-            font-weight: 700;
-            font-size: 3.75rem;
-            line-height: 1;
-            text-align: center;
-            padding: 0.5rem 0.75rem;
-            display: inline-block;
-            border-top: 3px solid #10b981;   
-            border-right: 3px solid #0ea5e9; 
-            border-bottom: 3px solid #0ea5e9; 
-            border-left: 3px solid #10b981;  
-            margin-bottom: 0.75rem; 
-        }
-        @media (min-width: 640px) {
-            .app-logo {
-                font-size: 4.5rem; 
-                padding: 0.75rem 1rem; 
-            }
-        }
-        .app-logo .logo-run { color: #0ea5e9; }
-        .app-logo .logo-sup { color: #10b981; }
-        
         .companion-nav-button {
             padding: 0.6rem 1.1rem; 
             border-radius: 0.375rem; 
@@ -409,22 +386,6 @@
         .companion-nav-button.active.drills { background-color: #059669; color: white; }
         .companion-nav-button.active.mobility { background-color: #0ea5e9; color: white; }
         .companion-nav-button.active.strength { background-color: #f59e0b; color: white; }
-
-        .updates-sub-nav-button {
-             padding: 0.6rem 1.1rem; 
-            border-radius: 0.375rem; 
-            transition: background-color 0.2s ease-in-out, color 0.2s ease-in-out, box-shadow 0.2s ease-in-out;
-            font-weight: 600; 
-            box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
-            cursor: pointer;
-        }
-         .updates-sub-nav-button:hover:not(.active) { 
-            background-color: #f3f4f6; 
-            color: #1f2937; 
-        }
-        .updates-sub-nav-button.active.updates { background-color: #6366f1; color: white; }
-        .updates-sub-nav-button.active.info { background-color: #4f46e5; color: white; }
-
         
         .exercise-card {
             background-color: #fff;
@@ -556,7 +517,7 @@
             #calendar-controls, 
             .calendar-grid, 
             #this-weeks-plan-card, 
-            #mileageChart, 
+            #mileage-chart-modal,
             #training-plan-content .chart-container, 
             .chart-container p,
             #calendar-selected-day-header, 
@@ -709,7 +670,7 @@
             <button id="nav-companion" class="nav-button">Companion</button> 
             <button id="nav-calendar" class="nav-button">Calendar</button>
             <button id="nav-race" class="nav-button">Race</button> 
-            <button id="nav-updates" class="nav-button">Updates</button> 
+            <button id="nav-info" class="nav-button">Info</button> 
         </nav>
 
         <main id="app-content">
@@ -724,6 +685,16 @@
         </main>
     </div>
     <div id="print-section-container" class="hidden"></div>
+
+    <div id="mileage-chart-modal" class="hidden fixed inset-0 bg-black bg-opacity-70 flex items-center justify-center p-4 z-50">
+        <div class="bg-white p-4 rounded-lg shadow-xl relative w-full max-w-3xl">
+            <button id="closeMileageChartBtn" class="absolute top-2 right-2 text-gray-500 hover:text-gray-800 text-3xl leading-none">&times;</button>
+            <h2 id="mileage-chart-modal-title" class="text-xl sm:text-2xl font-semibold text-sky-700 mb-3">Overall Mileage Progression</h2>
+            <div class="chart-container" style="height: 40vh;">
+                <canvas id="mileageChartModalCanvas"></canvas>
+            </div>
+        </div>
+    </div>
 
 <script>
 // Hardcoded fallback for race date if not provided by the data source.
@@ -816,7 +787,7 @@ function updateStaticUIText() {
         document.getElementById('nav-calendar').textContent = 'Calendar';
         document.getElementById('nav-race').textContent = 'Race'; 
         document.getElementById('nav-companion').textContent = 'Companion'; 
-        document.getElementById('nav-updates').textContent = 'Updates'; 
+        document.getElementById('nav-info').textContent = 'Info'; 
         return;
     }
     const uiText = marathonPlan.uiText;
@@ -832,7 +803,7 @@ function updateStaticUIText() {
     document.getElementById('nav-calendar').textContent = uiText.navButtonCalendar || 'Calendar';
     document.getElementById('nav-race').textContent = uiText.navButtonRace || 'Race'; 
     document.getElementById('nav-companion').textContent = uiText.navButtonCompanion || 'Companion';
-    document.getElementById('nav-updates').textContent = uiText.navButtonUpdates || 'Updates';
+    document.getElementById('nav-info').textContent = uiText.navButtonInfo || 'Info';
 }
 
 /**
@@ -932,8 +903,20 @@ function initializeApp() {
     document.getElementById('nav-calendar').addEventListener('click', renderCalendarTab);
     document.getElementById('nav-race').addEventListener('click', renderRaceTab); 
     document.getElementById('nav-companion').addEventListener('click', renderCompanionTab);
-    document.getElementById('nav-updates').addEventListener('click', renderUpdatesTab);
+    document.getElementById('nav-info').addEventListener('click', renderInfoTab);
     
+    // Add event listeners for the mileage chart modal
+    const modal = document.getElementById('mileage-chart-modal');
+    const closeModalBtn = document.getElementById('closeMileageChartBtn');
+    if(modal && closeModalBtn) {
+        closeModalBtn.addEventListener('click', () => modal.classList.add('hidden'));
+        modal.addEventListener('click', (e) => {
+            if (e.target.id === 'mileage-chart-modal') {
+                modal.classList.add('hidden');
+            }
+        });
+    }
+
     renderOverview(); // Render the default "Overview" tab.
     mainAppWrapper.classList.remove('hidden');
     loginContainer.classList.add('hidden');
@@ -971,13 +954,13 @@ async function handleLogin() {
 function setActiveNav(activeId) {
     const navButtons = document.querySelectorAll('.nav-button');
     navButtons.forEach(btn => {
-        btn.classList.remove('active-overview', 'active-plan', 'active-calendar', 'active-race', 'active-companion', 'active-updates'); 
+        btn.classList.remove('active-overview', 'active-plan', 'active-calendar', 'active-race', 'active-companion', 'active-info'); 
         if (btn.id === activeId) {
             if (activeId === 'nav-overview') btn.classList.add('active-overview');
             else if (activeId === 'nav-plan') btn.classList.add('active-plan');
             else if (activeId === 'nav-calendar') btn.classList.add('active-calendar');
             else if (activeId === 'nav-race') btn.classList.add('active-race'); 
-            else if (activeId === 'nav-updates') btn.classList.add('active-updates');
+            else if (activeId === 'nav-info') btn.classList.add('active-info');
             else if (activeId === 'nav-companion') btn.classList.add('active-companion');
             else btn.classList.add('active-overview'); // Default active style.
         }
@@ -1488,48 +1471,67 @@ function printSelectedWeekToPdf(printableAreaId) {
  * Renders the main "Overview" tab, which is the default view of the application.
  * It includes today's training, this week's plan, pace guide, and general notes.
  */
-function renderOverview() {
+async function renderOverview() {
     if (!marathonPlan || !marathonPlan.uiText || !marathonPlan.uiText.overview) return; 
     setActiveNav('nav-overview'); 
-    appContent.innerHTML = ''; 
-    const overviewSection = document.createElement('section');
-    overviewSection.id = "overview-content";
-    overviewSection.className = "space-y-6";
-    const uiTextOverview = marathonPlan.uiText.overview; 
-    overviewSection.innerHTML = `
-        <div class="md:flex md:space-x-6 space-y-6 md:space-y-0 mb-6">
-            <div id="todays-training-card" class="content-card p-4 md:flex-1 custom-rect-border-today"> 
-                <div id="todays-training-content"></div> 
+    appContent.innerHTML = `
+        <section id="overview-content" class="space-y-6">
+            <div class="md:flex md:space-x-6 space-y-6 md:space-y-0 mb-6">
+                <div id="todays-training-card" class="content-card p-4 md:flex-1 custom-rect-border-today"> 
+                    <div id="todays-training-content"></div> 
+                </div>
+                <div id="this-weeks-plan-card" class="content-card p-4 md:flex-1 custom-rect-border-this-week">
+                    <div id="this-weeks-plan-content"></div> 
+                </div>
             </div>
-            <div id="this-weeks-plan-card" class="content-card p-4 md:flex-1 custom-rect-border-this-week">
-                <div id="this-weeks-plan-content"></div> 
-            </div>
-        </div>
-        <div class="content-card overview-section-card">
-            <h2 class="text-xl sm:text-2xl font-semibold text-sky-700 mb-3">${marathonPlan.paceGuide.title || uiTextOverview.paceGuideTitle || 'Pace Guide'}</h2>
-            ${createHtmlList(marathonPlan.paceGuide.paces)}
-        </div>
-        <div class="content-card overview-section-card">
-            <h2 class="text-xl sm:text-2xl font-semibold text-sky-700 mb-3">${marathonPlan.generalNotes.title || uiTextOverview.generalNotesTitle || 'Important Notes'}</h2>
-            ${createHtmlList(marathonPlan.generalNotes.notes)}
-        </div>
-        `;
-    appContent.appendChild(overviewSection);
+            <div id="overview-updates-content"></div>
+        </section>`;
+
     renderTodaysTraining(); 
     renderThisWeeksPlan();
+    renderOverviewUpdates();
 }
 
 /**
- * Renders the weekly mileage progression line chart.
+ * Renders the Team Updates section on the overview page.
+ */
+async function renderOverviewUpdates() {
+    const container = document.getElementById('overview-updates-content');
+    if (!container) return;
+    container.innerHTML = `<div class="text-center">Loading Updates...</div>`;
+    try {
+        await ensureCompanionData();
+        if (!companionData || !companionData.updates || companionData.updates.length === 0) {
+             container.innerHTML = ''; // No updates, show nothing.
+             return;
+        }
+        const list = companionData.updates.map(item => `
+        <div class="content-card updates-card">
+            <h3 class="text-indigo-800 font-semibold text-xl mb-2">${item.title}</h3>
+            <ul class="list-disc list-inside space-y-1 text-stone-700">
+                ${item.content.map(line => `<li>${line}</li>`).join('')}
+            </ul>
+        </div>`).join('<div class="my-4"></div>');
+        container.innerHTML = `<h2 class="text-2xl font-bold text-indigo-700 mb-4">Team Updates</h2><div class="space-y-4">${list}</div>`;
+
+    } catch(error) {
+        console.error("Failed to render overview updates", error);
+        container.innerHTML = `<div class="content-card updates-card"><p class="text-red-500">Could not load team updates.</p></div>`;
+    }
+}
+
+
+/**
+ * Renders the weekly mileage progression line chart inside a modal.
  */
 function renderMileageChart() {
     if (!marathonPlan || !marathonPlan.mileageChartDataSource) {
         console.warn("Mileage chart data source not available.");
         return; 
     }
-    const chartCanvas = document.getElementById('mileageChart'); 
+    const chartCanvas = document.getElementById('mileageChartModalCanvas'); 
     if (!chartCanvas) {
-        console.warn("Mileage chart canvas not found.");
+        console.warn("Mileage chart canvas not found in modal.");
         return;
     }
     const labels = marathonPlan.mileageChartDataSource.map(item => item.label);
@@ -1602,7 +1604,6 @@ function renderTrainingPlan() {
         `<button class="phase-button ${getPhaseButtonClass(phase.name)}" data-phase-index="${index}">${phase.name}</button>`
     ).join('');
     const selectPhaseTitle = marathonPlan.uiText.plan.selectPhaseTitle || "Select Training Phase:";
-    const mileageProgressionTitleText = marathonPlan.uiText.overview?.mileageProgressionTitle || 'Overall Mileage Progression';
     trainingPlanSection.innerHTML = `
         <div>
             <h2 class="text-xl sm:text-2xl font-semibold text-sky-700 mb-4">${selectPhaseTitle}</h2>
@@ -1610,13 +1611,7 @@ function renderTrainingPlan() {
             <div id="phase-details" class="space-y-4"><p class="text-stone-600 italic">Select a phase to see its details.</p></div>
         </div>
         <div id="week-details-container" class="mt-6"></div>
-        <div class="content-card overview-section-card mt-6"> 
-            <h2 class="text-xl sm:text-2xl font-semibold text-sky-700 mb-3">${mileageProgressionTitleText}</h2>
-            <div class="chart-container bg-white p-2 rounded-md shadow">
-                <canvas id="mileageChart"></canvas>
-            </div>
-            <p class="text-xs text-stone-500 mt-2 text-center">Hover over points to see weekly mileage.</p>
-        </div>`;
+        `;
     appContent.appendChild(trainingPlanSection);
     document.querySelectorAll('#phase-navigation .phase-button').forEach(button => {
         button.addEventListener('click', (e) => {
@@ -1630,7 +1625,6 @@ function renderTrainingPlan() {
         const firstPhaseButton = document.querySelector('#phase-navigation .phase-button');
         if (firstPhaseButton) { firstPhaseButton.classList.add('active'); renderPhaseDetails(0); }
     }
-    renderMileageChart(); 
 }
 
 /**
@@ -1761,13 +1755,27 @@ function renderWeekDetails(phaseIndex, weekIndex) {
     
     const weekDetailsId = `week-details-printable-${phaseIndex}-${weekIndex}`;
 
+    const paceGuideHtml = `<div class="content-card overview-section-card mt-6">
+        <h2 class="text-xl sm:text-2xl font-semibold text-sky-700 mb-3">${marathonPlan.paceGuide.title || 'Pace Guide'}</h2>
+        ${createHtmlList(marathonPlan.paceGuide.paces)}
+    </div>`;
+
+    const generalNotesHtml = `<div class="content-card overview-section-card mt-6">
+        <h2 class="text-xl sm:text-2xl font-semibold text-sky-700 mb-3">${marathonPlan.generalNotes.title || 'Important Notes'}</h2>
+        ${createHtmlList(marathonPlan.generalNotes.notes)}
+    </div>`;
+
     if(weekDetailsContainer) weekDetailsContainer.innerHTML = `
-        <div class="content-card mt-4" id="${weekDetailsId}"> <div class="flex justify-between items-center mb-2">
+        <div class="content-card mt-4" id="${weekDetailsId}"> 
+            <div class="flex justify-between items-center mb-2">
                 <h4 class="text-lg font-semibold text-sky-700">Week ${week.weekNum} (Total: ${getDisplayKm(week.totalKm)})</h4>
-                <button onclick="printSelectedWeekToPdf('${weekDetailsId}')" class="pdf-button no-print"> 
-                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" class="w-4 h-4"><path fill-rule="evenodd" d="M5 2.5A2.5 2.5 0 0 1 7.5 0h5A2.5 2.5 0 0 1 15 2.5V5h-2.55a3 3 0 0 0-4.9 0H5V2.5zM10 6a2 2 0 0 0-1.936 1.5H5V15a2 2 0 0 0 2 2h6a2 2 0 0 0 2-2V7.5h-3.064A2 2 0 0 0 10 6zm0 2a.75.75 0 0 1 .75.75v.032l1.533.306a.75.75 0 0 1-.293 1.455l-1.68-.335a.75.75 0 0 1-.59-.518L9.25 8.75A.75.75 0 0 1 10 8z" clip-rule="evenodd" /></svg>
-                    PDF
-                </button>
+                <div class="flex items-center gap-2">
+                    <button id="showMileageChartBtn" class="bg-teal-500 text-white text-xs font-bold py-1 px-3 rounded-full hover:bg-teal-600 transition-colors">Mileage Chart</button>
+                    <button onclick="printSelectedWeekToPdf('${weekDetailsId}')" class="pdf-button no-print"> 
+                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" class="w-4 h-4"><path fill-rule="evenodd" d="M5 2.5A2.5 2.5 0 0 1 7.5 0h5A2.5 2.5 0 0 1 15 2.5V5h-2.55a3 3 0 0 0-4.9 0H5V2.5zM10 6a2 2 0 0 0-1.936 1.5H5V15a2 2 0 0 0 2 2h6a2 2 0 0 0 2-2V7.5h-3.064A2 2 0 0 0 10 6zm0 2a.75.75 0 0 1 .75.75v.032l1.533.306a.75.75 0 0 1-.293 1.455l-1.68-.335a.75.75 0 0 1-.59-.518L9.25 8.75A.75.75 0 0 1 10 8z" clip-rule="evenodd" /></svg>
+                        PDF
+                    </button>
+                </div>
             </div>
             <div class="overflow-x-auto rounded-lg border border-stone-200">
                 <table class="schedule-table min-w-full">
@@ -1776,7 +1784,18 @@ function renderWeekDetails(phaseIndex, weekIndex) {
                 </table>
             </div>
             ${week.notes ? `<p class="text-sm italic mt-3 p-3 bg-stone-100 rounded-md"><strong class="text-black text-xs">Weekly Notes:</strong> <span class="text-stone-800 text-sm">${week.notes}</span></p>` : ''}
-        </div>`;
+        </div>
+        ${paceGuideHtml}
+        ${generalNotesHtml}
+        `;
+    
+    document.getElementById('showMileageChartBtn').addEventListener('click', () => {
+        const modal = document.getElementById('mileage-chart-modal');
+        if(modal) {
+            modal.classList.remove('hidden');
+            renderMileageChart(); // Now call the chart render function
+        }
+    });
 }
 
 /**
@@ -1834,16 +1853,9 @@ function renderCalendarTab() {
     document.getElementById('prevMonthBtn').addEventListener('click', () => { calendarCurrentDisplayDate.setMonth(calendarCurrentDisplayDate.getMonth() - 1); renderCalendarGrid(); document.getElementById('calendar-day-details-content').innerHTML = ''; document.getElementById('calendar-selected-day-header').innerHTML = ''; });
     document.getElementById('nextMonthBtn').addEventListener('click', () => { calendarCurrentDisplayDate.setMonth(calendarCurrentDisplayDate.getMonth() + 1); renderCalendarGrid(); document.getElementById('calendar-day-details-content').innerHTML = ''; document.getElementById('calendar-selected-day-header').innerHTML = ''; });
     
-    // Set the initial calendar view to the month of the plan start date.
-    if (marathonPlan && marathonPlan.settings && marathonPlan.settings.planStartDate) {
-        const planStartDate = new Date(marathonPlan.settings.planStartDate + "T00:00:00");
-        if (isValidDate(planStartDate)) {
-            calendarCurrentDisplayDate = new Date(planStartDate.getFullYear(), planStartDate.getMonth(), 1);
-        }
-    } else {
-        calendarCurrentDisplayDate = new Date(); 
-        calendarCurrentDisplayDate.setDate(1);
-    }
+    // Set the initial calendar view to the current month.
+    calendarCurrentDisplayDate = new Date();
+    calendarCurrentDisplayDate.setDate(1);
 
     renderCalendarGrid(); 
     renderSelectedCalendarDayDetails(new Date()); 
@@ -2065,7 +2077,7 @@ function renderRaceElevationChart() {
     });
 }
 
-// --- START: COMPANION & UPDATES APP FUNCTIONS ---
+// --- START: COMPANION & INFO APP FUNCTIONS ---
 
 /**
  * Ensures the companion app data is fetched and stored globally.
@@ -2186,75 +2198,12 @@ function createExerciseCard(item, type) {
     `;
 }
 
-async function renderUpdatesTab() {
-    setActiveNav('nav-updates');
-    appContent.innerHTML = `
-        <div id="updates-wrapper">
-            <div id="updates-loading-message">
-                 <svg class="animate-spin h-8 w-8 text-sky-600 mx-auto mb-2" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
-                    <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
-                    <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
-                </svg>
-                Loading...
-            </div>
-            <div id="updates-error-message" class="hidden"></div>
-            <nav id="updates-sub-navigation" class="mb-8 flex flex-wrap justify-center gap-2 sm:gap-4 pb-4 border-b-2 border-slate-200 hidden">
-                 <button id="sub-nav-updates" class="updates-sub-nav-button updates">Team Updates</button>
-                 <button id="sub-nav-info" class="updates-sub-nav-button info">Info</button>
-            </nav>
-            <div id="updates-sub-content"></div>
-        </div>
-    `;
-     try {
-        await ensureCompanionData(); // Ensure companion data is loaded for the "Team Updates"
-        document.getElementById('updates-loading-message').classList.add('hidden');
-        document.getElementById('updates-sub-navigation').classList.remove('hidden');
+function renderInfoTab() {
+    setActiveNav('nav-info');
+    appContent.innerHTML = ''; 
 
-        document.getElementById('sub-nav-updates').addEventListener('click', renderUpdatesSubContent);
-        document.getElementById('sub-nav-info').addEventListener('click', renderInfoSubContent);
-        
-        renderUpdatesSubContent(); // Load team updates by default
-    } catch (error) {
-        console.error('Failed to initialize updates tab:', error);
-        const loadingMsg = document.getElementById('updates-loading-message');
-        const errorMsg = document.getElementById('updates-error-message');
-        if (loadingMsg) loadingMsg.classList.add('hidden');
-        if (errorMsg) {
-            errorMsg.textContent = `Error: ${error.message}`;
-            errorMsg.classList.remove('hidden');
-        }
-    }
-}
-
-function setActiveUpdatesSubNav(activeId) {
-    document.querySelectorAll('.updates-sub-nav-button').forEach(btn => {
-        btn.classList.remove('active');
-        if (btn.id === activeId) {
-            btn.classList.add('active');
-        }
-    });
-}
-
-function renderUpdatesSubContent() {
-    setActiveUpdatesSubNav('sub-nav-updates');
-    const contentDiv = document.getElementById('updates-sub-content');
-    if(!contentDiv || !companionData) return;
-
-    const list = companionData.updates.map(item => `
-        <div class="content-card updates-card">
-            <h3 class="text-indigo-800 font-semibold text-xl mb-2">${item.title}</h3>
-            <ul class="list-disc list-inside space-y-1 text-stone-700">
-                ${item.content.map(line => `<li>${line}</li>`).join('')}
-            </ul>
-        </div>`).join('<div class="my-4"></div>');
-    contentDiv.innerHTML = `<h2 class="text-2xl font-bold text-indigo-700 mb-4">Team Updates</h2><div class="space-y-4">${list}</div>`;
-}
-
-function renderInfoSubContent() {
-    setActiveUpdatesSubNav('sub-nav-info');
-    const contentDiv = document.getElementById('updates-sub-content');
-    if (!contentDiv || !marathonPlan || !marathonPlan.uiText ) {
-        if(contentDiv) contentDiv.innerHTML = "<p>Info content is currently unavailable.</p>";
+    if (!marathonPlan || !marathonPlan.newsSection) { 
+        appContent.innerHTML = "<p>Info content is currently unavailable.</p>";
         return;
     }
    
@@ -2274,14 +2223,14 @@ function renderInfoSubContent() {
     } else {
         const noNewsMessage = (marathonPlan.uiText && marathonPlan.uiText.news && marathonPlan.uiText.news.noNewsAvailable) 
                                  ? marathonPlan.uiText.news.noNewsAvailable 
-                                 : "No news items to display at the moment.";
+                                 : "No information to display at the moment.";
         infoHtml = `<div class="content-card news-section-card"><p>${noNewsMessage}</p></div>`;
     }
     
-    contentDiv.innerHTML = `<h2 class="text-2xl font-bold text-indigo-700 mb-4">Info</h2><div class="space-y-4">${infoHtml}</div>`;
+    appContent.innerHTML = `<h2 class="text-2xl font-bold text-indigo-700 mb-4">Info</h2><div class="space-y-4">${infoHtml}</div>`;
 }
 
-// --- END: COMPANION & UPDATES APP FUNCTIONS ---
+// --- END: COMPANION & INFO APP FUNCTIONS ---
 
 
 // Main entry point when the DOM is fully loaded.
@@ -2298,7 +2247,7 @@ document.addEventListener('DOMContentLoaded', () => {
     document.getElementById('nav-calendar').textContent = 'Calendar';
     document.getElementById('nav-race').textContent = 'Race'; 
     document.getElementById('nav-companion').textContent = 'Companion';
-    document.getElementById('nav-updates').textContent = 'Updates';
+    document.getElementById('nav-info').textContent = 'Info';
 
     const loginButton = document.getElementById('loginButton');
     if(loginButton) loginButton.addEventListener('click', handleLogin);
