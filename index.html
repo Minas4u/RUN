@@ -36,7 +36,7 @@
             font-weight: 600; 
             box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.05); 
         }
-        .nav-button:hover:not(.active-overview):not(.active-plan):not(.active-calendar):not(.active-race):not(.active-news):not(.active-companion) { 
+        .nav-button:hover:not(.active-overview):not(.active-plan):not(.active-calendar):not(.active-race):not(.active-news):not(.active-companion):not(.active-updates) { 
             background-color: #f3f4f6; 
             color: #1f2937; 
         }
@@ -53,8 +53,8 @@
         .nav-button.active-race { background-color: #7c3aed; color: white; } 
         .nav-button.active-race:hover { background-color: #6d28d9; }
         
-        .nav-button.active-news { background-color: #4f46e5; color: white; } 
-        .nav-button.active-news:hover { background-color: #4338ca; } 
+        .nav-button.active-updates { background-color: #6366f1; color: white; } 
+        .nav-button.active-updates:hover { background-color: #4f46e5; }
 
         .nav-button.active-companion { background-color: #10b981; color: white; } 
         .nav-button.active-companion:hover { background-color: #047857; }
@@ -409,7 +409,22 @@
         .companion-nav-button.active.drills { background-color: #059669; color: white; }
         .companion-nav-button.active.mobility { background-color: #0ea5e9; color: white; }
         .companion-nav-button.active.strength { background-color: #f59e0b; color: white; }
-        .companion-nav-button.active.updates { background-color: #6366f1; color: white; }
+
+        .updates-sub-nav-button {
+             padding: 0.6rem 1.1rem; 
+            border-radius: 0.375rem; 
+            transition: background-color 0.2s ease-in-out, color 0.2s ease-in-out, box-shadow 0.2s ease-in-out;
+            font-weight: 600; 
+            box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+            cursor: pointer;
+        }
+         .updates-sub-nav-button:hover:not(.active) { 
+            background-color: #f3f4f6; 
+            color: #1f2937; 
+        }
+        .updates-sub-nav-button.active.updates { background-color: #6366f1; color: white; }
+        .updates-sub-nav-button.active.info { background-color: #4f46e5; color: white; }
+
         
         .exercise-card {
             background-color: #fff;
@@ -689,12 +704,12 @@
         </header>
 
         <nav class="mb-8 flex flex-wrap justify-center gap-2 sm:gap-4 pb-4 custom-rect-border-nav">
-            <button id="nav-overview" class="nav-button active-overview">{NAV_OVERVIEW_TEXT}</button>
-            <button id="nav-news" class="nav-button">{NAV_NEWS_TEXT}</button>
-            <button id="nav-plan" class="nav-button">{NAV_PLAN_TEXT}</button>
-            <button id="nav-calendar" class="nav-button">{NAV_CALENDAR_TEXT}</button>
-            <button id="nav-race" class="nav-button">{NAV_RACE_TEXT}</button> 
-            <button id="nav-companion" class="nav-button">{NAV_COMPANION_TEXT}</button> 
+            <button id="nav-overview" class="nav-button active-overview">Plan Overview</button>
+            <button id="nav-plan" class="nav-button">Training Plan</button>
+            <button id="nav-companion" class="nav-button">Companion</button> 
+            <button id="nav-calendar" class="nav-button">Calendar</button>
+            <button id="nav-race" class="nav-button">Race</button> 
+            <button id="nav-updates" class="nav-button">Updates</button> 
         </nav>
 
         <main id="app-content">
@@ -797,11 +812,11 @@ function updateStaticUIText() {
         document.getElementById('appHeaderTitleMarathon').textContent = 'Marathon';
         document.getElementById('appSubtitle').textContent = 'Your interactive guide to marathon training.';
         document.getElementById('nav-overview').textContent = 'Plan Overview';
-        document.getElementById('nav-news').textContent = 'News';
         document.getElementById('nav-plan').textContent = 'Training Plan';
         document.getElementById('nav-calendar').textContent = 'Calendar';
         document.getElementById('nav-race').textContent = 'Race'; 
         document.getElementById('nav-companion').textContent = 'Companion'; 
+        document.getElementById('nav-updates').textContent = 'Updates'; 
         return;
     }
     const uiText = marathonPlan.uiText;
@@ -813,11 +828,11 @@ function updateStaticUIText() {
     document.getElementById('appHeaderTitleMarathon').textContent = uiText.mainTitleMarathon || 'Marathon';
     document.getElementById('appSubtitle').textContent = uiText.appSubtitle || 'Your interactive guide to marathon training.';
     document.getElementById('nav-overview').textContent = uiText.navButtonOverview || 'Plan Overview';
-    document.getElementById('nav-news').textContent = uiText.navButtonNews || 'News';
     document.getElementById('nav-plan').textContent = uiText.navButtonPlan || 'Training Plan';
     document.getElementById('nav-calendar').textContent = uiText.navButtonCalendar || 'Calendar';
     document.getElementById('nav-race').textContent = uiText.navButtonRace || 'Race'; 
     document.getElementById('nav-companion').textContent = uiText.navButtonCompanion || 'Companion';
+    document.getElementById('nav-updates').textContent = uiText.navButtonUpdates || 'Updates';
 }
 
 /**
@@ -913,11 +928,11 @@ function initializeApp() {
 
     // Add event listeners to the main navigation buttons.
     document.getElementById('nav-overview').addEventListener('click', renderOverview);
-    document.getElementById('nav-news').addEventListener('click', renderNewsTab); 
     document.getElementById('nav-plan').addEventListener('click', renderTrainingPlan);
     document.getElementById('nav-calendar').addEventListener('click', renderCalendarTab);
     document.getElementById('nav-race').addEventListener('click', renderRaceTab); 
     document.getElementById('nav-companion').addEventListener('click', renderCompanionTab);
+    document.getElementById('nav-updates').addEventListener('click', renderUpdatesTab);
     
     renderOverview(); // Render the default "Overview" tab.
     mainAppWrapper.classList.remove('hidden');
@@ -956,13 +971,13 @@ async function handleLogin() {
 function setActiveNav(activeId) {
     const navButtons = document.querySelectorAll('.nav-button');
     navButtons.forEach(btn => {
-        btn.classList.remove('active-overview', 'active-plan', 'active-calendar', 'active-race', 'active-news', 'active-companion'); 
+        btn.classList.remove('active-overview', 'active-plan', 'active-calendar', 'active-race', 'active-companion', 'active-updates'); 
         if (btn.id === activeId) {
             if (activeId === 'nav-overview') btn.classList.add('active-overview');
             else if (activeId === 'nav-plan') btn.classList.add('active-plan');
             else if (activeId === 'nav-calendar') btn.classList.add('active-calendar');
             else if (activeId === 'nav-race') btn.classList.add('active-race'); 
-            else if (activeId === 'nav-news') btn.classList.add('active-news');
+            else if (activeId === 'nav-updates') btn.classList.add('active-updates');
             else if (activeId === 'nav-companion') btn.classList.add('active-companion');
             else btn.classList.add('active-overview'); // Default active style.
         }
@@ -1538,42 +1553,6 @@ function renderMileageChart() {
     });
 }
 
-/**
- * Renders the "News" tab with content from the plan data.
- */
-function renderNewsTab() {
-    if (!marathonPlan || !marathonPlan.uiText || !marathonPlan.newsSection) { 
-        appContent.innerHTML = "<p>News content is currently unavailable. Please check sheet configuration.</p>";
-        return;
-    }
-    setActiveNav('nav-news'); 
-    appContent.innerHTML = ''; 
-    const newsSectionContainer = document.createElement('section');
-    newsSectionContainer.id = "news-content";
-    newsSectionContainer.className = "space-y-6";
-
-    if (marathonPlan.newsSection && Array.isArray(marathonPlan.newsSection) && marathonPlan.newsSection.length > 0) {
-        marathonPlan.newsSection.forEach(newsItem => {
-            if (newsItem && newsItem.title && Array.isArray(newsItem.content)) {
-                const newsItemDiv = document.createElement('div');
-                newsItemDiv.className = 'content-card news-section-card'; 
-                newsItemDiv.innerHTML = `
-                    <h2 class="text-xl sm:text-2xl font-semibold text-indigo-700 mb-3">${newsItem.title}</h2>
-                    ${createHtmlList(newsItem.content)}
-                `;
-                newsSectionContainer.appendChild(newsItemDiv);
-            }
-        });
-    } else {
-        const noNewsMessage = (marathonPlan.uiText && marathonPlan.uiText.news && marathonPlan.uiText.news.noNewsAvailable) 
-                                 ? marathonPlan.uiText.news.noNewsAvailable 
-                                 : "No news items to display at the moment.";
-        newsSectionContainer.innerHTML = `<div class="content-card news-section-card"><p>${noNewsMessage}</p></div>`;
-    }
-    
-    appContent.appendChild(newsSectionContainer);
-}
-
 
 // Functions to get dynamic CSS classes based on the training phase name.
 function getPhaseButtonClass(phaseName) {
@@ -2086,94 +2065,69 @@ function renderRaceElevationChart() {
     });
 }
 
-// --- START: COMPANION APP FUNCTIONS ---
+// --- START: COMPANION & UPDATES APP FUNCTIONS ---
 
 /**
- * Initializes the companion app section by fetching its data.
+ * Ensures the companion app data is fetched and stored globally.
+ * @returns {Promise<void>}
  */
-async function initializeCompanionApp() {
-    // Companion-specific DOM elements, queried only when this tab is rendered.
-    const companionLoading = document.getElementById('companion-loading-message');
-    const companionError = document.getElementById('companion-error-message');
-    const companionNav = document.getElementById('companion-navigation');
-    const companionContent = document.getElementById('companion-content');
-
-    if (companionLoading) companionLoading.classList.remove('hidden');
-    
-    try {
-        // Fetch data only if it hasn't been fetched before.
-        if (!companionData) {
-            const response = await fetch(companionDataUrl);
-            if (!response.ok) throw new Error(`Network response error (status: ${response.status})`);
-            
-            const data = await response.json();
-            if (data.error) throw new Error(`Data error from Google Sheet: ${data.error}`);
-            
-            companionData = data;
-        }
-
-        if (companionLoading) companionLoading.classList.add('hidden');
-        if (companionNav) companionNav.classList.remove('hidden');
-        if (companionContent) companionContent.classList.remove('hidden');
-
-        document.getElementById('comp-nav-drills').addEventListener('click', renderCompanionDrills);
-        document.getElementById('comp-nav-mobility').addEventListener('click', renderCompanionMobility);
-        document.getElementById('comp-nav-strength').addEventListener('click', renderCompanionStrength);
-        document.getElementById('comp-nav-updates').addEventListener('click', renderCompanionUpdates);
-        
-        // Load drills section by default
-        renderCompanionDrills();
-
-    } catch (error) {
-        console.error('Failed to initialize companion app:', error);
-        if (companionLoading) companionLoading.classList.add('hidden');
-        if (companionError) {
-            companionError.textContent = `Error: ${error.message}`;
-            companionError.classList.remove('hidden');
-        }
+async function ensureCompanionData() {
+    if (companionData) {
+        return; // Data already loaded
     }
+    const response = await fetch(companionDataUrl);
+    if (!response.ok) throw new Error(`Companion data network response error (status: ${response.status})`);
+    
+    const data = await response.json();
+    if (data.error) throw new Error(`Data error from Companion Google Sheet: ${data.error}`);
+    
+    companionData = data;
 }
 
 /**
  * Renders the companion tab content.
  */
-function renderCompanionTab() {
+async function renderCompanionTab() {
     setActiveNav('nav-companion');
     appContent.innerHTML = `
         <div id="companion-app-container">
-            <header class="mb-8 text-center">
-                <div class="app-logo">
-                    <span class="logo-run">RUN</span><span class="logo-sup">APP</span>
-                </div>
-                <h1 class="text-3xl sm:text-4xl font-extrabold text-stone-800 mt-2">
-                    <span class="text-sky-600">Team</span> <span class="text-emerald-600">Companion</span>
-                </h1>
-                <p class="text-stone-600 mt-2 text-lg">
-                    Your daily guide to drills, mobility, and strength.
-                </p>
-            </header>
-
+             <div id="companion-loading-message">
+                <svg class="animate-spin h-8 w-8 text-sky-600 mx-auto mb-2" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                    <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                    <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                </svg>
+                Loading team data...
+            </div>
+            <div id="companion-error-message" class="hidden"></div>
             <nav id="companion-navigation" class="mb-8 flex flex-wrap justify-center gap-2 sm:gap-4 pb-4 border-b-2 border-slate-200 hidden">
                 <button id="comp-nav-drills" class="companion-nav-button drills">Drills</button>
                 <button id="comp-nav-mobility" class="companion-nav-button mobility">Mobility</button>
                 <button id="comp-nav-strength" class="companion-nav-button strength">Strength</button>
-                <button id="comp-nav-updates" class="companion-nav-button updates">Updates</button>
             </nav>
-
-            <main id="companion-main-content">
-                <div id="companion-loading-message">
-                    <svg class="animate-spin h-8 w-8 text-sky-600 mx-auto mb-2" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
-                        <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
-                        <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
-                    </svg>
-                    Loading team data...
-                </div>
-                <div id="companion-error-message" class="hidden"></div>
-                <div id="companion-content" class="hidden"></div>
-            </main>
+            <div id="companion-content"></div>
         </div>
     `;
-    initializeCompanionApp();
+
+    try {
+        await ensureCompanionData();
+        document.getElementById('companion-loading-message').classList.add('hidden');
+        document.getElementById('companion-navigation').classList.remove('hidden');
+
+        document.getElementById('comp-nav-drills').addEventListener('click', renderCompanionDrills);
+        document.getElementById('comp-nav-mobility').addEventListener('click', renderCompanionMobility);
+        document.getElementById('comp-nav-strength').addEventListener('click', renderCompanionStrength);
+        
+        renderCompanionDrills(); // Load drills by default
+    } catch (error) {
+        console.error('Failed to initialize companion app:', error);
+        const loadingMsg = document.getElementById('companion-loading-message');
+        const errorMsg = document.getElementById('companion-error-message');
+        if (loadingMsg) loadingMsg.classList.add('hidden');
+        if (errorMsg) {
+            errorMsg.textContent = `Error: ${error.message}`;
+            errorMsg.classList.remove('hidden');
+        }
+    }
 }
 
 
@@ -2210,19 +2164,6 @@ function renderCompanionStrength() {
     contentDiv.innerHTML = `<h2 class="text-2xl font-bold text-amber-700 mb-4">Strength Exercises</h2><div class="grid grid-cols-1 md:grid-cols-2 gap-4">${grid}</div>`;
 }
 
-function renderCompanionUpdates() {
-    setActiveCompanionNav('comp-nav-updates');
-    const contentDiv = document.getElementById('companion-content');
-    if(!contentDiv || !companionData) return;
-    const list = companionData.updates.map(item => `
-        <div class="content-card updates-card">
-            <h3 class="text-indigo-800 font-semibold text-xl mb-2">${item.title}</h3>
-            <ul class="list-disc list-inside space-y-1 text-stone-700">
-                ${item.content.map(line => `<li>${line}</li>`).join('')}
-            </ul>
-        </div>`).join('<div class="my-4"></div>');
-    contentDiv.innerHTML = `<h2 class="text-2xl font-bold text-indigo-700 mb-4">Team Updates</h2><div class="space-y-4">${list}</div>`;
-}
 
 function createExerciseCard(item, type) {
     let details = '';
@@ -2244,7 +2185,103 @@ function createExerciseCard(item, type) {
         </div>
     `;
 }
-// --- END: COMPANION APP FUNCTIONS ---
+
+async function renderUpdatesTab() {
+    setActiveNav('nav-updates');
+    appContent.innerHTML = `
+        <div id="updates-wrapper">
+            <div id="updates-loading-message">
+                 <svg class="animate-spin h-8 w-8 text-sky-600 mx-auto mb-2" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                    <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                    <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                </svg>
+                Loading...
+            </div>
+            <div id="updates-error-message" class="hidden"></div>
+            <nav id="updates-sub-navigation" class="mb-8 flex flex-wrap justify-center gap-2 sm:gap-4 pb-4 border-b-2 border-slate-200 hidden">
+                 <button id="sub-nav-updates" class="updates-sub-nav-button updates">Team Updates</button>
+                 <button id="sub-nav-info" class="updates-sub-nav-button info">Info</button>
+            </nav>
+            <div id="updates-sub-content"></div>
+        </div>
+    `;
+     try {
+        await ensureCompanionData(); // Ensure companion data is loaded for the "Team Updates"
+        document.getElementById('updates-loading-message').classList.add('hidden');
+        document.getElementById('updates-sub-navigation').classList.remove('hidden');
+
+        document.getElementById('sub-nav-updates').addEventListener('click', renderUpdatesSubContent);
+        document.getElementById('sub-nav-info').addEventListener('click', renderInfoSubContent);
+        
+        renderUpdatesSubContent(); // Load team updates by default
+    } catch (error) {
+        console.error('Failed to initialize updates tab:', error);
+        const loadingMsg = document.getElementById('updates-loading-message');
+        const errorMsg = document.getElementById('updates-error-message');
+        if (loadingMsg) loadingMsg.classList.add('hidden');
+        if (errorMsg) {
+            errorMsg.textContent = `Error: ${error.message}`;
+            errorMsg.classList.remove('hidden');
+        }
+    }
+}
+
+function setActiveUpdatesSubNav(activeId) {
+    document.querySelectorAll('.updates-sub-nav-button').forEach(btn => {
+        btn.classList.remove('active');
+        if (btn.id === activeId) {
+            btn.classList.add('active');
+        }
+    });
+}
+
+function renderUpdatesSubContent() {
+    setActiveUpdatesSubNav('sub-nav-updates');
+    const contentDiv = document.getElementById('updates-sub-content');
+    if(!contentDiv || !companionData) return;
+
+    const list = companionData.updates.map(item => `
+        <div class="content-card updates-card">
+            <h3 class="text-indigo-800 font-semibold text-xl mb-2">${item.title}</h3>
+            <ul class="list-disc list-inside space-y-1 text-stone-700">
+                ${item.content.map(line => `<li>${line}</li>`).join('')}
+            </ul>
+        </div>`).join('<div class="my-4"></div>');
+    contentDiv.innerHTML = `<h2 class="text-2xl font-bold text-indigo-700 mb-4">Team Updates</h2><div class="space-y-4">${list}</div>`;
+}
+
+function renderInfoSubContent() {
+    setActiveUpdatesSubNav('sub-nav-info');
+    const contentDiv = document.getElementById('updates-sub-content');
+    if (!contentDiv || !marathonPlan || !marathonPlan.uiText ) {
+        if(contentDiv) contentDiv.innerHTML = "<p>Info content is currently unavailable.</p>";
+        return;
+    }
+   
+    let infoHtml = '';
+    const newsSection = marathonPlan.newsSection;
+
+    if (newsSection && Array.isArray(newsSection) && newsSection.length > 0) {
+        newsSection.forEach(newsItem => {
+            if (newsItem && newsItem.title && Array.isArray(newsItem.content)) {
+                infoHtml += `
+                    <div class="content-card news-section-card mb-6">
+                        <h3 class="text-xl sm:text-2xl font-semibold text-indigo-700 mb-3">${newsItem.title}</h3>
+                        ${createHtmlList(newsItem.content)}
+                    </div>`;
+            }
+        });
+    } else {
+        const noNewsMessage = (marathonPlan.uiText && marathonPlan.uiText.news && marathonPlan.uiText.news.noNewsAvailable) 
+                                 ? marathonPlan.uiText.news.noNewsAvailable 
+                                 : "No news items to display at the moment.";
+        infoHtml = `<div class="content-card news-section-card"><p>${noNewsMessage}</p></div>`;
+    }
+    
+    contentDiv.innerHTML = `<h2 class="text-2xl font-bold text-indigo-700 mb-4">Info</h2><div class="space-y-4">${infoHtml}</div>`;
+}
+
+// --- END: COMPANION & UPDATES APP FUNCTIONS ---
 
 
 // Main entry point when the DOM is fully loaded.
@@ -2257,11 +2294,11 @@ document.addEventListener('DOMContentLoaded', () => {
     document.getElementById('appHeaderTitleMarathon').textContent = 'Marathon';
     document.getElementById('appSubtitle').textContent = 'Your interactive guide to marathon training.';
     document.getElementById('nav-overview').textContent = 'Plan Overview';
-    document.getElementById('nav-news').textContent = 'News';
     document.getElementById('nav-plan').textContent = 'Training Plan';
     document.getElementById('nav-calendar').textContent = 'Calendar';
     document.getElementById('nav-race').textContent = 'Race'; 
     document.getElementById('nav-companion').textContent = 'Companion';
+    document.getElementById('nav-updates').textContent = 'Updates';
 
     const loginButton = document.getElementById('loginButton');
     if(loginButton) loginButton.addEventListener('click', handleLogin);
