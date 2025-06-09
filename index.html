@@ -36,7 +36,7 @@
             font-weight: 600; 
             box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.05); 
         }
-        .nav-button:hover:not(.active-overview):not(.active-plan):not(.active-calendar):not(.active-race):not(.active-news) { 
+        .nav-button:hover:not(.active-overview):not(.active-plan):not(.active-calendar):not(.active-race):not(.active-news):not(.active-companion) { 
             background-color: #f3f4f6; 
             color: #1f2937; 
         }
@@ -55,6 +55,10 @@
         
         .nav-button.active-news { background-color: #4f46e5; color: white; } 
         .nav-button.active-news:hover { background-color: #4338ca; } 
+
+        .nav-button.active-companion { background-color: #10b981; color: white; } 
+        .nav-button.active-companion:hover { background-color: #047857; }
+
 
         .phase-button {
             padding: 0.5rem 1rem;
@@ -106,7 +110,6 @@
             background-color: #fafaf9; 
             padding: 1rem; 
             border-radius: 0.5rem; 
-            /* Default border removed, will be applied by specific border classes or default .overview-section-card etc. */
         }
         .content-card h3.phase-title-style { margin-bottom: 0.5rem; } 
         
@@ -173,7 +176,7 @@
             text-align: center; 
             padding: 0.5rem 0.75rem; 
             display: inline-block; 
-            border-top: 3px solid #f59e0b;    
+            border-top: 3px solid #f59e0b;   
             border-right: 3px solid #0284c7;  
             border-bottom: 3px solid #0284c7; 
             border-left: 3px solid #f59e0b;   
@@ -260,11 +263,11 @@
             border-style: solid !important;
         }
         .custom-rect-border-today { /* For today's training card */
-             border-top: 3px solid #f59e0b !important;    /* Yellow */
-             border-right: 3px solid #0284c7 !important;   /* Blue */
-             border-bottom: 3px solid #0284c7 !important; /* Blue */
-             border-left: 3px solid #f59e0b !important;    /* Yellow */
-             border-style: solid !important;
+            border-top: 3px solid #f59e0b !important;    /* Yellow */
+            border-right: 3px solid #0284c7 !important;   /* Blue */
+            border-bottom: 3px solid #0284c7 !important; /* Blue */
+            border-left: 3px solid #f59e0b !important;    /* Yellow */
+            border-style: solid !important;
         }
         .custom-rect-border-this-week { /* For this week's plan card */
             border-top: 3px solid #15803d !important;    /* Green */
@@ -284,7 +287,7 @@
         .title-marathon {
             color: #0284c7; 
         }
-       
+        
         .loader {
             border: 4px solid #f3f3f3; 
             border-top: 4px solid #3b82f6; 
@@ -335,11 +338,11 @@
 
         #toggleRepeatsButton {
             background-color: #0284c7; 
-            color: white;              
+            color: white;           
             border: 2px solid #f59e0b; 
             padding: 0.4rem 0.9rem;   
-            font-size: 0.9rem;        
-            font-weight: 600;          
+            font-size: 0.9rem;      
+            font-weight: 600;       
             border-radius: 0.375rem; 
             transition: background-color 0.2s, border-color 0.2s;
         }
@@ -365,6 +368,89 @@
             background-color: #f59e0b !important; 
             color: #1e293b !important; 
             font-weight: bold !important;
+        }
+
+        /* --- Companion App Styles --- */
+        .app-logo {
+            font-family: 'Ubuntu', sans-serif;
+            font-weight: 700;
+            font-size: 3.75rem;
+            line-height: 1;
+            text-align: center;
+            padding: 0.5rem 0.75rem;
+            display: inline-block;
+            border-top: 3px solid #10b981;   
+            border-right: 3px solid #0ea5e9; 
+            border-bottom: 3px solid #0ea5e9; 
+            border-left: 3px solid #10b981;  
+            margin-bottom: 0.75rem; 
+        }
+        @media (min-width: 640px) {
+            .app-logo {
+                font-size: 4.5rem; 
+                padding: 0.75rem 1rem; 
+            }
+        }
+        .app-logo .logo-run { color: #0ea5e9; }
+        .app-logo .logo-sup { color: #10b981; }
+        
+        .companion-nav-button {
+            padding: 0.6rem 1.1rem; 
+            border-radius: 0.375rem; 
+            transition: background-color 0.2s ease-in-out, color 0.2s ease-in-out, box-shadow 0.2s ease-in-out;
+            font-weight: 600; 
+            box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+            cursor: pointer;
+        }
+        .companion-nav-button:hover:not(.active) { 
+            background-color: #f3f4f6; 
+            color: #1f2937; 
+        }
+        .companion-nav-button.active.drills { background-color: #059669; color: white; }
+        .companion-nav-button.active.mobility { background-color: #0ea5e9; color: white; }
+        .companion-nav-button.active.strength { background-color: #f59e0b; color: white; }
+        .companion-nav-button.active.updates { background-color: #6366f1; color: white; }
+        
+        .exercise-card {
+            background-color: #fff;
+            border-radius: 0.5rem;
+            padding: 1rem;
+            box-shadow: 0 4px 6px -1px rgba(0,0,0,0.1), 0 2px 4px -2px rgba(0,0,0,0.1);
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+        .exercise-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 15px -3px rgba(0,0,0,0.1), 0 4px 6px -4px rgba(0,0,0,0.1);
+        }
+        .exercise-card h3 {
+            font-weight: 600;
+            margin-bottom: 0.25rem;
+        }
+        .exercise-card .details {
+            font-weight: 500;
+            padding: 0.25rem 0.75rem;
+            border-radius: 9999px;
+            font-size: 0.875rem;
+            display: inline-block;
+        }
+        .details-drills { background-color: #dcfce7; color: #166534; }
+        .details-mobility { background-color: #e0f2fe; color: #075985; }
+        .details-strength { background-color: #fef3c7; color: #92400e; }
+        .video-link {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            color: #0ea5e9;
+            font-weight: 500;
+            text-decoration: none;
+            transition: color 0.2s;
+        }
+        .video-link:hover {
+            color: #0284c7;
+        }
+        .updates-card {
+            border-left-width: 4px;
+            border-left-color: #6366f1;
         }
 
 
@@ -560,7 +646,7 @@
 <body class="min-h-screen p-4 py-8"> 
     <div id="login-container" class="main-container">
         <header class="mb-8 text-center">
-             <div class="css-logo-dna">
+            <div class="css-logo-dna">
                 <span class="logo-d">D</span><span class="logo-n">N</span><span class="logo-a">A</span>
             </div>
             <h1 class="text-3xl sm:text-4xl main-title text-stone-800 mt-2"> 
@@ -608,6 +694,7 @@
             <button id="nav-plan" class="nav-button">{NAV_PLAN_TEXT}</button>
             <button id="nav-calendar" class="nav-button">{NAV_CALENDAR_TEXT}</button>
             <button id="nav-race" class="nav-button">{NAV_RACE_TEXT}</button> 
+            <button id="nav-companion" class="nav-button">{NAV_COMPANION_TEXT}</button> 
         </nav>
 
         <main id="app-content">
@@ -624,10 +711,14 @@
     <div id="print-section-container" class="hidden"></div>
 
 <script>
+// Hardcoded fallback for race date if not provided by the data source.
 const DEFAULT_RACE_DATE_STRING = '2025-11-09'; 
+// To store the current web app URL for data fetching.
 let currentWebAppUrl = ''; 
+// To hold the deferred PWA install prompt event.
 let deferredInstallPrompt = null;
 
+// Object mapping user IDs to their specific Google Apps Script web app URLs.
 const userSpecificDataSources = {
     "ADMIN": "https://script.google.com/macros/s/AKfycbxfeBaM8_DTlCppjt6eLWztDV2YBJih2TfRju9iL8BWQMvf2FneqdYUqNRIb0ypWu9U/exec", 
     "ALEX": "https://script.google.com/macros/s/AKfycbxqan2-K__zvFqJZ-b-se2SxNfPPCDHjuRyTxdatvv3AvIdnkJOdkQm8v3SPhcVgWoQvA/exec", 
@@ -644,13 +735,20 @@ const userSpecificDataSources = {
     "IOANNA": "tba",
 };
 
-let marathonPlan = null; 
-let datedTrainingPlan = []; 
-let currentRaceDate = null; 
-let calendarCurrentDisplayDate = new Date(); 
-let raceElevationChartInstance = null; 
-let mileageChartInstance = null; 
+// --- Companion App Data Source ---
+const companionDataUrl = "https://script.google.com/macros/s/AKfycbw3fpGf2W8ANwIaioiZdXZBeEjw3vr1g3XSLf3KXPR3wKLDPYSDpRbFGjJ-BDZLYd6rKg/exec";
 
+
+// Global variables to hold application state and data.
+let marathonPlan = null; // Stores the entire JSON object from the Google Sheet.
+let datedTrainingPlan = []; // Stores each day of the plan with a specific date.
+let currentRaceDate = null; // The calculated date of the race.
+let calendarCurrentDisplayDate = new Date(); // The month/year the calendar is currently showing.
+let raceElevationChartInstance = null; // Chart.js instance for the elevation profile.
+let mileageChartInstance = null; // Chart.js instance for the weekly mileage.
+let companionData = null; // Stores data for the companion app.
+
+// DOM element references for quick access.
 const loginContainer = document.getElementById('login-container');
 const mainAppWrapper = document.getElementById('main-app-wrapper');
 const appContent = document.getElementById('app-content');
@@ -660,6 +758,11 @@ const loginErrorMessageDiv = document.getElementById('login-error-message');
 const loginLoadingMessageDiv = document.getElementById('login-loading-message');
 const installPwaButton = document.getElementById('installPwaButton');
 
+/**
+ * Parses a pace string (e.g., "5:30") into total seconds.
+ * @param {string} paceString The pace string in "mm:ss" format.
+ * @returns {number} Total seconds, or NaN if invalid.
+ */
 function parsePaceToSeconds(paceString) { 
     if (!paceString || typeof paceString !== 'string') return NaN;
     const parts = paceString.trim().split(':'); if (parts.length !== 2) return NaN;
@@ -667,6 +770,11 @@ function parsePaceToSeconds(paceString) {
     if (isNaN(minutes) || isNaN(seconds) || minutes < 0 || seconds < 0 || seconds >= 60) return NaN;
     return (minutes * 60) + seconds;
 }
+/**
+ * Formats total seconds into a pace string (e.g., "5:30").
+ * @param {number} totalSeconds The total seconds to format.
+ * @returns {string} The formatted pace string "m:ss".
+ */
 function formatSecondsToPace(totalSeconds) { 
     if (isNaN(totalSeconds) || totalSeconds < 0) return "N/A";
     const minutes = Math.floor(totalSeconds / 60); const seconds = Math.round(totalSeconds % 60); 
@@ -674,9 +782,14 @@ function formatSecondsToPace(totalSeconds) {
 }
 
 
+/**
+ * Updates static UI text elements (like titles and button labels) using data from the fetched plan.
+ * Falls back to default English text if the data is not available.
+ */
 function updateStaticUIText() {
     if (!marathonPlan || !marathonPlan.uiText) {
         console.warn("marathonPlan.uiText not available. Using default HTML text.");
+        // Set default text content if uiText object is missing.
         document.getElementById('loginButton').textContent = 'Enter the Run';
         document.getElementById('mainTitleProject').textContent = 'project:';
         document.getElementById('mainTitleMarathon').textContent = 'Marathon';
@@ -688,9 +801,11 @@ function updateStaticUIText() {
         document.getElementById('nav-plan').textContent = 'Training Plan';
         document.getElementById('nav-calendar').textContent = 'Calendar';
         document.getElementById('nav-race').textContent = 'Race'; 
+        document.getElementById('nav-companion').textContent = 'Companion'; 
         return;
     }
     const uiText = marathonPlan.uiText;
+    // Set text content from the fetched uiText object, with fallbacks.
     document.getElementById('loginButton').textContent = uiText.loginButtonText || 'Enter the Run';
     document.getElementById('mainTitleProject').textContent = uiText.mainTitleProject || 'project:';
     document.getElementById('mainTitleMarathon').textContent = uiText.mainTitleMarathon || 'Marathon';
@@ -702,8 +817,15 @@ function updateStaticUIText() {
     document.getElementById('nav-plan').textContent = uiText.navButtonPlan || 'Training Plan';
     document.getElementById('nav-calendar').textContent = uiText.navButtonCalendar || 'Calendar';
     document.getElementById('nav-race').textContent = uiText.navButtonRace || 'Race'; 
+    document.getElementById('nav-companion').textContent = uiText.navButtonCompanion || 'Companion';
 }
 
+/**
+ * Fetches the entire marathon training plan from the specified Google Apps Script URL.
+ * Validates the structure of the returned JSON data.
+ * @param {string} webAppUrlToUse The URL of the web app to fetch data from.
+ * @returns {Promise<boolean>} True on successful fetch and parse, false otherwise.
+ */
 async function fetchMarathonPlan(webAppUrlToUse) {
     if (!webAppUrlToUse) {
         console.error("No Web App URL for fetching plan.");
@@ -723,6 +845,7 @@ async function fetchMarathonPlan(webAppUrlToUse) {
             throw new Error(`Error from Google Sheet App: ${data.error}`);
         }
         
+        // Basic validation of the received data structure.
         if (!data.uiText || typeof data.uiText !== 'object' ||
             !data.settings || !data.settings.zones || !Array.isArray(data.settings.zones) || 
             !data.settings.hasOwnProperty('defaultLt2Speed') ||
@@ -743,6 +866,7 @@ async function fetchMarathonPlan(webAppUrlToUse) {
         marathonPlan = data; 
         updateStaticUIText();
 
+        // Validate and process the plan's start date to calculate the race date.
         const planStartDateString = marathonPlan.settings.planStartDate;
         if (!planStartDateString || !isValidDate(new Date(planStartDateString + "T00:00:00"))) {
             throw new Error("Invalid or missing 'planStartDate' in settings from Google Sheet.");
@@ -765,6 +889,7 @@ async function fetchMarathonPlan(webAppUrlToUse) {
         
         calculateAndStoreDatedTrainingPlan(currentRaceDate);
         
+        // Set the calendar to start on the first month of the plan.
         calendarCurrentDisplayDate = new Date(planStartDate); 
         calendarCurrentDisplayDate.setDate(1); 
         return true; 
@@ -777,22 +902,32 @@ async function fetchMarathonPlan(webAppUrlToUse) {
     }
 }
 
+/**
+ * Initializes the main application after a successful login and data fetch.
+ * Hides login UI, shows main app UI, sets up navigation, and renders the initial view.
+ */
 function initializeApp() {
     if(loadingMessageDiv) loadingMessageDiv.classList.add('hidden');
     if(errorMessageDiv) errorMessageDiv.classList.add('hidden');
     if(appContent) appContent.innerHTML = ''; 
 
+    // Add event listeners to the main navigation buttons.
     document.getElementById('nav-overview').addEventListener('click', renderOverview);
     document.getElementById('nav-news').addEventListener('click', renderNewsTab); 
     document.getElementById('nav-plan').addEventListener('click', renderTrainingPlan);
     document.getElementById('nav-calendar').addEventListener('click', renderCalendarTab);
     document.getElementById('nav-race').addEventListener('click', renderRaceTab); 
+    document.getElementById('nav-companion').addEventListener('click', renderCompanionTab);
     
-    renderOverview();
+    renderOverview(); // Render the default "Overview" tab.
     mainAppWrapper.classList.remove('hidden');
     loginContainer.classList.add('hidden');
 }
 
+/**
+ * Handles the login process when the user clicks the login button.
+ * Validates User ID, fetches data, and initializes the app on success.
+ */
 async function handleLogin() {
     const userIdInput = document.getElementById('userIdInput');
     const userId = userIdInput.value.trim().toUpperCase(); 
@@ -800,7 +935,7 @@ async function handleLogin() {
     loginLoadingMessageDiv.classList.remove('hidden');
     currentWebAppUrl = userSpecificDataSources[userId]; 
     if (currentWebAppUrl) { 
-        localStorage.setItem('lastUserID', userId); 
+        localStorage.setItem('lastUserID', userId); // Remember user for next visit.
         localStorage.setItem('lastWebAppUrl', currentWebAppUrl);
         const success = await fetchMarathonPlan(currentWebAppUrl); 
         if (success) initializeApp(); 
@@ -814,30 +949,42 @@ async function handleLogin() {
     }
 }
 
+/**
+ * Sets the visual "active" state for the currently selected navigation button.
+ * @param {string} activeId The ID of the nav button to activate.
+ */
 function setActiveNav(activeId) {
     const navButtons = document.querySelectorAll('.nav-button');
     navButtons.forEach(btn => {
-        btn.classList.remove('active-overview', 'active-plan', 'active-calendar', 'active-race', 'active-news'); 
+        btn.classList.remove('active-overview', 'active-plan', 'active-calendar', 'active-race', 'active-news', 'active-companion'); 
         if (btn.id === activeId) {
             if (activeId === 'nav-overview') btn.classList.add('active-overview');
             else if (activeId === 'nav-plan') btn.classList.add('active-plan');
             else if (activeId === 'nav-calendar') btn.classList.add('active-calendar');
             else if (activeId === 'nav-race') btn.classList.add('active-race'); 
             else if (activeId === 'nav-news') btn.classList.add('active-news');
-            else btn.classList.add('active-overview');
+            else if (activeId === 'nav-companion') btn.classList.add('active-companion');
+            else btn.classList.add('active-overview'); // Default active style.
         }
     });
 }
 
+/**
+ * Creates an HTML unordered list from an array of strings.
+ * @param {string[]} items Array of strings to be converted to list items.
+ * @returns {string} An HTML `<ul>` element as a string.
+ */
 function createHtmlList(items) {
     if (!items || !Array.isArray(items)) return ''; 
     return `<ul class="list-disc list-inside space-y-1 text-stone-700">${items.map(item => {
+        // Sanitize innerHTML to prevent XSS, though data is from a trusted source.
         const tempDiv = document.createElement('div');
         tempDiv.innerHTML = item;
         return `<li>${tempDiv.innerHTML}</li>`;
     }).join('')}</ul>`;
 }
 
+// Utility functions for date manipulation and validation.
 function isValidDate(d) { return d instanceof Date && !isNaN(d); }
 function formatDate(date, options = { year: 'numeric', month: 'long', day: 'numeric' }) {
     if (!isValidDate(date)) return "N/A";
@@ -855,10 +1002,16 @@ function isSameDay(date1, date2) {
            date1.getDate() === date2.getDate();
 }
 
+/**
+ * Populates the `datedTrainingPlan` array by assigning a specific date to each training day,
+ * working backward from the race date.
+ * @param {Date} planEndDate The final date of the plan (race day).
+ */
 function calculateAndStoreDatedTrainingPlan(planEndDate) { 
     if (!marathonPlan || !marathonPlan.phases || !isValidDate(planEndDate)) {
         datedTrainingPlan = []; return; 
     }
+    // Flatten the entire plan into a single array of day objects.
     let allDaysScheduled = [];
     marathonPlan.phases.forEach(phase => {
         phase.weeks.forEach(week => {
@@ -870,12 +1023,19 @@ function calculateAndStoreDatedTrainingPlan(planEndDate) {
     });
     datedTrainingPlan = [];
     let tempCurrentDate = new Date(planEndDate); 
+    // Assign dates by iterating backward from the race day.
     for (let i = allDaysScheduled.length - 1; i >= 0; i--) {
         datedTrainingPlan.unshift({ date: new Date(tempCurrentDate), ...allDaysScheduled[i] });
         tempCurrentDate = addDays(tempCurrentDate, -1); 
     }
 }
 
+/**
+ * Renders the pace calculator for zones and repeats based on the user's LT2 pace.
+ * It also highlights the relevant pace in the zones table for the current day's activity.
+ * @param {string} lt2PaceString The lactate threshold pace (mm:ss).
+ * @param {object} todaysActivityForHighlight The activity object for the current day to determine which pace to highlight.
+ */
 function renderTodayPaces(lt2PaceString, todaysActivityForHighlight) { 
     const zonesContainer = document.getElementById('today-zones-content');
     const repeatsContainer = document.getElementById('today-repeats-content');
@@ -905,6 +1065,7 @@ function renderTodayPaces(lt2PaceString, todaysActivityForHighlight) {
     let repeatsTable = document.getElementById(repeatsTableId);
 
 
+    // Data for calculating and displaying training zones.
     const zonesData = [
         { name: "Z1", descriptor: "Easy/Rec", lowPaceFactor: 1.54, highPaceFactor: 1.33, colorClass: "text-green-600" },
         { name: "Z2", descriptor: "Aerobic", lowPaceFactor: 1.32, highPaceFactor: 1.16, colorClass: "text-sky-600" },
@@ -913,23 +1074,23 @@ function renderTodayPaces(lt2PaceString, todaysActivityForHighlight) {
         { name: "Z5", descriptor: "VO2 Max", lowPaceFactor: 0.90, highPaceFactor: 0.83, colorClass: "text-red-600" }
     ];
     let zonesTableHtml = `<table class="today-pace-table"><thead><tr>
-                            <th class="header-zone">Zone</th>
-                            <th class="header-pace">Pace</th>
-                            <th class="header-low">Low</th>
-                            <th class="header-average">Average</th>
-                            <th class="header-high">High</th>
-                          </tr></thead><tbody>`;
+                                <th class="header-zone">Zone</th>
+                                <th class="header-pace">Pace</th>
+                                <th class="header-low">Low</th>
+                                <th class="header-average">Average</th>
+                                <th class="header-high">High</th>
+                              </tr></thead><tbody>`;
     zonesData.forEach(zone => {
         const sPS = lt2SpeedInSeconds * zone.lowPaceFactor; 
         const fPS = lt2SpeedInSeconds * zone.highPaceFactor; 
         const avgPS = (sPS + fPS) / 2; 
         zonesTableHtml += `<tr>
-                             <td class="${zone.colorClass} font-semibold">${zone.name}</td>
-                             <td class="font-bold">${formatSecondsToPace(sPS)} - ${formatSecondsToPace(fPS)}</td>
-                             <td class="font-bold">${formatSecondsToPace(sPS)}</td>
-                             <td class="font-bold">${formatSecondsToPace(avgPS)}</td>
-                             <td class="font-bold">${formatSecondsToPace(fPS)}</td>
-                           </tr>`;
+                                 <td class="${zone.colorClass} font-semibold">${zone.name}</td>
+                                 <td class="font-bold">${formatSecondsToPace(sPS)} - ${formatSecondsToPace(fPS)}</td>
+                                 <td class="font-bold">${formatSecondsToPace(sPS)}</td>
+                                 <td class="font-bold">${formatSecondsToPace(avgPS)}</td>
+                                 <td class="font-bold">${formatSecondsToPace(fPS)}</td>
+                               </tr>`;
     });
     zonesTableHtml += `</tbody></table>`;
     zonesContainer.innerHTML = zonesTableHtml;
@@ -938,6 +1099,7 @@ function renderTodayPaces(lt2PaceString, todaysActivityForHighlight) {
     if (paceTable) {
         paceTable.querySelectorAll('td').forEach(td => td.classList.remove('highlight-zone-pace'));
 
+        // Highlight the specific pace for today's workout if applicable.
         if (todaysActivityForHighlight && todaysActivityForHighlight.activity) {
             const activityText = todaysActivityForHighlight.activity.replace(/^[^:]+:\s*/, '');
             const zoneRegex = /(Z[1-5])\s*\((Low|Average|High)\)/gi;
@@ -965,6 +1127,7 @@ function renderTodayPaces(lt2PaceString, todaysActivityForHighlight) {
     }
 
 
+    // Data for calculating and displaying repeat interval paces.
     const repeatDistances = [
         {d:"3km",f:1.02,m:3},{d:"1 Mile",f:0.98,m:1.60934},{d:"1km",f:0.95,m:1},
         {d:"800m",f:0.92,m:0.8},{d:"400m",f:0.88,m:0.4},{d:"200m",f:0.85,m:0.2}
@@ -981,6 +1144,7 @@ function renderTodayPaces(lt2PaceString, todaysActivityForHighlight) {
     repeatsTable = document.getElementById(repeatsTableId);
     toggleRepeatsButton.textContent = repeatsTable && repeatsTable.classList.contains('hidden') ? 'Show Repeats' : 'Hide Repeats';
 
+    // Toggle visibility of the repeats table.
     toggleRepeatsButton.onclick = function() { 
         const table = document.getElementById(repeatsTableId);
         if (table) {
@@ -990,12 +1154,17 @@ function renderTodayPaces(lt2PaceString, todaysActivityForHighlight) {
     };
 }
 
+/**
+ * Renders the "Today's Training" card on the overview page.
+ * Finds today's activity from the dated plan and displays it along with pace calculations.
+ */
 function renderTodaysTraining() {
     const container = document.getElementById('todays-training-content');
     if (!container || !marathonPlan || !marathonPlan.uiText || !marathonPlan.uiText.overview) {
         if(container) container.innerHTML = "<p>Loading today's training data...</p>"; 
         return;
     }
+    // Ensure the dated plan is calculated if it hasn't been already.
     if (datedTrainingPlan.length === 0 && marathonPlan.settings.planStartDate && marathonPlan) {
         const planStartDate = new Date(marathonPlan.settings.planStartDate + "T00:00:00");
         let totalDaysInPlan = 0;
@@ -1017,7 +1186,7 @@ function renderTodaysTraining() {
     let activityContentHtml = '';
     // Reset default colors for heading and date, dynamic text color will be applied to activityText only
     let titleHtml = `<h3 class="text-2xl font-semibold text-sky-700 mb-1 text-center">Today</h3>
-                       <p class="text-xs text-stone-500 text-center mb-3">${formatDate(today, { weekday: 'long', month: 'long', day: 'numeric' })}</p>`;
+                           <p class="text-xs text-stone-500 text-center mb-3">${formatDate(today, { weekday: 'long', month: 'long', day: 'numeric' })}</p>`;
     let notesBoxHtml = '';
     const todayCard = document.getElementById('todays-training-card');
 
@@ -1088,9 +1257,11 @@ function renderTodaysTraining() {
             ];
             dynamicActivityTextClasses.forEach(cls => strongActivityTextElement.classList.remove(cls)); 
             
+            // Determine the activity type from the first word.
             const activityDescriptionOnly = todaysActivity.activity.replace(/^[^:]+:\s*/, '').trim();
             const firstWord = activityDescriptionOnly.split(" ")[0].toLowerCase().replace(/:$/, '');
             
+            // Apply a specific color class based on the activity type.
             switch (firstWord) {
                 case 'easy': strongActivityTextElement.classList.add('activity-text-easy'); break;
                 case 'recovery': strongActivityTextElement.classList.add('activity-text-recovery'); break;
@@ -1124,6 +1295,10 @@ function renderTodaysTraining() {
     }
 }
 
+/**
+ * Renders the "This Week's Plan" card on the overview page.
+ * It determines the current week (Mon-Sun) and displays all scheduled activities for those days.
+ */
 function renderThisWeeksPlan() {
     const container = document.getElementById('this-weeks-plan-content');
     if (!container || !marathonPlan || !marathonPlan.uiText || !marathonPlan.uiText.overview) {
@@ -1148,12 +1323,12 @@ function renderThisWeeksPlan() {
     const thisWeeksCard = document.getElementById('this-weeks-plan-card');
     if (thisWeeksCard) {
         thisWeeksCard.classList.add('custom-rect-border-this-week');
-        // thisWeeksCard.style.borderLeftWidth = '3px'; // Ensure consistent with class
     }
 
 
     const today = new Date();
     const dayOfWeek = today.getDay(); 
+    // Calculate the start of the week (Monday).
     const startOfWeekOffset = dayOfWeek === 0 ? -6 : 1 - dayOfWeek;
     const monday = new Date(new Date().setDate(today.getDate() + startOfWeekOffset));
     monday.setHours(0, 0, 0, 0); 
@@ -1161,6 +1336,7 @@ function renderThisWeeksPlan() {
     let weekNotes = ""; 
     let weekInfoFound = false;
 
+    // Loop through the 7 days of the current week.
     for (let i = 0; i < 7; i++) {
         const dayInWeek = addDays(monday, i);
         dayInWeek.setHours(0,0,0,0); 
@@ -1179,6 +1355,7 @@ function renderThisWeeksPlan() {
                 weekInfoFound = true;
             }
             const activityString = activityForDay.activity;
+            // Extract day name prefix (e.g., "Mon:") if it exists in the activity string.
             const dayPrefixMatch = activityString.match(/^(\w{3,4}(\s\d{1,2})?):\s*(.*)/s); 
             if (dayPrefixMatch && dayPrefixMatch[1] && dayPrefixMatch[3]) {
                 displayDayName = dayPrefixMatch[1].trim(); 
@@ -1190,6 +1367,7 @@ function renderThisWeeksPlan() {
             activityDescription = "Rest or Unscheduled";
         }
         
+        // Format the activity description for better readability (bolding the type).
         const activityParts = activityDescription.split(/:(.*)/s); 
         let formattedActivity;
         if (activityParts.length > 1 && activityParts[0].trim() !== "") {
@@ -1205,6 +1383,7 @@ function renderThisWeeksPlan() {
     }
     
     if (currentWeekActivities.length > 0) {
+        // Create table rows for the week's schedule.
         const dayColors = ['bg-red-50', 'bg-orange-50', 'bg-amber-50', 'bg-yellow-50', 'bg-lime-50', 'bg-green-50', 'bg-emerald-50']; 
         let tableRowsHtml = currentWeekActivities.map((dayEntry, index) => {
             const bgColor = dayColors[index % dayColors.length];
@@ -1248,10 +1427,16 @@ function renderThisWeeksPlan() {
     }
 }
 
+/**
+ * Handles the print functionality. It clones the specified content area,
+ * makes it visible for printing, and then hides it again.
+ * @param {string} printableAreaId The ID of the element to be printed.
+ */
 function printSelectedWeekToPdf(printableAreaId) {
     const originalContentToPrint = document.getElementById(printableAreaId);
 
     if (originalContentToPrint) {
+        // Clone the content to avoid modifying the original DOM.
         const clonedWeekContent = originalContentToPrint.cloneNode(true);
         clonedWeekContent.classList.add('currently-printing-this-week'); 
 
@@ -1261,12 +1446,14 @@ function printSelectedWeekToPdf(printableAreaId) {
         
         printContainer.classList.remove('hidden'); 
 
-        window.print(); 
+        window.print(); // Trigger the browser's print dialog.
 
+        // Clean up after printing.
         printContainer.innerHTML = '';
         printContainer.classList.add('hidden');
     } else {
         console.error("Printable area not found for ID:", printableAreaId);
+        // Display a user-friendly error message.
         const tempErrorDiv = document.createElement('div');
         tempErrorDiv.textContent = 'Error preparing content for printing. Please try again.';
         tempErrorDiv.style.position = 'fixed';
@@ -1282,6 +1469,10 @@ function printSelectedWeekToPdf(printableAreaId) {
 }
 
 
+/**
+ * Renders the main "Overview" tab, which is the default view of the application.
+ * It includes today's training, this week's plan, pace guide, and general notes.
+ */
 function renderOverview() {
     if (!marathonPlan || !marathonPlan.uiText || !marathonPlan.uiText.overview) return; 
     setActiveNav('nav-overview'); 
@@ -1313,6 +1504,9 @@ function renderOverview() {
     renderThisWeeksPlan();
 }
 
+/**
+ * Renders the weekly mileage progression line chart.
+ */
 function renderMileageChart() {
     if (!marathonPlan || !marathonPlan.mileageChartDataSource) {
         console.warn("Mileage chart data source not available.");
@@ -1344,6 +1538,9 @@ function renderMileageChart() {
     });
 }
 
+/**
+ * Renders the "News" tab with content from the plan data.
+ */
 function renderNewsTab() {
     if (!marathonPlan || !marathonPlan.uiText || !marathonPlan.newsSection) { 
         appContent.innerHTML = "<p>News content is currently unavailable. Please check sheet configuration.</p>";
@@ -1369,8 +1566,8 @@ function renderNewsTab() {
         });
     } else {
         const noNewsMessage = (marathonPlan.uiText && marathonPlan.uiText.news && marathonPlan.uiText.news.noNewsAvailable) 
-                              ? marathonPlan.uiText.news.noNewsAvailable 
-                              : "No news items to display at the moment.";
+                                 ? marathonPlan.uiText.news.noNewsAvailable 
+                                 : "No news items to display at the moment.";
         newsSectionContainer.innerHTML = `<div class="content-card news-section-card"><p>${noNewsMessage}</p></div>`;
     }
     
@@ -1378,6 +1575,7 @@ function renderNewsTab() {
 }
 
 
+// Functions to get dynamic CSS classes based on the training phase name.
 function getPhaseButtonClass(phaseName) {
     const nameLower = phaseName.toLowerCase();
     if (nameLower.includes("preseason")) return "phase-button-preseason";
@@ -1399,7 +1597,7 @@ function getPhaseTitleTextColorClass(phaseName) {
     if (nameLower.includes("preseason")) return "text-gray-600"; 
     if (nameLower.includes("base")) return "text-sky-700";   
     if (nameLower.includes("specific")) return "text-green-700"; 
-    if (nameLower.includes("taper")) return "text-red-700";    
+    if (nameLower.includes("taper")) return "text-red-700";   
     return "text-sky-700"; 
 }
 function getPhaseTextColorClass(phaseName) {
@@ -1411,6 +1609,9 @@ function getPhaseTextColorClass(phaseName) {
     return "week-button-text-base"; 
 }
 
+/**
+ * Renders the "Training Plan" tab, allowing users to navigate through phases and weeks.
+ */
 function renderTrainingPlan() {
     if (!marathonPlan || !marathonPlan.uiText || !marathonPlan.uiText.plan) return; 
     setActiveNav('nav-plan'); 
@@ -1445,6 +1646,7 @@ function renderTrainingPlan() {
             renderPhaseDetails(parseInt(e.target.dataset.phaseIndex)); 
         });
     });
+    // Automatically select and render the first phase.
     if (marathonPlan.phases && marathonPlan.phases.length > 0) {
         const firstPhaseButton = document.querySelector('#phase-navigation .phase-button');
         if (firstPhaseButton) { firstPhaseButton.classList.add('active'); renderPhaseDetails(0); }
@@ -1452,6 +1654,10 @@ function renderTrainingPlan() {
     renderMileageChart(); 
 }
 
+/**
+ * Renders the details for a selected training phase, including week buttons.
+ * @param {number} phaseIndex The index of the phase to render.
+ */
 function renderPhaseDetails(phaseIndex) {
     if (!marathonPlan || !marathonPlan.uiText || !marathonPlan.uiText.plan) return; 
     const phase = marathonPlan.phases[phaseIndex];
@@ -1483,6 +1689,7 @@ function renderPhaseDetails(phaseIndex) {
 
     document.querySelectorAll(`#week-navigation-${phaseIndex} .week-button`).forEach(button => {
         button.addEventListener('click', (e) => {
+            // Manage active state styling for week buttons.
             document.querySelectorAll(`#week-navigation-${phaseIndex} .week-button`).forEach(btn => {
                 btn.classList.remove('active');
                 const pIdxForClass = parseInt(btn.dataset.phaseIndex); 
@@ -1496,6 +1703,7 @@ function renderPhaseDetails(phaseIndex) {
         });
     });
 
+    // Automatically select and render the first week of the phase.
     if (phase.weeks && phase.weeks.length > 0) {
         const firstWeekButton = document.querySelector(`#week-navigation-${phaseIndex} .week-button`);
         if (firstWeekButton) { 
@@ -1506,6 +1714,12 @@ function renderPhaseDetails(phaseIndex) {
     }
 }
 
+/**
+ * Gets a formatted date range string for a given week.
+ * @param {object} weekObject The week object from the plan data.
+ * @param {string} phaseName The name of the phase this week belongs to.
+ * @returns {string} A formatted string like "Jul 8 - 14" or "Week 5".
+ */
 function getWeekDateRangeString(weekObject, phaseName) {
     if (!datedTrainingPlan || datedTrainingPlan.length === 0 ) { 
         return `Week ${weekObject.weekNum}`;
@@ -1525,6 +1739,11 @@ function getWeekDateRangeString(weekObject, phaseName) {
     return `Week ${weekObject.weekNum}`; 
 }
 
+/**
+ * Extracts a display-friendly kilometer value from a string (e.g., "60-70" becomes "70km").
+ * @param {string} totalKmString The string representing total kilometers for a week.
+ * @returns {string} The formatted kilometer string.
+ */
 function getDisplayKm(totalKmString) {
     if (!totalKmString || typeof totalKmString !== 'string') return 'N/A';
     const rangeMatch = totalKmString.match(/(\d+)\s*-\s*(\d+)/); if (rangeMatch) return `${rangeMatch[2]}km`;
@@ -1532,6 +1751,11 @@ function getDisplayKm(totalKmString) {
     return totalKmString; 
 }
 
+/**
+ * Renders the detailed schedule for a specific week.
+ * @param {number} phaseIndex The index of the phase.
+ * @param {number} weekIndex The index of the week within the phase.
+ */
 function renderWeekDetails(phaseIndex, weekIndex) {
     if (!marathonPlan) return; 
     const week = marathonPlan.phases[phaseIndex]?.weeks[weekIndex]; 
@@ -1576,6 +1800,11 @@ function renderWeekDetails(phaseIndex, weekIndex) {
         </div>`;
 }
 
+/**
+ * Gets a CSS class for the calendar day thumbnail based on the activity type.
+ * @param {string} activityText The description of the activity.
+ * @returns {string} A CSS class name.
+ */
 function getActivityThumbnailClass(activityText) {
     const lowerActivity = activityText.toLowerCase();
 
@@ -1591,6 +1820,9 @@ function getActivityThumbnailClass(activityText) {
     return "activity-thumbnail-default"; 
 }
 
+/**
+ * Renders the "Calendar" tab.
+ */
 function renderCalendarTab() {
     if (!marathonPlan || !marathonPlan.uiText || !marathonPlan.uiText.calendar) return; 
     setActiveNav('nav-calendar'); 
@@ -1619,9 +1851,11 @@ function renderCalendarTab() {
             <div id="calendar-grid-container" class="calendar-grid"></div>
         </div>`;
     appContent.appendChild(calendarSection);
+    // Add event listeners for month navigation.
     document.getElementById('prevMonthBtn').addEventListener('click', () => { calendarCurrentDisplayDate.setMonth(calendarCurrentDisplayDate.getMonth() - 1); renderCalendarGrid(); document.getElementById('calendar-day-details-content').innerHTML = ''; document.getElementById('calendar-selected-day-header').innerHTML = ''; });
     document.getElementById('nextMonthBtn').addEventListener('click', () => { calendarCurrentDisplayDate.setMonth(calendarCurrentDisplayDate.getMonth() + 1); renderCalendarGrid(); document.getElementById('calendar-day-details-content').innerHTML = ''; document.getElementById('calendar-selected-day-header').innerHTML = ''; });
     
+    // Set the initial calendar view to the month of the plan start date.
     if (marathonPlan && marathonPlan.settings && marathonPlan.settings.planStartDate) {
         const planStartDate = new Date(marathonPlan.settings.planStartDate + "T00:00:00");
         if (isValidDate(planStartDate)) {
@@ -1636,6 +1870,9 @@ function renderCalendarTab() {
     renderSelectedCalendarDayDetails(new Date()); 
 }
 
+/**
+ * Renders the grid of days for the currently selected month in the calendar.
+ */
 function renderCalendarGrid() {
     const gridContainer = document.getElementById('calendar-grid-container');
     const monthYearDisplay = document.getElementById('currentMonthYear');
@@ -1645,11 +1882,13 @@ function renderCalendarGrid() {
     monthYearDisplay.textContent = calendarCurrentDisplayDate.toLocaleDateString(undefined, { month: 'long', year: 'numeric' }); 
     const firstDayOfMonth = new Date(year, month, 1); const lastDayOfMonth = new Date(year, month + 1, 0);
     const daysInMonth = lastDayOfMonth.getDate();
-    let startingDayOfWeek = firstDayOfMonth.getDay(); if (startingDayOfWeek === 0) startingDayOfWeek = 6; else startingDayOfWeek--;
+    let startingDayOfWeek = firstDayOfMonth.getDay(); if (startingDayOfWeek === 0) startingDayOfWeek = 6; else startingDayOfWeek--; // Monday as start of week.
     const dayHeaders = ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"];
     dayHeaders.forEach(header => { const hc = document.createElement('div'); hc.className = 'calendar-header'; hc.textContent = header; gridContainer.appendChild(hc); });
+    // Add empty cells for days before the 1st of the month.
     for (let i = 0; i < startingDayOfWeek; i++) { const ec = document.createElement('div'); ec.className = 'calendar-day other-month'; gridContainer.appendChild(ec); }
     const today = new Date(); today.setHours(0,0,0,0); 
+    // Create a cell for each day of the month.
     for (let day = 1; day <= daysInMonth; day++) {
         const cell = document.createElement('div'); cell.className = 'calendar-day';
         const currentDateInLoop = new Date(year, month, day); currentDateInLoop.setHours(0,0,0,0);
@@ -1673,6 +1912,10 @@ function renderCalendarGrid() {
     }
 }
 
+/**
+ * Renders the details for a specific day when clicked on the calendar.
+ * @param {Date} date The date for which to show details.
+ */
 function renderSelectedCalendarDayDetails(date) {
     const detailsContainer = document.getElementById('calendar-day-details-content');
     const headerContainer = document.getElementById('calendar-selected-day-header');
@@ -1702,6 +1945,9 @@ function renderSelectedCalendarDayDetails(date) {
     }
 }
 
+/**
+ * Renders the "Race" tab, showing race details, elevation chart, and strategies.
+ */
 function renderRaceTab() {
     if (!marathonPlan || !marathonPlan.uiText || !marathonPlan.uiText.race || !marathonPlan.settings) {
         appContent.innerHTML = "<p>Race information is currently unavailable. Please check sheet configuration.</p>";
@@ -1720,6 +1966,7 @@ function renderRaceTab() {
 
     let tacticsHtml = `<h3 class="text-xl font-semibold text-violet-700 mb-3">${uiTextRace.tacticsTitle || "Race Strategy & Tactics"}</h3>`;
     
+    // Build the race tactics section from the plan data.
     if (marathonPlan.raceTactics) {
         if (marathonPlan.raceTactics.pacing && Array.isArray(marathonPlan.raceTactics.pacing) && marathonPlan.raceTactics.pacing.length > 0) {
             tacticsHtml += `<div class="mb-4"><h4 class="text-lg font-medium text-violet-600 mb-1">${uiTextRace.pacingSectionTitle || "Pacing Strategy"}</h4>${createHtmlList(marathonPlan.raceTactics.pacing)}</div>`;
@@ -1765,6 +2012,9 @@ function renderRaceTab() {
     renderRaceElevationChart();
 }
 
+/**
+ * Renders the race elevation profile chart.
+ */
 function renderRaceElevationChart() {
     if (!marathonPlan || !marathonPlan.raceElevationData || marathonPlan.raceElevationData.length === 0) {
         const container = document.getElementById('raceElevationChartContainer');
@@ -1815,7 +2065,7 @@ function renderRaceElevationChart() {
                     title: { display: true, text: 'Kilometer of Race', font: { weight: '500' } },
                     ticks: { 
                         autoSkip: true, 
-                        maxTicksLimit: Math.ceil((marathonPlan.settings.raceDistanceKm || 21) / 5)
+                        maxTicksLimit: Math.ceil((marathonPlan.settings.raceDistanceKm || 21) / 5) // Show ticks approx every 5km.
                     } 
                 }
             },
@@ -1836,8 +2086,170 @@ function renderRaceElevationChart() {
     });
 }
 
+// --- START: COMPANION APP FUNCTIONS ---
 
+/**
+ * Initializes the companion app section by fetching its data.
+ */
+async function initializeCompanionApp() {
+    // Companion-specific DOM elements, queried only when this tab is rendered.
+    const companionLoading = document.getElementById('companion-loading-message');
+    const companionError = document.getElementById('companion-error-message');
+    const companionNav = document.getElementById('companion-navigation');
+    const companionContent = document.getElementById('companion-content');
+
+    if (companionLoading) companionLoading.classList.remove('hidden');
+    
+    try {
+        // Fetch data only if it hasn't been fetched before.
+        if (!companionData) {
+            const response = await fetch(companionDataUrl);
+            if (!response.ok) throw new Error(`Network response error (status: ${response.status})`);
+            
+            const data = await response.json();
+            if (data.error) throw new Error(`Data error from Google Sheet: ${data.error}`);
+            
+            companionData = data;
+        }
+
+        if (companionLoading) companionLoading.classList.add('hidden');
+        if (companionNav) companionNav.classList.remove('hidden');
+        if (companionContent) companionContent.classList.remove('hidden');
+
+        document.getElementById('comp-nav-drills').addEventListener('click', renderCompanionDrills);
+        document.getElementById('comp-nav-mobility').addEventListener('click', renderCompanionMobility);
+        document.getElementById('comp-nav-strength').addEventListener('click', renderCompanionStrength);
+        document.getElementById('comp-nav-updates').addEventListener('click', renderCompanionUpdates);
+        
+        // Load drills section by default
+        renderCompanionDrills();
+
+    } catch (error) {
+        console.error('Failed to initialize companion app:', error);
+        if (companionLoading) companionLoading.classList.add('hidden');
+        if (companionError) {
+            companionError.textContent = `Error: ${error.message}`;
+            companionError.classList.remove('hidden');
+        }
+    }
+}
+
+/**
+ * Renders the companion tab content.
+ */
+function renderCompanionTab() {
+    setActiveNav('nav-companion');
+    appContent.innerHTML = `
+        <div id="companion-app-container">
+            <header class="mb-8 text-center">
+                <div class="app-logo">
+                    <span class="logo-run">RUN</span><span class="logo-sup">APP</span>
+                </div>
+                <h1 class="text-3xl sm:text-4xl font-extrabold text-stone-800 mt-2">
+                    <span class="text-sky-600">Team</span> <span class="text-emerald-600">Companion</span>
+                </h1>
+                <p class="text-stone-600 mt-2 text-lg">
+                    Your daily guide to drills, mobility, and strength.
+                </p>
+            </header>
+
+            <nav id="companion-navigation" class="mb-8 flex flex-wrap justify-center gap-2 sm:gap-4 pb-4 border-b-2 border-slate-200 hidden">
+                <button id="comp-nav-drills" class="companion-nav-button drills">Drills</button>
+                <button id="comp-nav-mobility" class="companion-nav-button mobility">Mobility</button>
+                <button id="comp-nav-strength" class="companion-nav-button strength">Strength</button>
+                <button id="comp-nav-updates" class="companion-nav-button updates">Updates</button>
+            </nav>
+
+            <main id="companion-main-content">
+                <div id="companion-loading-message">
+                    <svg class="animate-spin h-8 w-8 text-sky-600 mx-auto mb-2" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                        <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                        <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                    </svg>
+                    Loading team data...
+                </div>
+                <div id="companion-error-message" class="hidden"></div>
+                <div id="companion-content" class="hidden"></div>
+            </main>
+        </div>
+    `;
+    initializeCompanionApp();
+}
+
+
+function setActiveCompanionNav(activeId) {
+    document.querySelectorAll('.companion-nav-button').forEach(btn => {
+        btn.classList.remove('active');
+        if (btn.id === activeId) {
+            btn.classList.add('active');
+        }
+    });
+}
+
+function renderCompanionDrills() {
+    setActiveCompanionNav('comp-nav-drills');
+    const contentDiv = document.getElementById('companion-content');
+    if(!contentDiv || !companionData) return;
+    const grid = companionData.drills.map(item => createExerciseCard(item, 'drills')).join('');
+    contentDiv.innerHTML = `<h2 class="text-2xl font-bold text-emerald-700 mb-4">Running Drills</h2><div class="grid grid-cols-1 md:grid-cols-2 gap-4">${grid}</div>`;
+}
+
+function renderCompanionMobility() {
+    setActiveCompanionNav('comp-nav-mobility');
+    const contentDiv = document.getElementById('companion-content');
+    if(!contentDiv || !companionData) return;
+    const grid = companionData.mobility.map(item => createExerciseCard(item, 'mobility')).join('');
+    contentDiv.innerHTML = `<h2 class="text-2xl font-bold text-sky-700 mb-4">Mobility Exercises</h2><div class="grid grid-cols-1 md:grid-cols-2 gap-4">${grid}</div>`;
+}
+
+function renderCompanionStrength() {
+    setActiveCompanionNav('comp-nav-strength');
+    const contentDiv = document.getElementById('companion-content');
+    if(!contentDiv || !companionData) return;
+    const grid = companionData.strength.map(item => createExerciseCard(item, 'strength')).join('');
+    contentDiv.innerHTML = `<h2 class="text-2xl font-bold text-amber-700 mb-4">Strength Exercises</h2><div class="grid grid-cols-1 md:grid-cols-2 gap-4">${grid}</div>`;
+}
+
+function renderCompanionUpdates() {
+    setActiveCompanionNav('comp-nav-updates');
+    const contentDiv = document.getElementById('companion-content');
+    if(!contentDiv || !companionData) return;
+    const list = companionData.updates.map(item => `
+        <div class="content-card updates-card">
+            <h3 class="text-indigo-800 font-semibold text-xl mb-2">${item.title}</h3>
+            <ul class="list-disc list-inside space-y-1 text-stone-700">
+                ${item.content.map(line => `<li>${line}</li>`).join('')}
+            </ul>
+        </div>`).join('<div class="my-4"></div>');
+    contentDiv.innerHTML = `<h2 class="text-2xl font-bold text-indigo-700 mb-4">Team Updates</h2><div class="space-y-4">${list}</div>`;
+}
+
+function createExerciseCard(item, type) {
+    let details = '';
+    if (type === 'drills') details = item.reps || '';
+    if (type === 'mobility') details = item.duration || '';
+    if (type === 'strength') details = `${item.sets || ''} sets of ${item.reps || item.duration}`;
+
+    return `
+        <div class="exercise-card">
+            <div class="flex justify-between items-start flex-wrap gap-2">
+                <h3 class="text-lg font-semibold">${item.name}</h3>
+                <span class="details details-${type} flex-shrink-0">${details}</span>
+            </div>
+            <p class="text-stone-600 mt-2 mb-4">${item.description}</p>
+            <a href="${item.videoUrl || '#'}" class="video-link" target="_blank" rel="noopener noreferrer">
+                 <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM9.555 7.168A1 1 0 008 8v4a1 1 0 001.555.832l3-2a1 1 0 000-1.664l-3-2z" clip-rule="evenodd" /></svg>
+                 Watch Video
+            </a>
+        </div>
+    `;
+}
+// --- END: COMPANION APP FUNCTIONS ---
+
+
+// Main entry point when the DOM is fully loaded.
 document.addEventListener('DOMContentLoaded', () => {
+    // Set initial text values before any data is fetched.
     document.getElementById('loginButton').textContent = 'Enter the Run';
     document.getElementById('mainTitleProject').textContent = 'project:';
     document.getElementById('mainTitleMarathon').textContent = 'Marathon';
@@ -1849,12 +2261,15 @@ document.addEventListener('DOMContentLoaded', () => {
     document.getElementById('nav-plan').textContent = 'Training Plan';
     document.getElementById('nav-calendar').textContent = 'Calendar';
     document.getElementById('nav-race').textContent = 'Race'; 
+    document.getElementById('nav-companion').textContent = 'Companion';
 
     const loginButton = document.getElementById('loginButton');
     if(loginButton) loginButton.addEventListener('click', handleLogin);
     const userIdInput = document.getElementById('userIdInput');
+    // Allow login by pressing Enter key.
     if(userIdInput) userIdInput.addEventListener('keypress', (event) => { if (event.key === 'Enter') { event.preventDefault(); handleLogin(); }}); 
     
+    // PWA install prompt logic.
     window.addEventListener('beforeinstallprompt', (e) => {
         e.preventDefault();
         deferredInstallPrompt = e;
@@ -1885,12 +2300,14 @@ document.addEventListener('DOMContentLoaded', () => {
         console.log('PWA was installed');
     });
 
+    // Pre-fill the User ID input if it was stored previously.
     const lastUserId = localStorage.getItem('lastUserID');
     if (lastUserId) {
         const userIdInputEl = document.getElementById('userIdInput');
         if (userIdInputEl) userIdInputEl.value = lastUserId; 
     }
     
+    // Show the login screen by default.
     loginContainer.classList.remove('hidden');
     mainAppWrapper.classList.add('hidden');
 });
