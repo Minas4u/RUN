@@ -336,7 +336,7 @@
             height: 1.25rem; 
         }
 
-        #toggleRepeatsButton {
+        #toggleRepeatsButton, #toggleZonesButton {
             background-color: #0284c7; 
             color: white;           
             border: 2px solid #f59e0b; 
@@ -346,23 +346,23 @@
             border-radius: 0.375rem; 
             transition: background-color 0.2s, border-color 0.2s;
         }
-        #toggleRepeatsButton:hover {
+        #toggleRepeatsButton:hover, #toggleZonesButton:hover {
             background-color: #0369a1; 
             border-color: #d97706; 
         }
 
         /* Today's Training Card - Activity Text Color Classes */
-        .activity-text-easy { color: #16a34a !important; }
-        .activity-text-recovery { color: #075985 !important; }
-        .activity-text-base { color: #1e40af !important; }
-        .activity-text-tempo { color: #b45309 !important; }
-        .activity-text-interval, .activity-text-intervals { color: #991b1b !important; }
-        .activity-text-fartlek { color: #831843 !important; }
-        .activity-text-str, .activity-text-hills { color: #713f12 !important; }
-        .activity-text-rest { color: #374151 !important; }
-        .activity-text-zone, .activity-text-race { color: #5b21b6 !important; }
-        .activity-text-double { color: #78350f !important; }
-        .activity-text-mobility { color: #713f12 !important; }
+        .activity-text-easy, .pace-text-easy { color: #16a34a !important; }
+        .activity-text-recovery, .pace-text-recovery { color: #075985 !important; }
+        .activity-text-base, .pace-text-base { color: #1e40af !important; }
+        .activity-text-tempo, .pace-text-tempo { color: #b45309 !important; }
+        .activity-text-interval, .activity-text-intervals, .pace-text-interval, .pace-text-intervals { color: #991b1b !important; }
+        .activity-text-fartlek, .pace-text-fartlek { color: #831843 !important; }
+        .activity-text-str, .activity-text-hills, .pace-text-str, .pace-text-hills { color: #713f12 !important; }
+        .activity-text-rest, .pace-text-rest { color: #374151 !important; }
+        .activity-text-zone, .activity-text-race, .pace-text-zone, .pace-text-race { color: #5b21b6 !important; }
+        .activity-text-double, .pace-text-double { color: #78350f !important; }
+        .activity-text-mobility, .pace-text-mobility { color: #713f12 !important; }
         
         .highlight-zone-pace {
             background-color: #f59e0b !important; 
@@ -1029,6 +1029,76 @@ function calculateAndStoreDatedTrainingPlan(planEndDate) {
 }
 
 /**
+ * Calculates and returns the pace string for a given activity.
+ * @param {string} activityString The full activity text.
+ * @param {string} lt2PaceString The user's LT2 pace.
+ * @returns {string} The formatted pace string (e.g., "6:06 - 5:39") or an empty string.
+ */
+function getPaceStringForActivity(activityString, lt2PaceString) {
+    if (!activityString || !lt2PaceString || lt2PaceString === "N/A") return '';
+    const lt2SpeedInSeconds = parsePaceToSeconds(lt2PaceString);
+    if (isNaN(lt2SpeedInSeconds)) return '';
+
+    const zonesData = [
+        { name: "Z1", lowPaceFactor: 1.54, highPaceFactor: 1.33 },
+        { name: "Z2", lowPaceFactor: 1.32, highPaceFactor: 1.16 },
+        { name: "Z3", lowPaceFactor: 1.15, highPaceFactor: 1.01 },
+        { name: "Z4", lowPaceFactor: 1.00, highPaceFactor: 0.91 },
+        { name: "Z5", lowPaceFactor: 0.90, highPaceFactor: 0.83 }
+    ];
+
+    const zoneRegex = /(Z[1-5])\s*\((Low|Average|High)\)/gi;
+    let match;
+    const paces = [];
+
+    while ((match = zoneRegex.exec(activityString)) !== null) {
+        const zoneName = match[1].toUpperCase();
+        const paceType = match[2].toLowerCase();
+        const zoneInfo = zonesData.find(z => z.name === zoneName);
+
+        if (zoneInfo) {
+            let paceInSeconds;
+            if (paceType === 'low') {
+                paceInSeconds = lt2SpeedInSeconds * zoneInfo.lowPaceFactor;
+            } else if (paceType === 'high') {
+                paceInSeconds = lt2SpeedInSeconds * zoneInfo.highPaceFactor;
+            } else if (paceType === 'average') {
+                paceInSeconds = lt2SpeedInSeconds * (zoneInfo.lowPaceFactor + zoneInfo.highPaceFactor) / 2;
+            }
+            if (paceInSeconds) {
+                paces.push(formatSecondsToPace(paceInSeconds));
+            }
+        }
+    }
+
+    return paces.join(' - ');
+}
+
+
+/**
+ * Gets the appropriate text color CSS class for an activity type.
+ * @param {string} activityFirstWord The first word of the activity description.
+ * @returns {string} The CSS class name.
+ */
+function getActivityTextColorClass(activityFirstWord) {
+    switch (activityFirstWord) {
+        case 'easy': return 'activity-text-easy';
+        case 'recovery': return 'activity-text-recovery';
+        case 'base': return 'activity-text-base';
+        case 'tempo': return 'activity-text-tempo';
+        case 'interval': case 'intervals': return 'activity-text-interval';
+        case 'fartlek': return 'activity-text-fartlek';
+        case 'str': case 'hills': return 'activity-text-str';
+        case 'rest': return 'activity-text-rest';
+        case 'zone': case 'race': return 'activity-text-zone';
+        case 'double': return 'activity-text-double';
+        case 'mobility': return 'activity-text-mobility';
+        default: return '';
+    }
+}
+
+
+/**
  * Renders the pace calculator for zones and repeats based on the user's LT2 pace.
  * It also highlights the relevant pace in the zones table for the current day's activity.
  * @param {string} lt2PaceString The lactate threshold pace (mm:ss).
@@ -1037,16 +1107,18 @@ function calculateAndStoreDatedTrainingPlan(planEndDate) {
 function renderTodayPaces(lt2PaceString, todaysActivityForHighlight) { 
     const zonesContainer = document.getElementById('today-zones-content');
     const repeatsContainer = document.getElementById('today-repeats-content');
+    const toggleZonesButton = document.getElementById('toggleZonesButton');
     const toggleRepeatsButton = document.getElementById('toggleRepeatsButton');
 
-    if (!zonesContainer || !repeatsContainer || !toggleRepeatsButton) { 
-        if(zonesContainer) zonesContainer.innerHTML = `<p class="text-xs text-red-500 italic">UI error for pace display.</p>`;
+    if (!zonesContainer || !repeatsContainer || !toggleZonesButton || !toggleRepeatsButton) { 
+        console.error("Pace display UI elements not found.");
         return;
     }
 
     if (!lt2PaceString || lt2PaceString === "N/A") {
         zonesContainer.innerHTML = `<p class="text-xs text-stone-500 italic">Set Default LT2 Speed in Settings sheet to see paces.</p>`;
         repeatsContainer.innerHTML = ''; 
+        toggleZonesButton.classList.add('hidden');
         toggleRepeatsButton.classList.add('hidden');
         return;
     }
@@ -1054,16 +1126,15 @@ function renderTodayPaces(lt2PaceString, todaysActivityForHighlight) {
     if (isNaN(lt2SpeedInSeconds) || lt2SpeedInSeconds <= 0) {
         zonesContainer.innerHTML = `<p class="text-xs text-red-500 italic">Invalid LT2 speed format in Settings ('${lt2PaceString}'). Use mm:ss.</p>`;
         repeatsContainer.innerHTML = '';
+        toggleZonesButton.classList.add('hidden');
         toggleRepeatsButton.classList.add('hidden');
         return;
     }
     
+    toggleZonesButton.classList.remove('hidden');
     toggleRepeatsButton.classList.remove('hidden');
-    const repeatsTableId = 'today-repeats-table';
-    let repeatsTable = document.getElementById(repeatsTableId);
-
-
-    // Data for calculating and displaying training zones.
+    
+    // ZONES TABLE
     const zonesData = [
         { name: "Z1", descriptor: "Easy/Rec", lowPaceFactor: 1.54, highPaceFactor: 1.33, colorClass: "text-green-600" },
         { name: "Z2", descriptor: "Aerobic", lowPaceFactor: 1.32, highPaceFactor: 1.16, colorClass: "text-sky-600" },
@@ -1071,7 +1142,7 @@ function renderTodayPaces(lt2PaceString, todaysActivityForHighlight) {
         { name: "Z4", descriptor: "Threshold", lowPaceFactor: 1.00, highPaceFactor: 0.91, colorClass: "text-amber-500" },
         { name: "Z5", descriptor: "VO2 Max", lowPaceFactor: 0.90, highPaceFactor: 0.83, colorClass: "text-red-600" }
     ];
-    let zonesTableHtml = `<table class="today-pace-table"><thead><tr>
+    let zonesTableHtml = `<table id="today-zones-table" class="today-pace-table hidden"><thead><tr>
                                 <th class="header-zone">Zone</th>
                                 <th class="header-pace">Pace</th>
                                 <th class="header-low">Low</th>
@@ -1093,11 +1164,16 @@ function renderTodayPaces(lt2PaceString, todaysActivityForHighlight) {
     zonesTableHtml += `</tbody></table>`;
     zonesContainer.innerHTML = zonesTableHtml;
 
-    const paceTable = zonesContainer.querySelector('table');
-    if (paceTable) {
-        paceTable.querySelectorAll('td').forEach(td => td.classList.remove('highlight-zone-pace'));
+    const zonesTable = document.getElementById('today-zones-table');
+    toggleZonesButton.textContent = zonesTable.classList.contains('hidden') ? 'Show Zones' : 'Hide Zones';
+    toggleZonesButton.onclick = function() {
+        zonesTable.classList.toggle('hidden');
+        this.textContent = zonesTable.classList.contains('hidden') ? 'Show Zones' : 'Hide Zones';
+    }
 
-        // Highlight the specific pace for today's workout if applicable.
+
+    if (zonesTable) {
+        zonesTable.querySelectorAll('td').forEach(td => td.classList.remove('highlight-zone-pace'));
         if (todaysActivityForHighlight && todaysActivityForHighlight.activity) {
             const activityText = todaysActivityForHighlight.activity.replace(/^[^:]+:\s*/, '');
             const zoneRegex = /(Z[1-5])\s*\((Low|Average|High)\)/gi;
@@ -1105,8 +1181,7 @@ function renderTodayPaces(lt2PaceString, todaysActivityForHighlight) {
             while ((match = zoneRegex.exec(activityText)) !== null) {
                 const zoneToHighlight = match[1].toUpperCase(); 
                 const paceTypeToHighlight = match[2].toLowerCase(); 
-
-                const rows = paceTable.querySelectorAll('tbody tr');
+                const rows = zonesTable.querySelectorAll('tbody tr');
                 rows.forEach(row => {
                     const zoneCell = row.cells[0];
                     if (zoneCell && zoneCell.textContent.trim().toUpperCase() === zoneToHighlight) {
@@ -1114,7 +1189,6 @@ function renderTodayPaces(lt2PaceString, todaysActivityForHighlight) {
                         if (paceTypeToHighlight === 'low') cellToHighlight = row.cells[2];
                         else if (paceTypeToHighlight === 'average') cellToHighlight = row.cells[3];
                         else if (paceTypeToHighlight === 'high') cellToHighlight = row.cells[4];
-                        
                         if (cellToHighlight) {
                             cellToHighlight.classList.add('highlight-zone-pace');
                         }
@@ -1125,12 +1199,12 @@ function renderTodayPaces(lt2PaceString, todaysActivityForHighlight) {
     }
 
 
-    // Data for calculating and displaying repeat interval paces.
+    // REPEATS TABLE
     const repeatDistances = [
         {d:"3km",f:1.02,m:3},{d:"1 Mile",f:0.98,m:1.60934},{d:"1km",f:0.95,m:1},
         {d:"800m",f:0.92,m:0.8},{d:"400m",f:0.88,m:0.4},{d:"200m",f:0.85,m:0.2}
     ];
-    let repeatsTableHtml = `<table id="${repeatsTableId}" class="today-pace-table mt-1 hidden"><thead><tr><th>Dist.</th><th>Time</th><th>Pace/km</th></tr></thead><tbody>`;
+    let repeatsTableHtml = `<table id="today-repeats-table" class="today-pace-table mt-1 hidden"><thead><tr><th>Dist.</th><th>Time</th><th>Pace/km</th></tr></thead><tbody>`;
     repeatDistances.forEach(item => {
         const tPPS = lt2SpeedInSeconds * item.f; 
         const tTDS = tPPS * item.m; 
@@ -1139,16 +1213,11 @@ function renderTodayPaces(lt2PaceString, todaysActivityForHighlight) {
     repeatsTableHtml += `</tbody></table>`;
     repeatsContainer.innerHTML = repeatsTableHtml;
     
-    repeatsTable = document.getElementById(repeatsTableId);
-    toggleRepeatsButton.textContent = repeatsTable && repeatsTable.classList.contains('hidden') ? 'Show Repeats' : 'Hide Repeats';
-
-    // Toggle visibility of the repeats table.
+    const repeatsTable = document.getElementById('today-repeats-table');
+    toggleRepeatsButton.textContent = repeatsTable.classList.contains('hidden') ? 'Show Repeats' : 'Hide Repeats';
     toggleRepeatsButton.onclick = function() { 
-        const table = document.getElementById(repeatsTableId);
-        if (table) {
-            table.classList.toggle('hidden');
-            toggleRepeatsButton.textContent = table.classList.contains('hidden') ? 'Show Repeats' : 'Hide Repeats';
-        }
+        repeatsTable.classList.toggle('hidden');
+        this.textContent = repeatsTable.classList.contains('hidden') ? 'Show Repeats' : 'Hide Repeats';
     };
 }
 
@@ -1182,33 +1251,34 @@ function renderTodaysTraining() {
     });
 
     let activityContentHtml = '';
-    // Reset default colors for heading and date, dynamic text color will be applied to activityText only
     let titleHtml = `<h3 class="text-2xl font-semibold text-sky-700 mb-1 text-center">Today</h3>
                            <p class="text-xs text-stone-500 text-center mb-3">${formatDate(today, { weekday: 'long', month: 'long', day: 'numeric' })}</p>`;
     let notesBoxHtml = '';
     const todayCard = document.getElementById('todays-training-card');
 
-    // Ensure the custom border is applied, and reset any dynamic background classes from previous renders
     if (todayCard) {
-        const dynamicBgClasses = [ // List of old background classes to remove if any
-            'today-bg-easy', 'today-bg-recovery', 'today-bg-base', 'today-bg-tempo', 
-            'today-bg-interval', 'today-bg-fartlek', 'today-bg-str', 'today-bg-rest', 
-            'today-bg-zone', 'today-bg-race', 'today-bg-double', 'today-bg-hills', 'today-bg-mobility'
-        ];
-        dynamicBgClasses.forEach(cls => todayCard.classList.remove(cls));
-        todayCard.style.backgroundColor = ''; // Revert to default .content-card background
-        if (!todayCard.classList.contains('custom-rect-border-today')) { // Apply if not present
-            todayCard.classList.add('custom-rect-border-today');
-        }
+        todayCard.classList.add('custom-rect-border-today');
     }
 
 
     if (todaysActivity) { 
-        let activityTextForDisplay = todaysActivity.activity.replace(/^[^:]+:\s*/, ''); 
+        const activityTextForDisplay = todaysActivity.activity.replace(/^[^:]+:\s*/, ''); 
+        const activityDescriptionOnly = todaysActivity.activity.replace(/^[^:]+:\s*/, '').trim();
+        const firstWord = activityDescriptionOnly.split(" ")[0].toLowerCase().replace(/:$/, '');
+        const colorClass = getActivityTextColorClass(firstWord);
+
+        const lt2PaceString = marathonPlan?.settings?.defaultLt2Speed || "N/A";
+        const paceString = getPaceStringForActivity(todaysActivity.activity, lt2PaceString);
+        let paceHtml = '';
+        if (paceString) {
+             paceHtml = `<p class="pace-text text-sm font-semibold mt-1 ${colorClass}">Pace: ${paceString}</p>`;
+        }
+
         activityContentHtml = `
             <div class="todays-activity-box">
-                <p><strong class="activity-text">${activityTextForDisplay}</strong></p> 
-                <p class="text-xs text-stone-500 mt-1">Phase: ${todaysActivity.phaseName} | Week: ${todaysActivity.weekNum}</p>
+                <p><strong class="activity-text ${colorClass}">${activityTextForDisplay}</strong></p> 
+                ${paceHtml}
+                <p class="text-xs text-stone-500 mt-2">Phase: ${todaysActivity.phaseName} | Week: ${todaysActivity.weekNum}</p>
             </div>
         `;
         if (todaysActivity.notes) { 
@@ -1233,63 +1303,32 @@ function renderTodaysTraining() {
     }
 
     const paceCalculatorHtml = `
-        <h3 class="text-lg font-semibold mt-4 text-sky-700">Zones</h3> 
-        <div id="today-zones-content"></div> 
-        <div class="mt-3 mb-1 flex justify-between items-center">
-             <h3 class="text-lg font-semibold text-yellow-500">Repeats</h3>
-             <button id="toggleRepeatsButton" class="hidden">Show Repeats</button>
+        <div class="mt-4 space-y-2">
+            <div class="flex justify-between items-center">
+                <h3 class="text-lg font-semibold text-sky-700">Pace Zones</h3>
+                <button id="toggleZonesButton" class="hidden">Show Zones</button>
+            </div>
+            <div id="today-zones-content"></div> 
+            <div class="flex justify-between items-center">
+                <h3 class="text-lg font-semibold text-yellow-500">Repeats</h3>
+                <button id="toggleRepeatsButton" class="hidden">Show Repeats</button>
+            </div>
+            <div id="today-repeats-content" class="mt-1"></div>
         </div>
-        <div id="today-repeats-content" class="mt-1"></div>
     `;
     container.innerHTML = titleHtml + activityContentHtml + notesBoxHtml + paceCalculatorHtml;
     
-    // Apply dynamic text color to the activity text after HTML is set
-    if (todaysActivity) {
-        const strongActivityTextElement = container.querySelector('.todays-activity-box .activity-text');
-        if (strongActivityTextElement) {
-            const dynamicActivityTextClasses = [
-                'activity-text-easy', 'activity-text-recovery', 'activity-text-base', 'activity-text-tempo', 
-                'activity-text-interval', 'activity-text-intervals', 'activity-text-fartlek', 'activity-text-str', 
-                'activity-text-rest', 'activity-text-zone', 'activity-text-race', 'activity-text-double', 
-                'activity-text-hills', 'activity-text-mobility'
-            ];
-            dynamicActivityTextClasses.forEach(cls => strongActivityTextElement.classList.remove(cls)); 
-            
-            // Determine the activity type from the first word.
-            const activityDescriptionOnly = todaysActivity.activity.replace(/^[^:]+:\s*/, '').trim();
-            const firstWord = activityDescriptionOnly.split(" ")[0].toLowerCase().replace(/:$/, '');
-            
-            // Apply a specific color class based on the activity type.
-            switch (firstWord) {
-                case 'easy': strongActivityTextElement.classList.add('activity-text-easy'); break;
-                case 'recovery': strongActivityTextElement.classList.add('activity-text-recovery'); break;
-                case 'base': strongActivityTextElement.classList.add('activity-text-base'); break; 
-                case 'tempo': strongActivityTextElement.classList.add('activity-text-tempo'); break;
-                case 'interval': 
-                case 'intervals': strongActivityTextElement.classList.add('activity-text-interval'); break;
-                case 'fartlek': strongActivityTextElement.classList.add('activity-text-fartlek'); break;
-                case 'str': strongActivityTextElement.classList.add('activity-text-str'); break;
-                case 'rest': strongActivityTextElement.classList.add('activity-text-rest'); break;
-                case 'zone': strongActivityTextElement.classList.add('activity-text-zone'); break;
-                case 'race': strongActivityTextElement.classList.add('activity-text-race'); break;
-                case 'double': strongActivityTextElement.classList.add('activity-text-double'); break;
-                case 'hills': strongActivityTextElement.classList.add('activity-text-hills'); break;
-                case 'mobility': strongActivityTextElement.classList.add('activity-text-mobility'); break;
-                default: strongActivityTextElement.style.color = ''; // Reset to default if no match
-            }
-        }
-    }
-    
-
     if (marathonPlan && marathonPlan.settings) {
         renderTodayPaces(marathonPlan.settings.defaultLt2Speed, todaysActivity); 
     } else { 
         const zonesContainer = document.getElementById('today-zones-content');
         const repeatsContainer = document.getElementById('today-repeats-content');
-        const toggleBtn = document.getElementById('toggleRepeatsButton');
+        const toggleZonesBtn = document.getElementById('toggleZonesButton');
+        const toggleRepeatsBtn = document.getElementById('toggleRepeatsButton');
         if(zonesContainer) zonesContainer.innerHTML = `<p class="text-xs text-stone-500 italic">Loading pace data...</p>`;
         if(repeatsContainer) repeatsContainer.innerHTML = '';
-        if(toggleBtn) toggleBtn.classList.add('hidden');
+        if(toggleZonesBtn) toggleZonesBtn.classList.add('hidden');
+        if(toggleRepeatsBtn) toggleRepeatsBtn.classList.add('hidden');
     }
 }
 
@@ -2111,6 +2150,9 @@ async function renderCompanionTab() {
                 Loading team data...
             </div>
             <div id="companion-error-message" class="hidden"></div>
+            <h2 class="text-3xl sm:text-4xl font-extrabold text-stone-800 mt-2 text-center mb-6">
+                <span class="text-sky-600">Team</span> <span class="text-emerald-600">Companion</span>
+            </h2>
             <nav id="companion-navigation" class="mb-8 flex flex-wrap justify-center gap-2 sm:gap-4 pb-4 border-b-2 border-slate-200 hidden">
                 <button id="comp-nav-drills" class="companion-nav-button drills">Drills</button>
                 <button id="comp-nav-mobility" class="companion-nav-button mobility">Mobility</button>
