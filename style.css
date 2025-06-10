@@ -978,36 +978,76 @@ body.dark-mode #updates-modal .updates-modal-content-wrapper {
 }
 
 
+@page {
+    margin: 15mm;
+}
+
 @media print {
     body {
         background-color: var(--print-body-bg) !important;
+        color: var(--print-text) !important; /* Ensure body text defaults to print colors */
         -webkit-print-color-adjust: exact !important;
         print-color-adjust: exact !important;
+        min-width: 0 !important; /* Allow body to shrink to content */
     }
+
     body * {
+        display: none !important;
         visibility: hidden !important;
+        margin: 0 !important;
+        padding: 0 !important;
+        background-color: transparent !important; /* Avoid unexpected backgrounds */
+        color: inherit !important; /* Inherit print text color */
+        border-color: var(--print-text) !important; /* Make borders visible if needed */
+        box-shadow: none !important;
     }
 
     #print-section-container {
         display: block !important;
         visibility: visible !important;
-        position: static !important;
-    }
-
-    #print-section-container .currently-printing-this-week,
-    #print-section-container .currently-printing-this-week * {
-        visibility: visible !important;
+        position: absolute !important;
+        left: 0 !important;
+        top: 0 !important;
+        width: 100% !important;
+        margin: 0 !important;
+        padding: 0 !important; /* Page margins handled by @page */
+        background-color: var(--print-body-bg) !important;
     }
 
     #print-section-container .currently-printing-this-week {
-        position: relative !important;
-        width: auto !important;
-        margin: 20px !important;
-        padding: 0 !important;
+        display: block !important;
+        visibility: visible !important;
+        width: 100% !important; /* Takes width from @page margins */
+        margin: 0 auto !important;
+        padding: 0 !important; /* Adjusted as @page handles margins/padding for overall page */
+        box-sizing: border-box !important;
         background-color: var(--print-body-bg) !important;
-        font-size: 11pt !important;
+        font-size: 10pt !important;
+        color: var(--print-text) !important;
+        border: none !important; /* Ensure no outer border */
         box-shadow: none !important;
-        border: none !important;
+    }
+
+    /* Make all children of currently-printing-this-week visible and display block by default */
+    #print-section-container .currently-printing-this-week * {
+        display: block !important; /* Overridden by more specific table rules below */
+        visibility: visible !important;
+        background-color: transparent !important; /* Ensure inner elements don't have odd backgrounds */
+        color: var(--print-text) !important; /* Ensure all text is printable */
+        box-shadow: none !important;
+        border-color: var(--print-text) !important; /* Default border color for printable items */
+    }
+
+    /* Revert display for table elements to ensure they render as tables */
+    #print-section-container .schedule-table,
+    #print-section-container .schedule-table caption,
+    #print-section-container .schedule-table tbody,
+    #print-section-container .schedule-table tfoot,
+    #print-section-container .schedule-table thead,
+    #print-section-container .schedule-table tr,
+    #print-section-container .schedule-table th,
+    #print-section-container .schedule-table td {
+        display: revert !important;
     }
 
     #print-section-container .currently-printing-this-week h4,
@@ -1015,10 +1055,14 @@ body.dark-mode #updates-modal .updates-modal-content-wrapper {
     #print-section-container .currently-printing-this-week strong,
     #print-section-container .currently-printing-this-week .schedule-table th,
     #print-section-container .currently-printing-this-week .schedule-table td,
-    #print-section-container .currently-printing-this-week .text-xs
-        {
+    #print-section-container .currently-printing-this-week .text-xs,
+    #print-section-container .currently-printing-this-week .text-sm,
+    #print-section-container .currently-printing-this-week .text-lg,
+    #print-section-container .currently-printing-this-week .font-bold,
+    #print-section-container .currently-printing-this-week .font-medium,
+    #print-section-container .currently-printing-this-week .font-semibold {
         color: var(--print-text) !important;
-        background-color: var(--print-body-bg) !important;
+        background-color: transparent !important; /* Ensure no colored backgrounds from Tailwind */
     }
 
     #print-section-container .currently-printing-this-week .schedule-table {
@@ -1030,19 +1074,19 @@ body.dark-mode #updates-modal .updates-modal-content-wrapper {
     #print-section-container .currently-printing-this-week .schedule-table th,
     #print-section-container .currently-printing-this-week .schedule-table td {
         border: 1px solid var(--print-table-border) !important;
-        padding: 0.4rem !important;
+        padding: 0.3rem 0.4rem !important; /* Slightly reduced padding for print */
         text-align: left !important;
     }
-        #print-section-container .currently-printing-this-week .schedule-table th {
+    #print-section-container .currently-printing-this-week .schedule-table th {
         font-weight: bold !important;
-        background-color: var(--print-table-th-bg) !important;
-        }
-        #print-section-container .currently-printing-this-week .schedule-table tr {
+        background-color: var(--print-table-th-bg) !important; /* Light gray for header */
+    }
+    #print-section-container .currently-printing-this-week .schedule-table tr {
         page-break-inside: avoid !important;
         page-break-after: auto !important;
-        }
+    }
     #print-section-container .currently-printing-this-week .schedule-table td:first-child {
-            font-weight: bold !important;
+        font-weight: bold !important;
     }
 
     #print-section-container .currently-printing-this-week p.italic {
@@ -1051,7 +1095,40 @@ body.dark-mode #updates-modal .updates-modal-content-wrapper {
         border: 1px solid var(--print-notes-border) !important;
         border-radius: 0.25rem !important;
     }
-        #print-section-container .currently-printing-this-week .text-sky-700 { color: var(--print-text) !important; }
+
+    /* Handle links for printing */
+    #print-section-container .currently-printing-this-week a {
+        color: var(--print-text) !important;
+        text-decoration: none !important;
+    }
+    /* Optionally show href for links, uncomment if desired
+    #print-section-container .currently-printing-this-week a[href]:after {
+        content: " (" attr(href) ")";
+        font-size: 0.9em;
+        color: #555 !important;
+    }
+    */
+
+    /* Ensure specific Tailwind text colors used in printable content are black for print */
+    #print-section-container .currently-printing-this-week .text-stone-800,
+    #print-section-container .currently-printing-this-week .text-stone-700,
+    #print-section-container .currently-printing-this-week .text-stone-600,
+    #print-section-container .currently-printing-this-week .text-sky-700,
+    #print-section-container .currently-printing-this-week .text-green-700,
+    #print-section-container .currently-printing-this-week .text-amber-500 {
+        color: var(--print-text) !important;
+    }
+    /* Ensure specific Tailwind background colors used in printable content are transparent */
+    #print-section-container .currently-printing-this-week .bg-stone-100,
+    #print-section-container .currently-printing-this-week .bg-red-50,
+    #print-section-container .currently-printing-this-week .bg-orange-50,
+    #print-section-container .currently-printing-this-week .bg-amber-50,
+    #print-section-container .currently-printing-this-week .bg-yellow-50,
+    #print-section-container .currently-printing-this-week .bg-lime-50,
+    #print-section-container .currently-printing-this-week .bg-green-50,
+    #print-section-container .currently-printing-this-week .bg-emerald-50 {
+        background-color: transparent !important;
+    }
 
 
     .no-print,

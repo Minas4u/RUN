@@ -737,11 +737,16 @@ function printSelectedWeekToPdf(printableAreaId) {
     if (originalContentToPrint && printContainer) {
         const clonedWeekContent = originalContentToPrint.cloneNode(true);
         clonedWeekContent.classList.add('currently-printing-this-week');
+        // Ensure the cloned content itself is explicitly set to display block.
+        // This helps if 'currently-printing-this-week' or its source had display:none from a non-print style.
+        clonedWeekContent.style.setProperty('display', 'block', 'important');
 
         printContainer.innerHTML = '';
         printContainer.appendChild(clonedWeekContent);
-        printContainer.classList.remove('hidden');
+        printContainer.classList.remove('hidden'); // Make print container visible
+
         window.print();
+
         printContainer.innerHTML = '';
         printContainer.classList.add('hidden');
     } else {
