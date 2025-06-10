@@ -1256,6 +1256,103 @@ body.dark-mode .todays-weekly-notes-box p, body.dark-mode .todays-weekly-notes-b
         /* mix-blend-mode: unset; filter: unset; /* Option 1: remove effect */
         /* color: var(--dm-text-color); /* Option 2: Ensure contrast */
     }
+
+    /* Reduce base font size on smaller screens for better readability */
+    html {
+        font-size: 93.75%; /* 15px base if default is 16px. Scales rem units. */
+    }
+
+    /* Adjust element sizes for mobile view */
+    .css-logo-dna {
+        font-size: 2.8rem; /* Reduced from 3.75rem. (15px * 2.8 = 42px) */
+        padding: 0.4rem 0.6rem; /* Reduced from 0.5rem 0.75rem */
+        margin-bottom: 0.5rem; /* Optionally reduce from 0.75rem */
+    }
+
+    h1.main-title { /* Targets main page titles. Tailwind text-3xl is 1.875rem (now ~28px) */
+        font-size: 1.75rem; /* Slightly smaller, approx 26.25px now */
+        line-height: 1.2;
+    }
+
+    #darkModeToggle svg {
+        width: 1.25rem; /* 20px (was h-6 w-6 -> 1.5rem -> 22.5px) */
+        height: 1.25rem;
+    }
+
+    /* Reduce padding for calendar navigation buttons */
+    .calendar-nav-button {
+        width: 2.25rem; /* Reduced from 2.5rem */
+        height: 2.25rem;
+    }
+    .calendar-nav-button svg {
+        width: 1.125rem; /* Reduced from 1.25rem */
+        height: 1.125rem;
+    }
+
+    /* Adjust spacing for mobile view */
+    body {
+        padding: 1rem; /* Reduced from p-4 py-8 (which is 1rem horizontal, 2rem vertical) */
+    }
+
+    .main-container {
+        padding: 1rem; /* Reduced from 1.5rem default */
+    }
+
+    /* Headers and Navigations */
+    header.mb-8, /* Matches Tailwind mb-8, which is 2rem */
+    nav.mb-8 { /* Matches Tailwind mb-8, which is 2rem */
+        margin-bottom: 1rem !important; /* Reduced to 1rem */
+    }
+
+    /* Specifically target the main app header and nav if they are the ones with mb-8 */
+    /* If other headers/navs exist that also use mb-8 but shouldn't be reduced, more specific selectors would be needed */
+    #main-app-wrapper > header.mb-8,
+    #main-app-wrapper > nav.mb-8 {
+         margin-bottom: 1rem !important;
+    }
+
+
+    .nav-button {
+        padding: 0.4rem 0.8rem; /* Reduced from 0.6rem 1.1rem */
+        font-size: 0.875rem; /* text-sm, if not already scaled by html font-size */
+    }
+
+    /* Companion navigation buttons, if they need separate adjustment */
+    .companion-nav-button {
+        padding: 0.5rem 0.9rem; /* Slightly larger than main nav, adjust as needed */
+        font-size: 0.875rem;
+    }
+
+    .content-card {
+        padding: 0.75rem; /* Reduced from 1rem */
+    }
+
+    .schedule-table th,
+    .schedule-table td {
+        padding: 0.5rem; /* Reduced from 0.75rem */
+    }
+
+    /* .today-pace-table th, .today-pace-table td already have small padding (0.3rem 0.5rem), likely okay. */
+
+    /* Adjustments for login screen if needed */
+    #login-container header.mb-8 {
+        margin-bottom: 1.5rem !important; /* Example: slightly more than others */
+    }
+    #login-container .space-y-4 > div:not(:first-child) { /* Tailwind space-y-4 is 1rem */
+        margin-top: 0.75rem; /* Example: reduce space between elements */
+    }
+     #login-container .space-y-4 > button:not(:first-child) {
+        margin-top: 1rem; /* Keep button spacing reasonable */
+    }
+
+    /* Reduce padding for specific modals if they feel too large on mobile */
+    #mileage-chart-modal > div {
+        padding: 1rem;
+    }
+    #updates-modal .updates-modal-content-wrapper {
+        padding: 1rem;
+    }
+
 }
 
 /* Dark mode specific overrides for button icon colors if not handled by Tailwind */
