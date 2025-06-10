@@ -257,7 +257,7 @@
     --dm-table-th-bg: #1f2937; /* gray-800 */
     --dm-schedule-table-border: #4b5563; /* gray-600 */
     --dm-schedule-table-th-bg: #1f2937; /* gray-800 */
-    --dm-schedule-table-th-text: #d1d5db; /* gray-300 */
+    --dm-schedule-table-th-text: #e5e7eb; /* gray-200 for slightly better brightness */
     --dm-input-userid-border: #f59e0b;
     --dm-input-userid-focus-border: #d97706;
     --dm-input-userid-focus-shadow: rgba(245, 158, 11, 0.4);
@@ -315,7 +315,7 @@
     --dm-updates-modal-card-bg: #374151; /* gray-700 */
     --dm-today-pace-table-border: #6b7280; /* gray-500 */
     --dm-today-pace-table-th-bg: #1f2937; /* gray-800 */
-    --dm-today-pace-table-th-text: #d1d5db; /* gray-300 */
+    --dm-today-pace-table-th-text: #e5e7eb; /* gray-200 for slightly better brightness */
     --dm-today-pace-table-header-low: #60a5fa; /* blue-400 */
     --dm-today-pace-table-header-average: #4ade80; /* green-400 */
     --dm-today-pace-table-header-high: #f87171; /* red-400 */
@@ -1192,10 +1192,47 @@ body.dark-mode .text-stone-700 { color: var(--dm-text-color) !important; } /* Fo
 body.dark-mode .text-stone-600 { color: #d1d5db !important; } /* gray-300 for subtitles */
 body.dark-mode .text-sky-600 { color: #7dd3fc !important; } /* sky-300 for links/highlights */
 body.dark-mode .text-sky-700 { color: #38bdf8 !important; } /* sky-400 for stronger highlights */
+    body.dark-mode .text-amber-500 { color: #fcd34d !important; } /* amber-300 */
+    body.dark-mode .text-green-700 { color: #4ade80 !important; } /* green-400 */
+    body.dark-mode .text-violet-700 { color: #a78bfa !important; } /* violet-400 */
+    body.dark-mode .text-violet-600 { color: #c4b5fd !important; } /* violet-300 */
+    body.dark-mode .text-indigo-700 { color: #a5b4fc !important; } /* indigo-300 */
+    body.dark-mode .text-indigo-800 { color: #818cf8 !important; } /* indigo-400 */
+    body.dark-mode .text-emerald-600 { color: #6ee7b7 !important; } /* emerald-300 */
+    body.dark-mode .text-emerald-700 { color: #34d399 !important; } /* emerald-400 */
+    body.dark-mode .text-yellow-500 { color: #fde047 !important; } /* yellow-300 */
+
 
 /* Ensure Tailwind's background colors in HTML are overridden */
 body.dark-mode .bg-sky-600 { background-color: var(--nav-button-active-overview-bg) !important; } /* Or a specific dark mode primary button color */
 body.dark-mode .hover\:bg-sky-700:hover { background-color: var(--nav-button-active-overview-hover-bg) !important; }
+
+    /* Dark mode for table row backgrounds (Tailwind bg-color-50 series) */
+    body.dark-mode .bg-stone-100 { background-color: #2c3e50 !important; /* Darker slate/blue */ }
+    body.dark-mode .bg-red-50 { background-color: #4a1d1d !important; /* Dark red */ }
+    body.dark-mode .bg-orange-50 { background-color: #522c15 !important; /* Dark orange */ }
+    body.dark-mode .bg-amber-50 { background-color: #543810 !important; /* Dark amber */ }
+    body.dark-mode .bg-yellow-50 { background-color: #534a18 !important; /* Dark yellow */ }
+    body.dark-mode .bg-lime-50 { background-color: #2f481a !important; /* Dark lime */ }
+    body.dark-mode .bg-green-50 { background-color: #1c4b30 !important; /* Dark green */ }
+    body.dark-mode .bg-emerald-50 { background-color: #154734 !important; /* Dark emerald */ }
+    body.dark-mode .bg-violet-50 { background-color: #2f1e44 !important; /* Dark violet */ }
+
+
+    /* Ensure text in these specific background rows is light */
+    body.dark-mode .bg-red-50 td, body.dark-mode .bg-red-50 strong,
+    body.dark-mode .bg-orange-50 td, body.dark-mode .bg-orange-50 strong,
+    body.dark-mode .bg-amber-50 td, body.dark-mode .bg-amber-50 strong,
+    body.dark-mode .bg-yellow-50 td, body.dark-mode .bg-yellow-50 strong,
+    body.dark-mode .bg-lime-50 td, body.dark-mode .bg-lime-50 strong,
+    body.dark-mode .bg-green-50 td, body.dark-mode .bg-green-50 strong,
+    body.dark-mode .bg-emerald-50 td, body.dark-mode .bg-emerald-50 strong,
+    body.dark-mode .bg-violet-50 td, body.dark-mode .bg-violet-50 strong,
+    body.dark-mode .bg-stone-100 td, body.dark-mode .bg-stone-100 strong,
+    body.dark-mode .bg-stone-100 th { /* For schedule table headers */
+        color: var(--dm-text-color) !important;
+    }
+
 
 /* Override for mileage chart modal background and text */
 body.dark-mode #mileage-chart-modal > div {
@@ -1220,3 +1257,26 @@ body.dark-mode .chart-container {
 body.dark-mode #mileageChartModalCanvas, body.dark-mode /* other canvas IDs */ {
     /* Chart.js often sets its own colors. May need JS to update chart options for dark mode */
 }
+
+/* Specific text color overrides for today-pace-table if not covered by general text-stone or activity-text */
+body.dark-mode .today-pace-table .text-teal-700 { color: #4fd1c5 !important; /* Lighter teal */ }
+body.dark-mode .today-pace-table .text-green-600 { color: #68d391 !important; /* Lighter green */ }
+body.dark-mode .today-pace-table .text-sky-600 { color: #7fccff !important; /* Lighter sky */ }
+body.dark-mode .today-pace-table .text-lime-600 { color: #a8e977 !important; /* Lighter lime */ }
+body.dark-mode .today-pace-table .text-amber-500 { color: #fcd34d !important; /* Lighter amber */ }
+body.dark-mode .today-pace-table .text-red-600 { color: #fca5a5 !important; /* Lighter red */ }
+
+/* Ensure all text in schedule-table and today-pace-table defaults to --dm-text-color if not specifically styled */
+body.dark-mode .schedule-table td,
+body.dark-mode .today-pace-table td {
+    color: var(--dm-text-color); /* Default for all td cells */
+}
+/* Override for the bolded day name in schedule table if it was text-stone-800 */
+body.dark-mode .schedule-table td.font-bold {
+    color: var(--dm-text-color) !important;
+}
+/* Ensure specific pace zone colors in today's pace table override the default td color */
+body.dark-mode .today-pace-table td.text-green-600 { color: #68d391 !important; }
+body.dark-mode .today-pace-table td.text-sky-600 { color: #7fccff !important; }
+body.dark-mode .today-pace-table td.text-lime-600 { color: #a8e977 !important; }
+/* Add other specific zone colors if they exist and are different from the general activity-text overrides */
