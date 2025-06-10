@@ -201,6 +201,57 @@ document.addEventListener('DOMContentLoaded', () => {
     // Show the login screen by default.
     if(loginContainer) loginContainer.classList.remove('hidden');
     if(mainAppWrapper) mainAppWrapper.classList.add('hidden');
+
+    // --- Dark Mode Toggle Functionality ---
+    const darkModeToggle = document.getElementById('darkModeToggle');
+    const body = document.body;
+
+    const sunIconSVG = `
+        <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 3v1m0 16v1m8.66-15.66l-.707.707M4.049 20.95l-.707.707M21 12h-1M4 12H3m15.66 8.66l-.707-.707M3.049 4.049l-.707-.707M12 5a7 7 0 100 14 7 7 0 000-14z" />
+        </svg>
+    `;
+    const moonIconSVG = `
+        <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z" />
+        </svg>
+    `;
+
+    function updateDarkModeButtonIcon(isDarkMode) {
+        if (darkModeToggle) {
+            darkModeToggle.innerHTML = isDarkMode ? sunIconSVG : moonIconSVG;
+        }
+    }
+
+    function applyTheme(theme) {
+        if (theme === 'dark') {
+            body.classList.add('dark-mode');
+            updateDarkModeButtonIcon(true);
+        } else {
+            body.classList.remove('dark-mode');
+            updateDarkModeButtonIcon(false);
+        }
+    }
+
+    if (darkModeToggle) {
+        darkModeToggle.addEventListener('click', () => {
+            const isDarkMode = body.classList.toggle('dark-mode');
+            const currentTheme = isDarkMode ? 'dark' : 'light';
+            localStorage.setItem('theme', currentTheme);
+            updateDarkModeButtonIcon(isDarkMode);
+        });
+    }
+
+    // Load saved theme from localStorage or default to light
+    const savedTheme = localStorage.getItem('theme');
+    if (savedTheme) {
+        applyTheme(savedTheme);
+    } else {
+        // Default to light mode and set the moon icon if no theme is saved.
+        // CSS already defaults to light, this ensures button icon is correct.
+        applyTheme('light');
+    }
+    // --- End of Dark Mode Toggle ---
 });
 
 /**
