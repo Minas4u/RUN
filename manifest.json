@@ -1,10 +1,10 @@
 {
-  "name": "My PWA App",
-  "short_name": "PWA App",
-  "start_url": ".",
+  "name": "Distance Association",
+  "short_name": "DNA",
+  "start_url": "https://minas4u.github.io/RUN/",
   "display": "standalone",
   "background_color": "#fff",
-  "description": "A simple PWA app.",
+  "description": "For Runners.",
   "icons": [
     {
       "src": "icons/icon-192x192.png",
