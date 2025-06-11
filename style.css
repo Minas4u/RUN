@@ -1454,3 +1454,44 @@ body.dark-mode .today-pace-table td.text-green-600 { color: #68d391 !important; 
 body.dark-mode .today-pace-table td.text-sky-600 { color: #7fccff !important; }
 body.dark-mode .today-pace-table td.text-lime-600 { color: #a8e977 !important; }
 /* Add other specific zone colors if they exist and are different from the general activity-text overrides */
+
+/* --- Today Card Navigation Arrows --- */
+#todayPrevDay,
+#todayNextDay {
+    /* Tailwind classes p-1, text-sky-700, hover:text-sky-500, disabled:opacity-30 are already applied in JS */
+    /* Adding subtle background on hover and ensuring good tap targets */
+    border-radius: 0.375rem; /* rounded-md */
+    transition: background-color 0.2s ease-in-out, color 0.2s ease-in-out, opacity 0.2s ease-in-out;
+}
+
+#todayPrevDay:not(:disabled):hover,
+#todayNextDay:not(:disabled):hover {
+    background-color: var(--nav-button-hover-bg); /* Using existing variable for hover background */
+}
+
+/* Ensure SVG icon color inherits button text color, especially for hover/disabled states */
+#todayPrevDay svg,
+#todayNextDay svg {
+    stroke: currentColor; /* Make SVG color same as button text color */
+}
+
+/* Disabled state is largely handled by Tailwind's disabled:opacity-30 */
+#todayPrevDay:disabled,
+#todayNextDay:disabled {
+    cursor: not-allowed;
+}
+
+/* Dark mode considerations for arrows if not covered by global text overrides */
+body.dark-mode #todayPrevDay:not(:disabled),
+body.dark-mode #todayNextDay:not(:disabled) {
+    color: var(--dm-title-marathon-text); /* Using sky-400 equivalent for dark mode */
+}
+
+body.dark-mode #todayPrevDay:not(:disabled):hover,
+body.dark-mode #todayNextDay:not(:disabled):hover {
+    background-color: var(--dm-nav-button-hover-bg); /* Dark mode hover background */
+    color: var(--dm-nav-button-hover-text);
+}
+
+/* The title area for Today card uses: <div class="flex justify-between items-center w-full">
+   This should already handle layout well. These CSS rules are mostly for subtle enhancements. */
