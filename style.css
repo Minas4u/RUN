@@ -2,7 +2,8 @@
     --body-bg: #f0f4f8;
     --text-color: #1e293b;
     --main-container-bg: #ffffff;
-    --main-container-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+    /* Updated for M3 elevation */
+    --main-container-shadow: 0 10px 15px -3px rgba(0,0,0,0.07), 0 4px 6px -2px rgba(0,0,0,0.05);
     --nav-button-hover-bg: #f3f4f6;
     --nav-button-hover-text: #1f2937;
     --nav-button-active-overview-bg: #0284c7;
@@ -195,8 +196,9 @@
     --companion-nav-button-active-strength-text: white;
 
     --exercise-card-bg: #fff;
-    --exercise-card-shadow: 0 4px 6px -1px rgba(0,0,0,0.1), 0 2px 4px -2px rgba(0,0,0,0.1);
-    --exercise-card-hover-shadow: 0 10px 15px -3px rgba(0,0,0,0.1), 0 4px 6px -4px rgba(0,0,0,0.1);
+    /* Updated for M3 elevation */
+    --exercise-card-shadow: 0 1px 3px rgba(0,0,0,0.1), 0 1px 2px rgba(0,0,0,0.06);
+    --exercise-card-hover-shadow: 0 4px 6px rgba(0,0,0,0.1), 0 2px 4px rgba(0,0,0,0.06);
     --details-drills-bg: #dcfce7; --details-drills-text: #166534;
     --details-mobility-bg: #e0f2fe; --details-mobility-text: #075985;
     --details-strength-bg: #fef3c7; --details-strength-text: #92400e;
@@ -205,7 +207,8 @@
     --updates-card-border-l: #6366f1;
 
     --updates-modal-bg: #f8fafc;
-    --updates-modal-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+    /* Updated for M3 elevation */
+    --updates-modal-shadow: 0 20px 25px -5px rgba(0,0,0,0.1), 0 8px 10px -6px rgba(0,0,0,0.1);
     --updates-modal-header-gradient-start: #4f46e5;
     --updates-modal-header-gradient-end: #7c3aed;
     --updates-modal-close-text: #9ca3af;
@@ -245,11 +248,18 @@
     --mobile-calendar-day-default-bg: #e0f2fe; --mobile-calendar-day-default-text: #0c4a6e;
     --mobile-calendar-day-today-number-text: #065f46;
 
+    /* New Elevation Shadows */
+    --shadow-elevation-low: 0 1px 2px 0 rgba(0,0,0,0.03), 0 1px 1px 0 rgba(0,0,0,0.03);
+    --shadow-elevation-medium: 0 4px 6px -1px rgba(0,0,0,0.07), 0 2px 4px -1px rgba(0,0,0,0.04);
+    --shadow-elevation-high: 0 10px 15px -3px rgba(0,0,0,0.07), 0 4px 6px -2px rgba(0,0,0,0.05);
+
+
     /* Dark Mode Variables */
     --dm-body-bg: #111827; /* gray-900 */
     --dm-text-color: #f3f4f6; /* gray-100 */
     --dm-main-container-bg: #1f2937; /* gray-800 */
-    --dm-main-container-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.3), 0 10px 10px -5px rgba(0, 0, 0, 0.2);
+    /* Updated for M3 elevation - more subtle in dark mode */
+    --dm-main-container-shadow: 0 8px 12px -4px rgba(0,0,0,0.25), 0 3px 5px -2px rgba(0,0,0,0.2);
     --dm-nav-button-hover-bg: #374151; /* gray-700 */
     --dm-nav-button-hover-text: #f3f4f6; /* gray-100 */
     --dm-content-card-bg: #374151; /* gray-700 */
@@ -297,15 +307,17 @@
     --dm-highlight-zone-pace-bg: #f59e0b;
     --dm-highlight-zone-pace-text: #111827;
     --dm-exercise-card-bg: #374151; /* gray-700 */
-    --dm-exercise-card-shadow: 0 4px 6px -1px rgba(0,0,0,0.3), 0 2px 4px -2px rgba(0,0,0,0.2);
-    --dm-exercise-card-hover-shadow: 0 10px 15px -3px rgba(0,0,0,0.3), 0 4px 6px -4px rgba(0,0,0,0.2);
+    /* Updated for M3 elevation - more subtle in dark mode */
+    --dm-exercise-card-shadow: 0 1px 3px rgba(0,0,0,0.25), 0 1px 2px rgba(0,0,0,0.2);
+    --dm-exercise-card-hover-shadow: 0 4px 6px rgba(0,0,0,0.25), 0 2px 4px rgba(0,0,0,0.2);
     --dm-details-drills-bg: #052e16; --dm-details-drills-text: #dcfce7; /* green-900 / green-100 */
     --dm-details-mobility-bg: #0c546e; --dm-details-mobility-text: #e0f2fe; /* custom darker blue / light blue */
     --dm-details-strength-bg: #78350f; --dm-details-strength-text: #fef3c7; /* amber-900 / amber-100 */
     --dm-video-link-text: #38bdf8; /* sky-400 */
     --dm-video-link-hover-text: #7dd3fc; /* sky-300 */
     --dm-updates-modal-bg: #1f2937; /* gray-800 */
-    --dm-updates-modal-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
+    /* Updated for M3 elevation - more subtle in dark mode */
+    --dm-updates-modal-shadow: 0 15px 20px -5px rgba(0,0,0,0.3), 0 6px 8px -5px rgba(0,0,0,0.3);
     --dm-updates-modal-header-gradient-start: #818cf8; /* indigo-300 */
     --dm-updates-modal-header-gradient-end: #c084fc; /* purple-300 */
     --dm-updates-modal-close-text: #9ca3af; /* gray-400 */
@@ -334,6 +346,20 @@
     --dm-mobile-calendar-day-rest-bg: #374151; --dm-mobile-calendar-day-rest-text: #f1f5f9;
     --dm-mobile-calendar-day-default-bg: #0c4a6e; --dm-mobile-calendar-day-default-text: #e0f2fe;
     --dm-mobile-calendar-day-today-number-text: #a7f3d0; /* green-200 */
+
+    /* New Elevation Shadows - Dark Mode */
+    --dm-shadow-elevation-low: 0 1px 2px 0 rgba(0,0,0,0.2), 0 1px 1px 0 rgba(0,0,0,0.15);
+    --dm-shadow-elevation-medium: 0 3px 5px -1px rgba(0,0,0,0.25), 0 2px 3px -1px rgba(0,0,0,0.2);
+    --dm-shadow-elevation-high: 0 8px 12px -4px rgba(0,0,0,0.25), 0 3px 5px -2px rgba(0,0,0,0.2);
+
+    /* New Border Radius Variables */
+    --border-radius-small: 0.25rem;  /* 4px */
+    --border-radius-medium: 0.5rem; /* 8px */
+    --border-radius-large: 0.75rem; /* 12px */
+    --border-radius-xl: 1rem;       /* 16px */
+    --border-radius-xxl: 1.25rem;   /* 20px */
+    --border-radius-pill: 9999px;
+    --border-radius-circle: 50%;
 }
 
 body {
@@ -465,7 +491,7 @@ body.dark-mode {
 
 .main-container {
     background-color: var(--main-container-bg);
-    border-radius: 0.75rem;
+    border-radius: var(--border-radius-xl); /* Updated border-radius */
     box-shadow: var(--main-container-shadow);
     width: 100%;
     max-width: 64rem; /* 1024px */
@@ -480,65 +506,83 @@ body.dark-mode {
 }
 .nav-button {
     padding: 0.6rem 1.1rem;
-    border-radius: 0.375rem;
-    transition: background-color 0.2s ease-in-out, color 0.2s ease-in-out, box-shadow 0.2s ease-in-out;
+    border-radius: var(--border-radius-medium); /* Updated border-radius */
+    transition: background-color 0.2s ease-in-out, color 0.2s ease-in-out, box-shadow 0.2s ease-in-out, transform 0.2s ease-in-out;
     font-weight: 600;
-    box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+    box-shadow: var(--shadow-elevation-low); /* Updated shadow */
 }
-.nav-button:hover:not(.active-overview):not(.active-plan):not(.active-calendar):not(.active-race):not(.active-info):not(.active-companion) {
+.nav-button:hover:not(.active-overview):not(.active-plan):not(.active-calendar):not(.active-race):not(.active-info):not(.active-companion),
+.nav-button:focus:not(.active-overview):not(.active-plan):not(.active-calendar):not(.active-race):not(.active-info):not(.active-companion) {
     background-color: var(--nav-button-hover-bg);
     color: var(--nav-button-hover-text);
+    box-shadow: var(--shadow-elevation-medium); /* Lift on hover */
+    transform: translateY(-1px) scale(1.02); /* Enhanced lift and pop */
 }
 
-.nav-button.active-overview { background-color: var(--nav-button-active-overview-bg); color: var(--nav-button-active-overview-text); }
-.nav-button.active-overview:hover { background-color: var(--nav-button-active-overview-hover-bg); }
+.nav-button.active-overview { background-color: var(--nav-button-active-overview-bg); color: var(--nav-button-active-overview-text); box-shadow: var(--shadow-elevation-medium); transform: translateY(-1px) scale(1.02); }
+.nav-button.active-overview:hover, .nav-button.active-overview:focus { background-color: var(--nav-button-active-overview-hover-bg); box-shadow: var(--shadow-elevation-high); transform: translateY(-2px) scale(1.03); }
 
-.nav-button.active-plan { background-color: var(--nav-button-active-plan-bg); color: var(--nav-button-active-plan-text); }
-.nav-button.active-plan:hover { background-color: var(--nav-button-active-plan-hover-bg); }
+.nav-button.active-plan { background-color: var(--nav-button-active-plan-bg); color: var(--nav-button-active-plan-text); box-shadow: var(--shadow-elevation-medium); transform: translateY(-1px) scale(1.02); }
+.nav-button.active-plan:hover, .nav-button.active-plan:focus { background-color: var(--nav-button-active-plan-hover-bg); box-shadow: var(--shadow-elevation-high); transform: translateY(-2px) scale(1.03); }
 
-.nav-button.active-calendar { background-color: var(--nav-button-active-calendar-bg); color: var(--nav-button-active-calendar-text); }
-.nav-button.active-calendar:hover { background-color: var(--nav-button-active-calendar-hover-bg); }
+.nav-button.active-calendar { background-color: var(--nav-button-active-calendar-bg); color: var(--nav-button-active-calendar-text); box-shadow: var(--shadow-elevation-medium); transform: translateY(-1px) scale(1.02); }
+.nav-button.active-calendar:hover, .nav-button.active-calendar:focus { background-color: var(--nav-button-active-calendar-hover-bg); box-shadow: var(--shadow-elevation-high); transform: translateY(-2px) scale(1.03); }
 
-.nav-button.active-race { background-color: var(--nav-button-active-race-bg); color: var(--nav-button-active-race-text); }
-.nav-button.active-race:hover { background-color: var(--nav-button-active-race-hover-bg); }
+.nav-button.active-race { background-color: var(--nav-button-active-race-bg); color: var(--nav-button-active-race-text); box-shadow: var(--shadow-elevation-medium); transform: translateY(-1px) scale(1.02); }
+.nav-button.active-race:hover, .nav-button.active-race:focus { background-color: var(--nav-button-active-race-hover-bg); box-shadow: var(--shadow-elevation-high); transform: translateY(-2px) scale(1.03); }
 
-.nav-button.active-info { background-color: var(--nav-button-active-info-bg); color: var(--nav-button-active-info-text); }
-.nav-button.active-info:hover { background-color: var(--nav-button-active-info-hover-bg); }
+.nav-button.active-info { background-color: var(--nav-button-active-info-bg); color: var(--nav-button-active-info-text); box-shadow: var(--shadow-elevation-medium); transform: translateY(-1px) scale(1.02); }
+.nav-button.active-info:hover, .nav-button.active-info:focus { background-color: var(--nav-button-active-info-hover-bg); box-shadow: var(--shadow-elevation-high); transform: translateY(-2px) scale(1.03); }
 
-.nav-button.active-companion { background-color: var(--nav-button-active-companion-bg); color: var(--nav-button-active-companion-text); }
-.nav-button.active-companion:hover { background-color: var(--nav-button-active-companion-hover-bg); }
+.nav-button.active-companion { background-color: var(--nav-button-active-companion-bg); color: var(--nav-button-active-companion-text); box-shadow: var(--shadow-elevation-medium); transform: translateY(-1px) scale(1.02); }
+.nav-button.active-companion:hover, .nav-button.active-companion:focus { background-color: var(--nav-button-active-companion-hover-bg); box-shadow: var(--shadow-elevation-high); transform: translateY(-2px) scale(1.03); }
 
 
 .phase-button {
     padding: 0.5rem 1rem;
-    border-radius: 0.375rem;
+    border-radius: var(--border-radius-medium); /* Updated border-radius */
     border-width: 1px;
-    transition: background-color 0.2s ease-in-out, color 0.2s ease-in-out;
+    transition: background-color 0.2s ease-in-out, color 0.2s ease-in-out, transform 0.2s ease-in-out; /* Added transform */
     font-weight: 500;
+}
+.phase-button:hover:not(.active), .phase-button:focus:not(.active) { /* Added focus and transform */
+    transform: scale(1.03);
 }
 .phase-button-preseason { border-color: var(--phase-button-preseason-border); color: var(--phase-button-preseason-text); }
 .phase-button-preseason:hover:not(.active) { background-color: var(--phase-button-preseason-hover-bg); }
-.phase-button-preseason.active { background-color: var(--phase-button-preseason-active-bg); color: var(--phase-button-preseason-active-text); border-color: var(--phase-button-preseason-active-border); }
+.phase-button-preseason.active { background-color: var(--phase-button-preseason-active-bg); color: var(--phase-button-preseason-active-text); border-color: var(--phase-button-preseason-active-border); transform: scale(1.03);} /* Active transform */
+.phase-button-preseason.active:hover, .phase-button-preseason.active:focus { transform: scale(1.05); } /* Active hover/focus transform */
+
 
 .phase-button-base { border-color: var(--phase-button-base-border); color: var(--phase-button-base-text); }
 .phase-button-base:hover:not(.active) { background-color: var(--phase-button-base-hover-bg); }
-.phase-button-base.active { background-color: var(--phase-button-base-active-bg); color: var(--phase-button-base-active-text); }
+.phase-button-base.active { background-color: var(--phase-button-base-active-bg); color: var(--phase-button-base-active-text); transform: scale(1.03); }
+.phase-button-base.active:hover, .phase-button-base.active:focus { transform: scale(1.05); }
 
 .phase-button-specific { border-color: var(--phase-button-specific-border); color: var(--phase-button-specific-text); }
 .phase-button-specific:hover:not(.active) { background-color: var(--phase-button-specific-hover-bg); }
-.phase-button-specific.active { background-color: var(--phase-button-specific-active-bg); color: var(--phase-button-specific-active-text); border-color: var(--phase-button-specific-active-border); }
+.phase-button-specific.active { background-color: var(--phase-button-specific-active-bg); color: var(--phase-button-specific-active-text); border-color: var(--phase-button-specific-active-border); transform: scale(1.03); }
+.phase-button-specific.active:hover, .phase-button-specific.active:focus { transform: scale(1.05); }
 
 .phase-button-taper { border-color: var(--phase-button-taper-border); color: var(--phase-button-taper-text); }
 .phase-button-taper:hover:not(.active) { background-color: var(--phase-button-taper-hover-bg); }
-.phase-button-taper.active { background-color: var(--phase-button-taper-active-bg); color: var(--phase-button-taper-active-text); border-color: var(--phase-button-taper-active-border); }
+.phase-button-taper.active { background-color: var(--phase-button-taper-active-bg); color: var(--phase-button-taper-active-text); border-color: var(--phase-button-taper-active-border); transform: scale(1.03); }
+.phase-button-taper.active:hover, .phase-button-taper.active:focus { transform: scale(1.05); }
 
 .week-button {
-    padding: 0.5rem 0.75rem; border-radius: 0.375rem; border: 1px solid var(--week-button-border);
+    padding: 0.5rem 0.75rem; border-radius: var(--border-radius-medium); border: 1px solid var(--week-button-border); /* Updated border-radius */
     font-weight: 500; text-align: center;
-    transition: background-color 0.2s ease-in-out, color 0.2s ease-in-out, border-color 0.2s ease-in-out;
+    transition: background-color 0.2s ease-in-out, color 0.2s ease-in-out, border-color 0.2s ease-in-out, transform 0.2s ease-in-out; /* Added transform */
+}
+.week-button:hover:not(.active), .week-button:focus:not(.active) { /* Added focus and transform */
+    transform: scale(1.03);
 }
 .week-button.active {
     background-color: var(--week-button-active-bg);
+    transform: scale(1.03); /* Active transform */
+}
+.week-button.active:hover, .week-button.active:focus {
+    transform: scale(1.05); /* Active hover/focus transform */
     color: var(--week-button-active-text) !important;
     border-color: var(--week-button-active-border);
 }
@@ -558,7 +602,12 @@ body.dark-mode {
 .content-card {
     background-color: var(--content-card-bg);
     padding: 1rem;
-    border-radius: 0.5rem;
+    border-radius: var(--border-radius-large); /* Updated border-radius */
+    box-shadow: var(--shadow-elevation-medium);
+}
+body.dark-mode .content-card {
+    box-shadow: var(--dm-shadow-elevation-medium);
+    border-radius: var(--border-radius-large); /* Ensure consistency */
 }
 .content-card h3.phase-title-style { margin-bottom: 0.5rem; }
 
@@ -597,6 +646,7 @@ body.dark-mode {
     border-color: var(--input-userid-border);
     background-color: var(--main-container-bg); /* For dark mode */
     color: var(--text-color); /* For dark mode */
+    border-radius: var(--border-radius-medium); /* Added border-radius */
 }
 #userIdInput:focus {
     outline: 2px solid transparent; outline-offset: 2px; border-color: var(--input-userid-focus-border);
@@ -608,7 +658,20 @@ label[for="userIdInput"] {
     padding-left: 0.5rem;
 }
 #loginButton {
-    border-radius: 9999px;
+    border-radius: var(--border-radius-pill); /* Updated border-radius */
+    box-shadow: var(--shadow-elevation-low);
+    transition: transform 0.2s ease-in-out, box-shadow 0.2s ease-in-out;
+}
+#loginButton:hover, #loginButton:focus {
+    transform: translateY(-1px) scale(1.02);
+    box-shadow: var(--shadow-elevation-medium);
+}
+
+input[type="text"]:not(#userIdInput), /* Added base style for border-radius */
+input[type="number"], /* Added base style for border-radius */
+input[type="date"] { /* Added base style for border-radius */
+    border-radius: var(--border-radius-medium);
+    /* other existing styles for these inputs if any should be preserved */
 }
 
 input[type="text"]:not(#userIdInput):focus,
@@ -619,6 +682,7 @@ input[type="date"]:focus {
     box-shadow: 0 0 0 3px var(--input-focus-shadow);
     background-color: var(--main-container-bg); /* For dark mode */
     color: var(--text-color); /* For dark mode */
+    /* border-radius will be inherited from the base style above */
 }
 body.dark-mode input[type="text"]:not(#userIdInput),
 body.dark-mode input[type="number"],
@@ -626,6 +690,7 @@ body.dark-mode input[type="date"] {
     background-color: var(--dm-main-container-bg); /* Should be input field specific bg */
     color: var(--dm-text-color);
     border: 1px solid var(--dm-table-border); /* Example border */
+    border-radius: var(--border-radius-medium); /* Ensure consistency in dark mode */
 }
 
 
@@ -677,10 +742,15 @@ body.dark-mode input[type="date"] {
     color: var(--install-pwa-button-text);
     font-weight: 600;
     border: 2px solid var(--install-pwa-button-border);
+    border-radius: var(--border-radius-medium); /* Added border-radius */
+    box-shadow: var(--shadow-elevation-low);
+    transition: background-color 0.2s ease-in-out, border-color 0.2s ease-in-out, transform 0.2s ease-in-out, box-shadow 0.2s ease-in-out;
 }
-#installPwaButton:hover {
+#installPwaButton:hover, #installPwaButton:focus {
     background-color: var(--install-pwa-button-hover-bg);
     border-color: var(--install-pwa-button-hover-border);
+    transform: translateY(-1px) scale(1.02);
+    box-shadow: var(--shadow-elevation-medium);
 }
 
 .calendar-grid { display: grid; grid-template-columns: repeat(7, 1fr); gap: 1px; background-color: var(--calendar-grid-bg); border: 1px solid var(--calendar-grid-border); }
@@ -693,9 +763,15 @@ body.dark-mode input[type="date"] {
     color: var(--calendar-header-text);
     border: 1px solid var(--calendar-header-border);
 }
-.calendar-day { background-color: var(--calendar-day-bg); padding: 0.5rem; min-height: 100px; font-size: 0.75rem; border: 1px solid var(--calendar-day-border); cursor: default; }
-.calendar-day.has-activity { cursor: pointer; }
-.calendar-day.has-activity:hover { background-color: var(--calendar-day-hover-bg); }
+.calendar-day { background-color: var(--calendar-day-bg); padding: 0.5rem; min-height: 100px; font-size: 0.75rem; border: 1px solid var(--calendar-day-border); cursor: default; border-radius: var(--border-radius-small); /* Added border-radius */ }
+.calendar-day.has-activity {
+    cursor: pointer;
+    transition: transform 0.2s ease-in-out, background-color 0.2s ease-in-out; /* Added transition */
+}
+.calendar-day.has-activity:hover, .calendar-day.has-activity:focus { /* Added focus state */
+    background-color: var(--calendar-day-hover-bg);
+    transform: scale(1.03); /* Added transform */
+}
 .calendar-day.other-month { background-color: var(--calendar-day-other-month-bg); color: var(--calendar-day-other-month-text); cursor: default;}
 .calendar-day.other-month:hover { background-color: var(--calendar-day-other-month-bg); }
 .calendar-day.is-today { background-color: var(--calendar-day-today-bg); border: 2px solid var(--calendar-day-today-border); }
@@ -706,7 +782,7 @@ body.dark-mode .calendar-day.is-today .day-number { color: var(--dm-text-color);
 
 .activity-thumbnail {
     display: block; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
-    padding: 0.25rem; border-radius: 0.25rem; margin-top: 0.25rem;
+    padding: 0.25rem; border-radius: var(--border-radius-medium); margin-top: 0.25rem; /* Updated border-radius */
     font-size: 0.7rem;
 }
 .activity-thumbnail-easy { background-color: var(--activity-thumb-easy-bg); color: var(--activity-thumb-easy-text); }
@@ -774,15 +850,18 @@ body.dark-mode .custom-rect-border-this-week {
     color: var(--pdf-button-text);
     padding: 0.25rem 0.5rem;
     font-size: 0.75rem;
-    border-radius: 9999px;
+    border-radius: var(--border-radius-pill); /* Updated border-radius */
     font-weight: 500;
-    transition: background-color 0.2s;
+    transition: background-color 0.2s ease-in-out, transform 0.2s ease-in-out, box-shadow 0.2s ease-in-out;
     display: inline-flex;
     align-items: center;
     gap: 0.25rem;
+    box-shadow: var(--shadow-elevation-low);
 }
-.pdf-button:hover {
+.pdf-button:hover, .pdf-button:focus {
     background-color: var(--pdf-button-hover-bg);
+    transform: translateY(-1px) scale(1.02);
+    box-shadow: var(--shadow-elevation-medium);
 }
 .pdf-button svg {
     width: 0.875rem;
@@ -792,7 +871,7 @@ body.dark-mode .custom-rect-border-this-week {
     background-color: var(--calendar-nav-button-bg);
     color: var(--calendar-nav-button-text);
     padding: 0.5rem 0.75rem;
-    border-radius: 9999px;
+    border-radius: var(--border-radius-pill); /* Updated border-radius */
     transition: background-color 0.2s ease-in-out;
     display: inline-flex;
     align-items: center;
@@ -810,6 +889,61 @@ body.dark-mode .custom-rect-border-this-week {
 body.dark-mode .calendar-nav-button svg {
     color: var(--dm-text-color); /* ensure icons are visible */
 }
+.calendar-nav-button {
+    background-color: var(--calendar-nav-button-bg);
+    color: var(--calendar-nav-button-text);
+    padding: 0.5rem 0.75rem;
+    border-radius: var(--border-radius-pill); /* Updated border-radius */
+    transition: background-color 0.2s ease-in-out, box-shadow 0.2s ease-in-out, transform 0.2s ease-in-out; /* Added box-shadow and transform */
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 2.5rem;
+    height: 2.5rem;
+    box-shadow: var(--shadow-elevation-low); /* Base shadow */
+}
+.calendar-nav-button:hover,
+.calendar-nav-button:focus {
+    background-color: var(--calendar-nav-button-hover-bg);
+    box-shadow: var(--shadow-elevation-medium); /* Lift on hover */
+    transform: translateY(-1px) scale(1.02); /* Enhanced lift and pop */
+}
+body.dark-mode .calendar-nav-button {
+    box-shadow: var(--dm-shadow-elevation-low);
+}
+body.dark-mode .calendar-nav-button:hover,
+body.dark-mode .calendar-nav-button:focus {
+    box-shadow: var(--dm-shadow-elevation-medium);
+    /* transform should be inherited if not overridden by more specific dark mode rule */
+}
+
+
+/* Adding shadow to darkModeToggle */
+#darkModeToggle {
+    display: inline-flex; /* Assuming it's a button or link */
+    padding: 0.5rem; /* Adjust as needed */
+    border-radius: var(--border-radius-medium); /* Updated border-radius */
+    box-shadow: var(--shadow-elevation-low);
+    transition: box-shadow 0.2s ease-in-out, transform 0.2s ease-in-out, background-color 0.2s ease-in-out; /* Added background-color to transition */
+}
+
+#darkModeToggle:hover,
+#darkModeToggle:focus {
+    box-shadow: var(--shadow-elevation-medium);
+    transform: translateY(-1px) scale(1.02); /* Enhanced lift and pop */
+    /* Consider a subtle background change if appropriate, e.g. using var(--nav-button-hover-bg) */
+}
+
+body.dark-mode #darkModeToggle {
+    box-shadow: var(--dm-shadow-elevation-low);
+}
+
+body.dark-mode #darkModeToggle:hover,
+body.dark-mode #darkModeToggle:focus {
+    box-shadow: var(--dm-shadow-elevation-medium);
+    /* Consider a subtle background change if appropriate, e.g. using var(--dm-nav-button-hover-bg) */
+}
+
 
 #toggleRepeatsButton, #toggleZonesButton {
     background-color: var(--toggle-button-bg);
@@ -818,12 +952,14 @@ body.dark-mode .calendar-nav-button svg {
     padding: 0.4rem 0.9rem;
     font-size: 0.9rem;
     font-weight: 600;
-    border-radius: 0.375rem;
-    transition: background-color 0.2s, border-color 0.2s;
+    border-radius: var(--border-radius-medium); /* Updated border-radius */
+    transition: background-color 0.2s ease-in-out, border-color 0.2s ease-in-out, transform 0.2s ease-in-out;
 }
-#toggleRepeatsButton:hover, #toggleZonesButton:hover {
+#toggleRepeatsButton:hover, #toggleZonesButton:hover,
+#toggleRepeatsButton:focus, #toggleZonesButton:focus {
     background-color: var(--toggle-button-hover-bg);
     border-color: var(--toggle-button-hover-border);
+    transform: translateY(-1px) scale(1.02);
 }
 
 /* Today's Training Card - Activity Text Color Classes */
@@ -861,29 +997,78 @@ body.dark-mode .activity-text-mobility, body.dark-mode .pace-text-mobility { col
 /* --- Companion App Styles --- */
 .companion-nav-button {
     padding: 0.6rem 1.1rem;
-    border-radius: 0.375rem;
-    transition: background-color 0.2s ease-in-out, color 0.2s ease-in-out, box-shadow 0.2s ease-in-out;
+    border-radius: var(--border-radius-medium); /* Updated border-radius */
+    transition: background-color 0.2s ease-in-out, color 0.2s ease-in-out, box-shadow 0.2s ease-in-out, transform 0.2s ease-in-out;
     font-weight: 600;
-    box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+    box-shadow: var(--shadow-elevation-low); /* Updated shadow */
     cursor: pointer;
 }
-.companion-nav-button:hover:not(.active) {
+.companion-nav-button:hover:not(.active),
+.companion-nav-button:focus:not(.active) {
     background-color: var(--companion-nav-button-hover-bg);
     color: var(--companion-nav-button-hover-text);
+    box-shadow: var(--shadow-elevation-medium); /* Lift on hover */
+    transform: translateY(-1px) scale(1.02); /* Enhanced lift and pop */
+}
+.companion-nav-button.active { /* Common style for active companion buttons */
+    box-shadow: var(--shadow-elevation-medium);
+    transform: translateY(-1px) scale(1.02);
+}
+.companion-nav-button.active:hover,
+.companion-nav-button.active:focus { /* Common hover for active companion buttons */
+    box-shadow: var(--shadow-elevation-high);
+    transform: translateY(-2px) scale(1.03);
 }
 .companion-nav-button.active.drills { background-color: var(--companion-nav-button-active-drills-bg); color: var(--companion-nav-button-active-drills-text); }
 .companion-nav-button.active.mobility { background-color: var(--companion-nav-button-active-mobility-bg); color: var(--companion-nav-button-active-mobility-text); }
 .companion-nav-button.active.strength { background-color: var(--companion-nav-button-active-strength-bg); color: var(--companion-nav-button-active-strength-text); }
 
+/* Ensure dark mode nav buttons also get shadows if variables are correctly assigned */
+body.dark-mode .nav-button {
+    box-shadow: var(--dm-shadow-elevation-low);
+}
+body.dark-mode .nav-button:hover:not(.active-overview):not(.active-plan):not(.active-calendar):not(.active-race):not(.active-info):not(.active-companion) {
+    box-shadow: var(--dm-shadow-elevation-medium);
+}
+body.dark-mode .nav-button.active-overview,
+body.dark-mode .nav-button.active-plan,
+body.dark-mode .nav-button.active-calendar,
+body.dark-mode .nav-button.active-race,
+body.dark-mode .nav-button.active-info,
+body.dark-mode .nav-button.active-companion {
+    box-shadow: var(--dm-shadow-elevation-medium);
+}
+body.dark-mode .nav-button.active-overview:hover,
+body.dark-mode .nav-button.active-plan:hover,
+body.dark-mode .nav-button.active-calendar:hover,
+body.dark-mode .nav-button.active-race:hover,
+body.dark-mode .nav-button.active-info:hover,
+body.dark-mode .nav-button.active-companion:hover {
+    box-shadow: var(--dm-shadow-elevation-high);
+}
+
+body.dark-mode .companion-nav-button {
+    box-shadow: var(--dm-shadow-elevation-low);
+}
+body.dark-mode .companion-nav-button:hover:not(.active) {
+    box-shadow: var(--dm-shadow-elevation-medium);
+}
+body.dark-mode .companion-nav-button.active {
+    box-shadow: var(--dm-shadow-elevation-medium);
+}
+body.dark-mode .companion-nav-button.active:hover {
+    box-shadow: var(--dm-shadow-elevation-high);
+}
+
 .exercise-card {
     background-color: var(--exercise-card-bg);
-    border-radius: 0.5rem;
+    border-radius: var(--border-radius-large); /* Updated border-radius */
     padding: 1rem;
     box-shadow: var(--exercise-card-shadow);
-    transition: transform 0.2s, box-shadow 0.2s;
+    transition: transform 0.2s ease-in-out, box-shadow 0.2s ease-in-out; /* Ensured ease-in-out */
 }
-.exercise-card:hover {
-    transform: translateY(-2px);
+.exercise-card:hover, .exercise-card:focus-within { /* Added focus-within for keyboard navigation */
+    transform: translateY(-2px) scale(1.01); /* Slightly enhanced with scale */
     box-shadow: var(--exercise-card-hover-shadow);
 }
 .exercise-card h3 {
@@ -918,16 +1103,20 @@ body.dark-mode .activity-text-mobility, body.dark-mode .pace-text-mobility { col
 .updates-card { /* Used on overview page */
     border-left-width: 4px;
     border-left-color: var(--updates-card-border-l);
+    box-shadow: var(--shadow-elevation-medium); /* Added shadow */
+    border-radius: var(--border-radius-large); /* Updated border-radius */
 }
 body.dark-mode .updates-card {
     border-left-color: var(--dm-updates-modal-header-gradient-start); /* Match modal style */
+    box-shadow: var(--dm-shadow-elevation-medium); /* Added shadow for dark mode */
+    border-radius: var(--border-radius-large); /* Ensure consistency */
 }
 
 
 /* --- Updates Modal --- */
 #updates-modal .updates-modal-content-wrapper {
     background-color: var(--updates-modal-bg);
-    border-radius: 0.75rem;
+    border-radius: var(--border-radius-xl); /* Updated border-radius */
     box-shadow: var(--updates-modal-shadow);
     width: 100%;
     max-width: 36rem; /* 576px */
@@ -948,7 +1137,7 @@ body.dark-mode .updates-card {
     right: 0.75rem;
     color: var(--updates-modal-close-text);
     background-color: var(--updates-modal-close-bg);
-    border-radius: 9999px;
+    border-radius: var(--border-radius-pill); /* Updated border-radius */
     width: 2rem;
     height: 2rem;
     display: flex;
@@ -967,11 +1156,14 @@ body.dark-mode .updates-card {
     border-left-color: var(--updates-modal-card-border-l);
     background-color: var(--updates-modal-card-bg);
     padding: 1rem;
-    border-radius: 0.5rem;
+    border-radius: var(--border-radius-large); /* Updated border-radius */
+    box-shadow: var(--shadow-elevation-low); /* Added shadow */
 }
 body.dark-mode #updates-modal .updates-card {
     border-left-color: var(--dm-updates-modal-header-gradient-start);
     background-color: var(--dm-updates-modal-card-bg); /* this should be darker than modal content wrapper */
+    box-shadow: var(--dm-shadow-elevation-low); /* Added shadow for dark mode */
+    border-radius: var(--border-radius-large); /* Ensure consistency */
 }
 body.dark-mode #updates-modal .updates-modal-content-wrapper {
      background-color: var(--dm-main-container-bg); /* Slightly lighter than card bg */
@@ -1416,11 +1608,26 @@ body.dark-mode #mileage-chart-modal > div {
 body.dark-mode #mileage-chart-modal-title {
     color: var(--dm-title-marathon-text); /* Or a more general heading color for dark mode */
 }
+
+/* Base style for closeMileageChartBtn */
+#closeMileageChartBtn {
+    /* Assuming it's positioned with position:absolute and top/right properties in JS or other CSS */
+    padding: 0.5rem; /* Example padding */
+    background-color: transparent; /* Or a subtle background */
+    border-radius: var(--border-radius-pill);
+    transition: background-color 0.2s ease-in-out, color 0.2s ease-in-out;
+    /* Add other necessary base styles like display:flex, align-items:center, justify-content:center if it contains an icon */
+}
+/* Hover style for light mode could be added if needed */
+/* #closeMileageChartBtn:hover { ... } */
+
 body.dark-mode #closeMileageChartBtn {
     color: var(--dm-text-color);
+    border-radius: var(--border-radius-pill); /* Ensure consistency */
 }
 body.dark-mode #closeMileageChartBtn:hover {
     color: var(--dm-nav-button-hover-text);
+    background-color: var(--dm-nav-button-hover-bg); /* Example hover effect */
 }
 
 /* Ensure chart.js legend/axes are visible in dark mode */
@@ -1431,6 +1638,21 @@ body.dark-mode .chart-container {
 body.dark-mode #mileageChartModalCanvas, body.dark-mode /* other canvas IDs */ {
     /* Chart.js often sets its own colors. May need JS to update chart options for dark mode */
 }
+
+body.dark-mode #mileage-chart-modal > div {
+    background-color: var(--dm-main-container-bg);
+    color: var(--dm-text-color);
+    box-shadow: var(--dm-updates-modal-shadow); /* Added shadow consistent with other modals */
+}
+
+#mileage-chart-modal > div {
+    /* Assuming light mode styling is needed too if not covered by a general modal style */
+    background-color: var(--main-container-bg); /* Or a specific modal bg if defined */
+    padding: 1.5rem; /* Example padding */
+    border-radius: var(--border-radius-xl); /* Updated border-radius */
+    box-shadow: var(--updates-modal-shadow); /* Added shadow consistent with other modals */
+}
+
 
 /* Specific text color overrides for today-pace-table if not covered by general text-stone or activity-text */
 body.dark-mode .today-pace-table .text-teal-700 { color: #4fd1c5 !important; /* Lighter teal */ }
@@ -1495,3 +1717,51 @@ body.dark-mode #todayNextDay:not(:disabled):hover {
 
 /* The title area for Today card uses: <div class="flex justify-between items-center w-full">
    This should already handle layout well. These CSS rules are mostly for subtle enhancements. */
+
+/* --- Modal Fade-in/Out Transitions --- */
+.modal-base-style { /* Apply to modal container itself */
+    transition: opacity 0.25s ease-in-out, transform 0.25s ease-in-out;
+    /* Ensure the modal is displayed (e.g., display: flex/block) for transitions to work.
+       This class only handles the transition properties themselves.
+       Actual visibility should be controlled by adding/removing classes below. */
+}
+
+.modal-hidden-state { /* Add this class when modal should be hidden */
+    opacity: 0;
+    transform: scale(0.95);
+    pointer-events: none; /* Prevent interaction when hidden */
+}
+
+.modal-visible-state { /* Add this class when modal should be visible */
+    opacity: 1;
+    transform: scale(1);
+    pointer-events: auto; /* Allow interaction when visible */
+}
+/* Example usage on actual modal IDs (assuming they are initially hidden using modal-hidden-state) */
+/* And JS adds modal-visible-state to show them */
+/*
+#mileage-chart-modal, #updates-modal {
+    display: flex; /* or block, depending on layout - needed for opacity/transform to work
+    align-items: center; /* Example centering */
+    justify-content: center; /* Example centering */
+    position: fixed; /* Example positioning */
+    /* ... other fixed position styles like top, left, width, height ... */
+/* } */
+
+/* --- Keyframes for Fade-In Animation --- */
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(10px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* --- App Content Tab Transitions --- */
+/* Assuming direct children of #app-content are sections that get replaced */
+#app-content > section {
+    animation: fadeIn 0.3s ease-in-out forwards;
+}
