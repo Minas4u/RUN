@@ -1765,3 +1765,11 @@ body.dark-mode #todayNextDay:not(:disabled):hover {
 #app-content > section {
     animation: fadeIn 0.3s ease-in-out forwards;
 }
+
+/* --- Training Activity Icon Styles --- */
+.training-activity-icon {
+    width: 2rem;  /* Approx 32px */
+    height: 2rem; /* Approx 32px */
+    object-fit: contain; /* Ensures aspect ratio is maintained if SVGs vary */
+    /* vertical-align: middle; /* Useful if not in a flex container, but items-center on parent handles it */
+}

@@ -30,6 +30,22 @@ const companionDataUrl = "https://script.google.com/macros/s/AKfycbw3fpGf2W8ANwI
 // Global variables to hold application state and data.
 let marathonPlan = null; // Stores the entire JSON object from the Google Sheet.
 let datedTrainingPlan = []; // Stores each day of the plan with a specific date.
+
+const activityIconMap = {
+    'base': 'icons/base_run.svg',
+    'easy': 'icons/easy_run.svg',
+    'fartlek': 'icons/fartlek_run.svg',
+    'tempo': 'icons/tempo_run.svg',
+    'interval': 'icons/interval_run.svg',
+    'intervals': 'icons/interval_run.svg', // Alias for interval
+    'long': 'icons/long_run.svg',
+    'long run': 'icons/long_run.svg', // Alias for long run
+    'rest': 'icons/rest_day.svg',
+    'recovery': 'icons/easy_run.svg', // Assuming recovery runs use easy icon
+    // Consider adding 'strides', 'hills', 'race' if specific icons are made
+    // For now, they will not have an icon.
+};
+
 let currentRaceDate = null; // The calculated date of the race.
 let currentTodayViewDate = null; // Stores the date currently displayed in the "Today's Training" card.
 let calendarCurrentDisplayDate = new Date(); // The month/year the calendar is currently showing.
@@ -565,6 +581,7 @@ function renderTodaysTraining() {
     });
 
     let activityContentHtml = '';
+    let iconHtml = ''; // Initialize iconHtml
     const isActualToday = isSameDay(displayDate, new Date(new Date().setHours(0,0,0,0)));
     const titleText = isActualToday ? "Today" : formatDate(displayDate, { weekday: 'short' });
 
@@ -595,8 +612,23 @@ function renderTodaysTraining() {
     if (todaysActivity) {
         const activityTextForDisplay = todaysActivity.activity.replace(/^[^:]+:\s*/, '');
         const activityDescriptionOnly = todaysActivity.activity.replace(/^[^:]+:\s*/, '').trim();
-        const firstWord = activityDescriptionOnly.split(" ")[0].toLowerCase().replace(/:$/, '');
-        const colorClass = getActivityTextColorClass(firstWord);
+        const firstWordLower = activityDescriptionOnly.split(" ")[0].toLowerCase().replace(/:$/, '');
+        const colorClass = getActivityTextColorClass(firstWordLower);
+
+        // Icon logic
+        let matchedKey = null;
+        if (activityIconMap[firstWordLower]) {
+            matchedKey = firstWordLower;
+        } else { // Fallback for multi-word keys or common variations
+            const activityDescLower = activityDescriptionOnly.toLowerCase();
+            if (activityDescLower.includes('long run')) matchedKey = 'long run';
+            else if (activityDescLower.includes('interval')) matchedKey = 'interval';
+            // Add more specific fallbacks if needed e.g. "recovery run" -> "recovery"
+        }
+        const iconPath = matchedKey ? activityIconMap[matchedKey] : null;
+        if (iconPath) {
+            iconHtml = `<img src="${iconPath}" alt="${matchedKey} icon" class="training-activity-icon ml-2">`; // Added ml-2 for spacing
+        }
 
         const lt2PaceString = marathonPlan?.settings?.defaultLt2Speed || "N/A";
         const paceString = getPaceStringForActivity(todaysActivity.activity, lt2PaceString);
@@ -606,7 +638,10 @@ function renderTodaysTraining() {
             <div class="todays-activity-box">
                 <p><strong class="activity-text ${colorClass}">${activityTextForDisplay}</strong></p>
                 ${paceHtml}
-                <p class="text-xs text-stone-500 mt-2">Phase: ${todaysActivity.phaseName} | Week: ${todaysActivity.weekNum}</p>
+                <div class="activity-meta-container flex items-center mt-2">
+                    <p class="text-xs text-stone-500">Phase: ${todaysActivity.phaseName} | Week: ${todaysActivity.weekNum}</p>
+                    ${iconHtml}
+                </div>
             </div>
         `;
         if (todaysActivity.notes) {
