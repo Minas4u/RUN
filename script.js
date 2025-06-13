@@ -253,6 +253,14 @@ document.addEventListener('DOMContentLoaded', () => {
         applyTheme('light');
     }
     // --- End of Dark Mode Toggle ---
+
+    // Initialize modals for animation
+    if (mileageChartModal) {
+        mileageChartModal.classList.add('modal-base-style', 'modal-hidden-state');
+    }
+    if (updatesModal) {
+        updatesModal.classList.add('modal-base-style', 'modal-hidden-state');
+    }
 });
 
 /**
@@ -274,21 +282,33 @@ function initializeApp() {
 
     // Add event listeners for the mileage chart modal
     if(mileageChartModal && closeMileageChartBtn) {
-        closeMileageChartBtn.addEventListener('click', () => mileageChartModal.classList.add('hidden'));
+        closeMileageChartBtn.addEventListener('click', () => {
+            mileageChartModal.classList.add('modal-hidden-state');
+            mileageChartModal.classList.remove('modal-visible-state');
+            // Optional: setTimeout(() => mileageChartModal.classList.add('hidden'), 250); // If display:none is still desired
+        });
         mileageChartModal.addEventListener('click', (e) => {
             if (e.target.id === 'mileage-chart-modal') {
-                mileageChartModal.classList.add('hidden');
+                mileageChartModal.classList.add('modal-hidden-state');
+                mileageChartModal.classList.remove('modal-visible-state');
+                // Optional: setTimeout(() => mileageChartModal.classList.add('hidden'), 250);
             }
         });
     }
 
     // Add event listeners for the new updates modal
     if(updatesModal && closeUpdatesModalBtn) {
-        closeUpdatesModalBtn.addEventListener('click', () => updatesModal.classList.add('hidden'));
+        closeUpdatesModalBtn.addEventListener('click', () => {
+            updatesModal.classList.add('modal-hidden-state');
+            updatesModal.classList.remove('modal-visible-state');
+            // Optional: setTimeout(() => updatesModal.classList.add('hidden'), 250);
+        });
         updatesModal.addEventListener('click', (e) => {
              // Closes modal if user clicks on the background overlay
             if (e.target.id === 'updates-modal') {
-                updatesModal.classList.add('hidden');
+                updatesModal.classList.add('modal-hidden-state');
+                updatesModal.classList.remove('modal-visible-state');
+                // Optional: setTimeout(() => updatesModal.classList.add('hidden'), 250);
             }
         });
     }
@@ -852,7 +872,10 @@ async function showUpdatesModalIfNeeded() {
         </div>`).join('');
 
         container.innerHTML = `<h2 class="text-2xl font-bold text-center mb-4">Team Updates</h2><div class="space-y-4">${list}</div>`;
-        modal.classList.remove('hidden');
+        modal.classList.remove('hidden'); // Ensure it's not display:none for animation
+        // modal-base-style should already be on the element from DOMContentLoaded
+        modal.classList.remove('modal-hidden-state');
+        modal.classList.add('modal-visible-state');
 
     } catch(error) {
         console.error("Failed to show updates modal:", error);
@@ -1067,7 +1090,10 @@ function renderWeekDetails(phaseIndex, weekIndex) {
     const showMileageChartBtnPlan = document.getElementById('showMileageChartBtnPlan'); // Re-fetch
     if(showMileageChartBtnPlan) showMileageChartBtnPlan.addEventListener('click', () => {
         if(mileageChartModal) {
-            mileageChartModal.classList.remove('hidden');
+            mileageChartModal.classList.remove('hidden'); // Ensure it's not display:none for animation
+            // modal-base-style should already be on the element from DOMContentLoaded
+            mileageChartModal.classList.remove('modal-hidden-state');
+            mileageChartModal.classList.add('modal-visible-state');
             renderMileageChart();
         }
     });
