@@ -31,6 +31,35 @@ const companionDataUrl = "https://script.google.com/macros/s/AKfycbw3fpGf2W8ANwI
 let marathonPlan = null; // Stores the entire JSON object from the Google Sheet.
 let datedTrainingPlan = []; // Stores each day of the plan with a specific date.
 
+const marathonGreats = [
+    "Eliud Kipchoge", "Kelvin Kiptum", "Kenenisa Bekele", "Haile Gebrselassie",
+    "Samuel Wanjiru", "Abebe Bikila", "Wilson Kipsang", "Geoffrey Mutai",
+    "Dennis Kimetto", "Tsegaye Kebede", "Evans Chebet", "Tamirat Tola",
+    "Sisay Lemma", "Lawrence Cherono", "Khalid Khannouchi", "Abel Kirui",
+    "Gezahegne Abera", "Stephen Kiprotich", "Jaouad Gharib", "Patrick Makau",
+    "Moses Mosop", "Frank Shorter", "Lelisa Desisa", "Ghirmay Ghebreslassie",
+    "Stefano Baldini", "Brigid Kosgei", "Paula Radcliffe", "Catherine Ndereba",
+    "Tigist Assefa", "Sifan Hassan", "Mary Keitany", "Ruth Chepngetich",
+    "Peres Jepchirchir", "Joan Benoit Samuelson", "Grete Waitz", "Rosa Mota",
+    "Naoko Takahashi", "Constantina Diță", "Mizuki Noguchi", "Tiki Gelana",
+    "Derartu Tulu", "Fatuma Roba", "Irina Mikitenko", "Joyciline Jepkosgei",
+    "Hellen Obiri", "Yalemzerf Yehualaw", "Gete Wami", "Amane Beriso",
+    "Lornah Kiplagat", "Jemima Sumgong"
+];
+
+/**
+ * Shuffles an array in place using the Fisher-Yates algorithm.
+ * @param {Array} array The array to shuffle.
+ */
+function shuffleArray(array) {
+    for (let i = array.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [array[i], array[j]] = [array[j], array[i]]; // Swap elements
+    }
+}
+
+shuffleArray(marathonGreats); // Shuffle the list on script load
+
 const activityIconMap = {
     'base': 'icons/base_run.svg',
     'easy': 'icons/easy_run.svg',
@@ -277,7 +306,57 @@ document.addEventListener('DOMContentLoaded', () => {
     if (updatesModal) {
         updatesModal.classList.add('modal-base-style', 'modal-hidden-state');
     }
+
+    populateAndScrollRunnersList(); // Populate and start scrolling names
 });
+
+/**
+ * Populates the #runners-list with names from marathonGreats,
+ * duplicates them for seamless scrolling, and applies the scrolling animation.
+ */
+function populateAndScrollRunnersList() {
+    const runnersListElement = document.getElementById('runners-list');
+    if (!runnersListElement) {
+        console.warn('Runners list element (#runners-list) not found.');
+        return;
+    }
+
+    // Clear any existing items
+    runnersListElement.innerHTML = '';
+
+    if (marathonGreats.length === 0) {
+        // Optionally display a message if the list is empty
+        // const li = document.createElement('li');
+        // li.textContent = "No names to display.";
+        // runnersListElement.appendChild(li);
+        return; // No need to proceed if there are no names
+    }
+
+    // 1. Populate the list with initial set of names
+    marathonGreats.forEach(name => {
+        const li = document.createElement('li');
+        li.textContent = name;
+        runnersListElement.appendChild(li);
+    });
+
+    // 2. Duplicate list items for seamless scrolling
+    //    Only duplicate if the container is visible (md:block implies it might be hidden on small screens)
+    const scrollWidget = document.getElementById('runners-scroll-widget');
+    if (scrollWidget && getComputedStyle(scrollWidget).display !== 'none') {
+        const listItems = runnersListElement.querySelectorAll('li');
+        if (listItems.length > 0) { // Check if items were actually added
+            listItems.forEach(item => {
+                runnersListElement.appendChild(item.cloneNode(true));
+            });
+        }
+    }
+
+    // 3. Add 'scrolling' class to start animation
+    //    Only add if there are items to scroll (which implies marathonGreats.length > 0)
+    if (runnersListElement.hasChildNodes()) { // Check if list is populated
+        runnersListElement.classList.add('scrolling');
+    }
+}
 
 /**
  * Initializes the main application after a successful login and data fetch.

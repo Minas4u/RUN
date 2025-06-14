@@ -11,39 +11,59 @@
     <link rel="stylesheet" href="style.css">
 </head>
 <body class="min-h-screen p-4 py-8"> 
-    <div id="login-container" class="main-container">
-        <header class="mb-8 text-center">
-            <div class="css-logo-dna">
-                <span class="logo-d">D</span><span class="logo-n">N</span><span class="logo-a">A</span>
+    <div id="login-container" class="main-container"> <!-- Existing: max-width: 64rem; -->
+        <!-- This will become a flex container for two columns on md+ screens -->
+        <div id="login-layout-wrapper" class="md:flex md:gap-8 lg:gap-12">
+
+            <!-- Left Column: Existing Login Form -->
+            <div id="login-form-column" class="md:w-1/2 lg:w-2/5 xl:w-1/3 md:flex-shrink-0">
+                <header class="mb-8 text-center">
+                    <div class="css-logo-dna">
+                        <span class="logo-d">D</span><span class="logo-n">N</span><span class="logo-a">A</span>
+                    </div>
+                    <h1 class="text-3xl sm:text-4xl main-title text-stone-800 mt-2">
+                        <span class="title-project" id="mainTitleProject">project:</span> <span class="title-marathon" id="mainTitleMarathon">Marathon</span>
+                    </h1>
+                </header>
+                <div class="space-y-4">
+                    <button id="installPwaButton" class="w-full flex justify-center py-2 px-4 border-transparent rounded-md shadow-sm text-sm font-medium hidden mb-4">
+                        Install App
+                    </button>
+                    <div>
+                        <label for="userIdInput" class="block text-sm font-medium text-stone-700 mb-1">User ID:</label>
+                        <input type="text" id="userIdInput" name="userIdInput" class="mt-1 block w-full px-3 py-2 shadow-sm sm:text-sm" placeholder="Enter your User ID">
+                    </div>
+                    <!-- #loginButtonWrapper and #loginButton are here -->
+                    <div id="loginButtonWrapper" style="position: relative;">
+                        <button id="loginButton" class="w-full flex justify-center py-2 px-4 border border-transparent shadow-sm text-sm font-medium text-white bg-sky-600 hover:bg-sky-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-sky-500">
+                            Enter the Run
+                        </button>
+                        <div class="runner" id="runner1"></div>
+                        <div class="runner" id="runner2"></div>
+                        <div class="runner" id="runner3"></div>
+                    </div>
+                    <div id="login-loading-message" class="hidden text-center text-sky-600">
+                        <svg class="animate-spin h-5 w-5 text-sky-600 mx-auto mb-1" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                            <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                            <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                        </svg>
+                        Running...
+                    </div>
+                    <div id="login-error-message" class="hidden"></div>
+                </div>
             </div>
-            <h1 class="text-3xl sm:text-4xl main-title text-stone-800 mt-2"> 
-                <span class="title-project" id="mainTitleProject">project:</span> <span class="title-marathon" id="mainTitleMarathon">Marathon</span>
-            </h1>
-        </header>
-        <div class="space-y-4">
-            <button id="installPwaButton" class="w-full flex justify-center py-2 px-4 border-transparent rounded-md shadow-sm text-sm font-medium hidden mb-4">
-                Install App
-            </button>
-            <div>
-                <label for="userIdInput" class="block text-sm font-medium text-stone-700 mb-1">User ID:</label>
-                <input type="text" id="userIdInput" name="userIdInput" class="mt-1 block w-full px-3 py-2 shadow-sm sm:text-sm" placeholder="Enter your User ID">
+
+            <!-- Right Column: New Scrolling Names List -->
+            <div id="runners-scroll-widget" class="hidden md:block md:w-1/2 lg:w-3/5 xl:w-2/3 md:pl-4 lg:pl-8">
+                <!-- Content for this will be styled and animated with CSS -->
+                <h3 class="text-xl font-semibold text-stone-700 mb-4 text-center md:text-left">Marathon Greats</h3>
+                <div id="runners-scroll-container">
+                    <ul id="runners-list">
+                        <!-- JS will populate this -->
+                    </ul>
+                </div>
             </div>
-            <div id="loginButtonWrapper" style="position: relative;">
-                <button id="loginButton" class="w-full flex justify-center py-2 px-4 border border-transparent shadow-sm text-sm font-medium text-white bg-sky-600 hover:bg-sky-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-sky-500">
-                    Enter the Run
-                </button>
-                <div class="runner" id="runner1"></div>
-                <div class="runner" id="runner2"></div>
-                <div class="runner" id="runner3"></div>
-            </div>
-            <div id="login-loading-message" class="hidden text-center text-sky-600">
-                <svg class="animate-spin h-5 w-5 text-sky-600 mx-auto mb-1" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
-                    <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
-                    <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
-                </svg>
-                Running...
-            </div>
-            <div id="login-error-message" class="hidden"></div>
+
         </div>
     </div>
 
