@@ -353,18 +353,35 @@ async function handleLogin() {
     loginErrorMessageDiv.classList.add('hidden');
     loginLoadingMessageDiv.classList.remove('hidden');
     currentWebAppUrl = userSpecificDataSources[userId];
+
+    const loginButtonWrapper = document.getElementById('loginButtonWrapper'); // Get the wrapper
+
     if (currentWebAppUrl) {
         localStorage.setItem('lastUserID', userId); // Remember user for next visit.
         localStorage.setItem('lastWebAppUrl', currentWebAppUrl);
+
+        if (loginButtonWrapper) {
+            loginButtonWrapper.classList.add('animate-runners');
+        }
+
         const success = await fetchMarathonPlan(currentWebAppUrl);
+
+        if (loginButtonWrapper) {
+            loginButtonWrapper.classList.remove('animate-runners'); // Stop animation
+        }
+
         if (success) initializeApp();
         else {
             loginLoadingMessageDiv.classList.add('hidden');
+            // Ensure animation stops on error too, though already handled above
         }
     } else {
         loginErrorMessageDiv.textContent = "Invalid User ID. Try again or contact admin.";
         loginErrorMessageDiv.classList.remove('hidden');
         loginLoadingMessageDiv.classList.add('hidden');
+        if (loginButtonWrapper) { // Also stop animation if User ID was invalid from start
+            loginButtonWrapper.classList.remove('animate-runners');
+        }
     }
 }
 
