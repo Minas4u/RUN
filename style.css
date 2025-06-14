@@ -647,6 +647,11 @@ body.dark-mode .content-card {
     background-color: var(--main-container-bg); /* For dark mode */
     color: var(--text-color); /* For dark mode */
     border-radius: var(--border-radius-medium); /* Added border-radius */
+    max-width: 320px; /* Set a max-width */
+    margin-left: auto;   /* Center the input */
+    margin-right: auto;  /* Center the input */
+    /* Tailwind's w-full will make it try to be 100% of parent,
+       but max-width will cap it. Margin auto centers it. */
 }
 #userIdInput:focus {
     outline: 2px solid transparent; outline-offset: 2px; border-color: var(--input-userid-focus-border);
@@ -660,11 +665,22 @@ label[for="userIdInput"] {
 #loginButton {
     border-radius: var(--border-radius-pill); /* Updated border-radius */
     box-shadow: var(--shadow-elevation-low);
-    transition: transform 0.2s ease-in-out, box-shadow 0.2s ease-in-out;
+    /* Tailwind classes handle base bg, text color, padding, font, etc. */
+    /* Ensure w-full from Tailwind is respected unless a max-width is added here. */
+    transition: background-color 0.2s ease-in-out,
+                transform 0.15s ease-in-out,
+                box-shadow 0.2s ease-in-out;
 }
-#loginButton:hover, #loginButton:focus {
-    transform: translateY(-1px) scale(1.02);
+#loginButton:hover,
+#loginButton:focus {
+    /* hover:bg-sky-700 is handled by Tailwind */
+    transform: translateY(-2px) scale(1.03); /* More pronounced hover/focus */
     box-shadow: var(--shadow-elevation-medium);
+}
+#loginButton:active {
+    transform: scale(0.96) translateY(1px); /* Clear press feedback */
+    background-color: var(--nav-button-active-overview-hover-bg); /* Darker shade like active nav buttons */
+    box-shadow: none; /* Flatten shadow on press */
 }
 
 input[type="text"]:not(#userIdInput), /* Added base style for border-radius */
@@ -1772,4 +1788,81 @@ body.dark-mode #todayNextDay:not(:disabled):hover {
     height: 2rem; /* Approx 32px */
     object-fit: contain; /* Ensures aspect ratio is maintained if SVGs vary */
     /* vertical-align: middle; /* Useful if not in a flex container, but items-center on parent handles it */
+}
+
+/* --- Login Button Runner Animation --- */
+#loginButtonWrapper {
+    position: relative;
+    /* If #loginButton has a max-width, this wrapper might need it too.
+       Currently, #loginButton uses w-full, so this wrapper will also be w-full of its parent. */
+}
+
+.runner {
+    position: absolute;
+    width: 8px;
+    height: 8px;
+    background-color: var(--logo-d-text); /* Using a theme color (sky blue) */
+    border-radius: 50%; /* Simple circles */
+    opacity: 0; /* Hidden by default, made visible by .animate-runners */
+    left: 50%;
+    top: 100%; /* Start below the button */
+    transform: translate(-50%, 0); /* Center below */
+}
+
+#loginButtonWrapper.animate-runners .runner {
+    opacity: 0.7; /* Become visible when animation starts */
+}
+
+#loginButtonWrapper.animate-runners #runner1 {
+    animation: raceAroundButton1 1.5s linear infinite;
+}
+#loginButtonWrapper.animate-runners #runner2 {
+    animation: raceAroundButton2 1.5s linear infinite;
+    animation-delay: 0.25s; /* Stagger start times */
+}
+#loginButtonWrapper.animate-runners #runner3 {
+    animation: raceAroundButton3 1.5s linear infinite;
+    animation-delay: 0.5s; /* Stagger start times */
+}
+
+/* Keyframes for simplified "around the button" effect */
+/* Each runner fades in/out at specific points to simulate continuous motion */
+
+@keyframes raceAroundButton1 {
+    0% { transform: translate(-50%, 5px) scale(0.8); left: 50%; top: 100%; opacity: 0; } /* Start below, transparent */
+    10% { transform: translate(-50%, 5px) scale(0.8); left: 50%; top: 100%; opacity: 0.7; } /* Fade in below */
+    25% { transform: translate(0px, -50%) scale(1); left: 100%; top: 50%; opacity: 1; margin-left: 5px; } /* Right middle, margin to clear button edge */
+    40% { transform: translate(0px, -50%) scale(1); left: 100%; top: 50%; opacity: 0; margin-left: 5px; } /* Fade out right */
+    40.01% { transform: translate(-50%, -5px) scale(0.8); left: 50%; top: 0%; opacity: 0; margin-top: -5px; } /* Teleport to top, transparent, margin to clear */
+    50% { transform: translate(-50%, -5px) scale(0.8); left: 50%; top: 0%; opacity: 0.7; margin-top: -5px; } /* Fade in top */
+    75% { transform: translate(-100%, -50%) scale(1); left: 0%; top: 50%; opacity: 1; margin-left: -5px; } /* Left middle, margin to clear */
+    90% { transform: translate(-100%, -50%) scale(1); left: 0%; top: 50%; opacity: 0; margin-left: -5px; } /* Fade out left */
+    90.01% { transform: translate(-50%, 5px) scale(0.8); left: 50%; top: 100%; opacity: 0; } /* Teleport to bottom, transparent */
+    100% { transform: translate(-50%, 5px) scale(0.8); left: 50%; top: 100%; opacity: 0; } /* Ensure ends transparent */
+}
+
+@keyframes raceAroundButton2 { /* Staggered and slightly different Y offset */
+    0% { transform: translate(-50%, 8px) scale(0.7); left: 50%; top: 100%; opacity: 0; }
+    10% { transform: translate(-50%, 8px) scale(0.7); left: 50%; top: 100%; opacity: 0.6; }
+    25% { transform: translate(0px, -50%) scale(0.9); left: 100%; top: 50%; opacity: 0.9; margin-left: 8px; }
+    40% { transform: translate(0px, -50%) scale(0.9); left: 100%; top: 50%; opacity: 0; margin-left: 8px; }
+    40.01% { transform: translate(-50%, -8px) scale(0.7); left: 50%; top: 0%; opacity: 0; margin-top: -8px; }
+    50% { transform: translate(-50%, -8px) scale(0.7); left: 50%; top: 0%; opacity: 0.6; margin-top: -8px; }
+    75% { transform: translate(-100%, -50%) scale(0.9); left: 0%; top: 50%; opacity: 0.9; margin-left: -8px; }
+    90% { transform: translate(-100%, -50%) scale(0.9); left: 0%; top: 50%; opacity: 0; margin-left: -8px; }
+    90.01% { transform: translate(-50%, 8px) scale(0.7); left: 50%; top: 100%; opacity: 0; }
+    100% { transform: translate(-50%, 8px) scale(0.7); left: 50%; top: 100%; opacity: 0; }
+}
+
+@keyframes raceAroundButton3 { /* Staggered and different scale/Y-offset */
+    0% { transform: translate(-50%, 3px) scale(0.9); left: 50%; top: 100%; opacity: 0; }
+    10% { transform: translate(-50%, 3px) scale(0.9); left: 50%; top: 100%; opacity: 0.8; }
+    25% { transform: translate(0px, -50%) scale(1.1); left: 100%; top: 50%; opacity: 1; margin-left: 3px; }
+    40% { transform: translate(0px, -50%) scale(1.1); left: 100%; top: 50%; opacity: 0; margin-left: 3px; }
+    40.01% { transform: translate(-50%, -3px) scale(0.9); left: 50%; top: 0%; opacity: 0; margin-top: -3px; }
+    50% { transform: translate(-50%, -3px) scale(0.9); left: 50%; top: 0%; opacity: 0.8; margin-top: -3px; }
+    75% { transform: translate(-100%, -50%) scale(1.1); left: 0%; top: 50%; opacity: 1; margin-left: -3px; }
+    90% { transform: translate(-100%, -50%) scale(1.1); left: 0%; top: 50%; opacity: 0; margin-left: -3px; }
+    90.01% { transform: translate(-50%, 3px) scale(0.9); left: 50%; top: 100%; opacity: 0; }
+    100% { transform: translate(-50%, 3px) scale(0.9); left: 50%; top: 100%; opacity: 0; }
 }
