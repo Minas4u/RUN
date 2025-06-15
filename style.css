@@ -182,6 +182,7 @@
     --activity-text-zone-race: #5b21b6;
     --activity-text-double: #78350f;
     --activity-text-mobility: #713f12;
+    --activity-text-long-run-purple: #6d28d9; /* Example: violet-700 for light mode */
 
     --activity-text-race: #d946ef;    /* Fuchsia 500 */
     --activity-text-zonetest: #ec4899; /* Pink 500 */
@@ -421,6 +422,7 @@ body.dark-mode {
     --title-project-text: var(--dm-title-project-text);
     --title-marathon-text: var(--dm-title-marathon-text);
     --loader-border: var(--dm-loader-border);
+    --activity-text-long-run-purple: #a78bfa; /* A lighter purple for dark mode, e.g., violet-400 */
     --highlight-zone-pace-bg: var(--dm-highlight-zone-pace-bg);
     --highlight-zone-pace-text: var(--dm-highlight-zone-pace-text);
     --exercise-card-bg: var(--dm-exercise-card-bg);
@@ -1025,6 +1027,10 @@ body.dark-mode .activity-text-mobility, body.dark-mode .pace-text-mobility { col
 }
 .activity-text-zonetest, .pace-text-zonetest {
     color: var(--activity-text-zonetest) !important;
+}
+
+.activity-text-long-run, .pace-text-long-run {
+    color: var(--activity-text-long-run-purple) !important;
 }
 
 .highlight-zone-pace {
@@ -1816,6 +1822,9 @@ body.dark-mode #todayNextDay:not(:disabled):hover {
 /* --- Static Dark Pace Text Style for Today's Card --- */
 .static-dark-pace-text {
     color: #1e293b !important; /* slate-800, a dark gray. Persists in dark mode. */
+}
+body.dark-mode .static-dark-pace-text {
+    color: var(--dm-text-color) !important; /* Use a white variable like --dm-text-color */
 }
 
 /* --- Scrolling Names List Widget --- */
