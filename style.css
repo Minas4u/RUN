@@ -183,6 +183,9 @@
     --activity-text-double: #78350f;
     --activity-text-mobility: #713f12;
 
+    --activity-text-race: #d946ef;    /* Fuchsia 500 */
+    --activity-text-zonetest: #ec4899; /* Pink 500 */
+
     --highlight-zone-pace-bg: #f59e0b;
     --highlight-zone-pace-text: #1e293b;
 
@@ -1011,6 +1014,18 @@ body.dark-mode .activity-text-zone, body.dark-mode .activity-text-race, body.dar
 body.dark-mode .activity-text-double, body.dark-mode .pace-text-double { color: #fcd34d !important; } /* amber-300 */
 body.dark-mode .activity-text-mobility, body.dark-mode .pace-text-mobility { color: #d4af80 !important; } /* custom brown-ish */
 
+    /* Dark mode overrides for new activity types */
+    --activity-text-race: #f0abfc;    /* Fuchsia 400 */
+    --activity-text-zonetest: #f9a8d4; /* Pink 400 */
+}
+
+/* New CSS rules for activity text colors */
+.activity-text-race, .pace-text-race {
+    color: var(--activity-text-race) !important;
+}
+.activity-text-zonetest, .pace-text-zonetest {
+    color: var(--activity-text-zonetest) !important;
+}
 
 .highlight-zone-pace {
     background-color: var(--highlight-zone-pace-bg) !important;
@@ -1796,6 +1811,11 @@ body.dark-mode #todayNextDay:not(:disabled):hover {
     height: 2rem; /* Approx 32px */
     object-fit: contain; /* Ensures aspect ratio is maintained if SVGs vary */
     /* vertical-align: middle; /* Useful if not in a flex container, but items-center on parent handles it */
+}
+
+/* --- Static Dark Pace Text Style for Today's Card --- */
+.static-dark-pace-text {
+    color: #1e293b !important; /* slate-800, a dark gray. Persists in dark mode. */
 }
 
 /* --- Scrolling Names List Widget --- */

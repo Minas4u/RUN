@@ -889,6 +889,7 @@ function renderTodaysTraining() {
 
     let activityContentHtml = '';
     let iconHtml = ''; // Initialize iconHtml
+    // notesBoxHtml related variables and logic will be removed.
     const isActualToday = isSameDay(displayDate, new Date(new Date().setHours(0,0,0,0)));
     const titleText = isActualToday ? "Today" : formatDate(displayDate, { weekday: 'short' });
 
@@ -939,7 +940,8 @@ function renderTodaysTraining() {
 
         const lt2PaceString = marathonPlan?.settings?.defaultLt2Speed || "N/A";
         const paceString = getPaceStringForActivity(todaysActivity.activity, lt2PaceString);
-        let paceHtml = paceString ? `<p class="pace-text text-lg font-semibold mt-1 ${colorClass}">Pace: ${paceString}</p>` : '';
+        // Removed ${colorClass} and added static-dark-pace-text
+        let paceHtml = paceString ? `<p class="pace-text text-lg font-semibold mt-1 static-dark-pace-text">Pace: ${paceString}</p>` : '';
 
         activityContentHtml = `
             <div class="todays-activity-box">
@@ -952,11 +954,7 @@ function renderTodaysTraining() {
             </div>
         `;
         if (todaysActivity.notes) {
-            notesBoxHtml = `
-                <div class="todays-weekly-notes-box">
-                    <p class="text-sm italic"><strong class="text-black text-xs">Weekly Notes:</strong> <span class="text-stone-800 text-sm">${todaysActivity.notes}</span></p>
-                </div>
-            `;
+            // notesBoxHtml related logic removed here
         }
     } else {
         let message = `No training scheduled for ${formatDate(displayDate, { month: 'short', day: 'numeric' })}.`;
@@ -1014,7 +1012,7 @@ function renderTodaysTraining() {
             <div id="today-repeats-content" class="mt-1"></div>
         </div>
     `;
-    container.innerHTML = titleHtml + activityContentHtml + dailyTipHtml + notesBoxHtml + paceCalculatorHtml;
+    container.innerHTML = titleHtml + activityContentHtml + dailyTipHtml + paceCalculatorHtml; // Removed notesBoxHtml
 
     // Add event listeners for new navigation arrows
     const prevDayBtn = document.getElementById('todayPrevDay');
@@ -1850,17 +1848,34 @@ function renderInfoTab() {
 // --- PACE CALCULATOR FUNCTIONS ---
 // (These are called from within renderTodaysTraining, which is part of OVERVIEW TAB)
 
-function getActivityTextColorClass(activityFirstWord) {
-    switch (activityFirstWord) {
+function getActivityTextColorClass(activityString) { // Expects the full activity string, lowercased
+    if (!activityString) return ''; // Handle null or undefined input
+
+    if (activityString.includes('zone test') || activityString.includes('zonetest')) {
+        return 'activity-text-zonetest'; // Pink
+    }
+    // Check for "race" but not as part of "zone pace" or "highlight-zone-pace" to avoid conflict with purple
+    // A simple check for "race" alone, or "race day" might be:
+    if (activityString.includes('race') && !activityString.includes('zone')) {
+        // This is a basic check; more specific keywords like "Race Day" or "Goal Race" might be better.
+        // For now, any "race" not part of "zone" will be fuchsia.
+        return 'activity-text-race';     // Fuchsia
+    }
+
+    // Fallback to first word logic for existing types if needed, or refine this section
+    const firstWord = activityString.split(" ")[0].replace(/:$/, ''); // get first word
+    switch (firstWord) {
         case 'easy': return 'activity-text-easy';
         case 'recovery': return 'activity-text-recovery';
         case 'base': return 'activity-text-base';
         case 'tempo': return 'activity-text-tempo';
         case 'interval': case 'intervals': return 'activity-text-interval';
         case 'fartlek': return 'activity-text-fartlek';
-        case 'str': case 'hills': return 'activity-text-str';
+        case 'str': case 'hills': return 'activity-text-str-hills'; // Assuming this class exists for --activity-text-str-hills
         case 'rest': return 'activity-text-rest';
-        case 'zone': case 'race': return 'activity-text-zone';
+        case 'zone': return 'activity-text-zone-race'; // Original purple for generic "Zone" or "Zone Pace"
+        // Note: if activityString was "Race Pace" and didn't hit the "race" condition above, it might hit "zone" if "Pace" is stripped.
+        // The order of checks and keyword specificity is important.
         case 'double': return 'activity-text-double';
         case 'mobility': return 'activity-text-mobility';
         default: return '';
