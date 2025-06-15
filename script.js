@@ -365,59 +365,78 @@ function populateAndScrollRunnersList() {
 function initializeApp() {
     if(loadingMessageDiv) loadingMessageDiv.classList.add('hidden');
     if(errorMessageDiv) errorMessageDiv.classList.add('hidden');
-    if(appContent) appContent.innerHTML = '';
+    if(appContent) appContent.innerHTML = ''; // Clear previous content if any
 
-    // Add event listeners to the main navigation buttons.
-    if(navOverview) navOverview.addEventListener('click', renderOverview);
-    if(navPlan) navPlan.addEventListener('click', renderTrainingPlan);
-    if(navCalendar) navCalendar.addEventListener('click', renderCalendarTab);
-    if(navRace) navRace.addEventListener('click', renderRaceTab);
-    if(navCompanion) navCompanion.addEventListener('click', renderCompanionTab);
-    if(navInfo) navInfo.addEventListener('click', renderInfoTab);
+    // Start fade-out of login screen
+    if (loginContainer) {
+        loginContainer.classList.remove('screen-is-fading-in'); // Precaution
+        loginContainer.classList.add('screen-is-fading-out');
+    }
 
-    // Add event listeners for the mileage chart modal
-    if(mileageChartModal && closeMileageChartBtn) {
-        closeMileageChartBtn.addEventListener('click', () => {
-            mileageChartModal.classList.add('modal-hidden-state');
-            mileageChartModal.classList.remove('modal-visible-state');
-            // Optional: setTimeout(() => mileageChartModal.classList.add('hidden'), 250); // If display:none is still desired
-        });
-        mileageChartModal.addEventListener('click', (e) => {
-            if (e.target.id === 'mileage-chart-modal') {
+    setTimeout(() => {
+        if (loginContainer) {
+            loginContainer.classList.add('hidden'); // display:none after fade
+            loginContainer.classList.remove('screen-is-fading-out');
+        }
+
+        if (mainAppWrapper) {
+            mainAppWrapper.classList.remove('hidden'); // display:block/flex, but still opacity:0 due to CSS rule for #main-app-wrapper
+
+            // Brief delay for browser to render mainAppWrapper before starting fade-in
+            setTimeout(() => {
+                if (mainAppWrapper) { // Check again in case something went wrong
+                    mainAppWrapper.classList.remove('screen-is-fading-out'); // Precaution
+                    mainAppWrapper.classList.add('screen-is-fading-in'); // Start fade-in
+                }
+            }, 20);
+        }
+
+        // Original initializeApp logic (nav listeners, modal setup, initial render)
+        if(navOverview) navOverview.addEventListener('click', renderOverview);
+        if(navPlan) navPlan.addEventListener('click', renderTrainingPlan);
+        if(navCalendar) navCalendar.addEventListener('click', renderCalendarTab);
+        if(navRace) navRace.addEventListener('click', renderRaceTab);
+        if(navCompanion) navCompanion.addEventListener('click', renderCompanionTab);
+        if(navInfo) navInfo.addEventListener('click', renderInfoTab);
+
+        // Add event listeners for the mileage chart modal
+        if(mileageChartModal && closeMileageChartBtn) {
+            closeMileageChartBtn.addEventListener('click', () => {
                 mileageChartModal.classList.add('modal-hidden-state');
                 mileageChartModal.classList.remove('modal-visible-state');
-                // Optional: setTimeout(() => mileageChartModal.classList.add('hidden'), 250);
-            }
-        });
-    }
+            });
+            mileageChartModal.addEventListener('click', (e) => {
+                if (e.target.id === 'mileage-chart-modal') {
+                    mileageChartModal.classList.add('modal-hidden-state');
+                    mileageChartModal.classList.remove('modal-visible-state');
+                }
+            });
+        }
 
-    // Add event listeners for the new updates modal
-    if(updatesModal && closeUpdatesModalBtn) {
-        closeUpdatesModalBtn.addEventListener('click', () => {
-            updatesModal.classList.add('modal-hidden-state');
-            updatesModal.classList.remove('modal-visible-state');
-            // Optional: setTimeout(() => updatesModal.classList.add('hidden'), 250);
-        });
-        updatesModal.addEventListener('click', (e) => {
-             // Closes modal if user clicks on the background overlay
-            if (e.target.id === 'updates-modal') {
+        // Add event listeners for the new updates modal
+        if(updatesModal && closeUpdatesModalBtn) {
+            closeUpdatesModalBtn.addEventListener('click', () => {
                 updatesModal.classList.add('modal-hidden-state');
                 updatesModal.classList.remove('modal-visible-state');
-                // Optional: setTimeout(() => updatesModal.classList.add('hidden'), 250);
-            }
-        });
-    }
+            });
+            updatesModal.addEventListener('click', (e) => {
+                if (e.target.id === 'updates-modal') {
+                    updatesModal.classList.add('modal-hidden-state');
+                    updatesModal.classList.remove('modal-visible-state');
+                }
+            });
+        }
 
-    renderOverview(); // Render the default "Overview" tab.
-    if(mainAppWrapper) mainAppWrapper.classList.remove('hidden');
-    if(loginContainer) loginContainer.classList.add('hidden');
+        renderOverview(); // Render the default "Overview" tab.
 
-    // Initialize currentTodayViewDate to today
-    currentTodayViewDate = new Date();
-    currentTodayViewDate.setHours(0, 0, 0, 0);
+        // Initialize currentTodayViewDate to today
+        currentTodayViewDate = new Date();
+        currentTodayViewDate.setHours(0, 0, 0, 0);
 
-    // Show the updates modal after the main app is visible.
-    showUpdatesModalIfNeeded();
+        // Show the updates modal after the main app is visible.
+        showUpdatesModalIfNeeded();
+
+    }, 400); // Matches CSS transition duration (0.4s) for loginContainer fade-out
 }
 
 // --- LOGIN & DATA FETCHING ---

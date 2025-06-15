@@ -1989,3 +1989,27 @@ body.dark-mode #runners-list li {
     90.01% { transform: translate(-50%, 3px) scale(0.9); left: 50%; top: 100%; opacity: 0; }
     100% { transform: translate(-50%, 3px) scale(0.9); left: 50%; top: 100%; opacity: 0; }
 }
+
+/* --- Screen Transition Styles --- */
+#login-container,
+#main-app-wrapper {
+    transition: opacity 0.4s ease-in-out;
+}
+
+/* #login-container by default is opacity: 1 if not hidden by Tailwind 'hidden' class */
+
+#main-app-wrapper {
+    /* This already has class="main-container hidden" in HTML.
+       When 'hidden' (display:none) is removed by JS, opacity 0 allows it to fade in. */
+    opacity: 0;
+}
+
+.screen-is-fading-out {
+    opacity: 0 !important;
+    pointer-events: none !important; /* Prevent interaction during/after fade-out */
+}
+
+.screen-is-fading-in {
+    opacity: 1 !important;
+    pointer-events: auto !important; /* Ensure interactable after fade-in */
+}
