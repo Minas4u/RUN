@@ -919,23 +919,66 @@ function renderTodaysTraining() {
 
     if (todaysActivity) {
         const activityTextForDisplay = todaysActivity.activity.replace(/^[^:]+:\s*/, '');
-        const activityDescriptionOnly = todaysActivity.activity.replace(/^[^:]+:\s*/, '').trim();
-        const firstWordLower = activityDescriptionOnly.split(" ")[0].toLowerCase().replace(/:$/, '');
-        const colorClass = getActivityTextColorClass(firstWordLower);
 
-        // Icon logic
-        let matchedKey = null;
-        if (activityIconMap[firstWordLower]) {
-            matchedKey = firstWordLower;
-        } else { // Fallback for multi-word keys or common variations
-            const activityDescLower = activityDescriptionOnly.toLowerCase();
-            if (activityDescLower.includes('long run')) matchedKey = 'long run';
-            else if (activityDescLower.includes('interval')) matchedKey = 'interval';
-            // Add more specific fallbacks if needed e.g. "recovery run" -> "recovery"
+        // New logic to determine activityTypeForClass
+        let activityTypeForClass = '';
+        const fullActivityDescriptionLower = todaysActivity.activity.toLowerCase(); // Use the full original activity string
+
+        if (fullActivityDescriptionLower.includes('long run')) {
+            activityTypeForClass = 'long run';
+        } else if (fullActivityDescriptionLower.includes('easy run')) {
+            activityTypeForClass = 'easy run';
+        } else if (fullActivityDescriptionLower.includes('recovery run') || fullActivityDescriptionLower.includes('recovery')) {
+            activityTypeForClass = 'recovery';
+        } else if (fullActivityDescriptionLower.includes('base run')) {
+            activityTypeForClass = 'base';
+        } else if (fullActivityDescriptionLower.includes('tempo run') || fullActivityDescriptionLower.includes('tempo:')) {
+            activityTypeForClass = 'tempo';
+        } else if (fullActivityDescriptionLower.includes('interval training') || fullActivityDescriptionLower.includes('intervals:')) {
+            activityTypeForClass = 'interval';
+        } else if (fullActivityDescriptionLower.includes('fartlek')) {
+            activityTypeForClass = 'fartlek';
+        } else if (fullActivityDescriptionLower.includes('strides') || fullActivityDescriptionLower.includes('hills')) {
+            activityTypeForClass = 'strides/hills';
+        } else if (fullActivityDescriptionLower.includes('rest day') || fullActivityDescriptionLower.startsWith('rest:')) {
+            activityTypeForClass = 'rest';
+        } else if (fullActivityDescriptionLower.includes('zone test') || fullActivityDescriptionLower.includes('zonetest')) {
+            activityTypeForClass = 'zonetest';
+        } else if (fullActivityDescriptionLower.includes('race pace') || fullActivityDescriptionLower.includes('race simulation') || fullActivityDescriptionLower.includes('race day')) {
+            activityTypeForClass = 'race';
+        } else if (fullActivityDescriptionLower.includes('zone')) { // General zone as a lower priority
+            activityTypeForClass = 'zone';
+        } else if (fullActivityDescriptionLower.includes('double')) {
+            activityTypeForClass = 'double';
+        } else if (fullActivityDescriptionLower.includes('mobility')) {
+            activityTypeForClass = 'mobility';
+        } else {
+            const parts = todaysActivity.activity.split(':');
+            if (parts.length > 0) {
+                activityTypeForClass = parts[0].trim().toLowerCase();
+            } else {
+                activityTypeForClass = fullActivityDescriptionLower;
+            }
         }
-        const iconPath = matchedKey ? activityIconMap[matchedKey] : null;
+
+        const colorClass = getActivityTextColorClass(activityTypeForClass);
+
+        // Updated Icon logic
+        let iconPath = null;
+        const iconKey = activityTypeForClass; // Use the more accurate activityTypeForClass
+
+        if (activityIconMap[iconKey]) {
+            iconPath = activityIconMap[iconKey];
+        } else if (iconKey.startsWith('long')) {
+            iconPath = activityIconMap['long run'] || activityIconMap['long'];
+        } else if (iconKey.startsWith('easy')) {
+            iconPath = activityIconMap['easy'];
+        } else if (iconKey.startsWith('interval')) {
+            iconPath = activityIconMap['interval'] || activityIconMap['intervals'];
+        } // Add more specific fallbacks if needed for other types
+
         if (iconPath) {
-            iconHtml = `<img src="${iconPath}" alt="${matchedKey} icon" class="training-activity-icon ml-2">`; // Added ml-2 for spacing
+            iconHtml = `<img src="${iconPath}" alt="${iconKey} icon" class="training-activity-icon ml-2">`; // Added ml-2 for spacing
         }
 
         const lt2PaceString = marathonPlan?.settings?.defaultLt2Speed || "N/A";
@@ -1848,37 +1891,52 @@ function renderInfoTab() {
 // --- PACE CALCULATOR FUNCTIONS ---
 // (These are called from within renderTodaysTraining, which is part of OVERVIEW TAB)
 
-function getActivityTextColorClass(activityString) { // Expects the full activity string, lowercased
-    if (!activityString) return ''; // Handle null or undefined input
+function getActivityTextColorClass(activityString) { // activityString is now the determined type like "long run", "easy run", "tempo"
+    if (!activityString) return '';
+    const type = activityString.toLowerCase().trim(); // Ensure it's lowercase and trimmed
 
-    if (activityString.includes('zone test') || activityString.includes('zonetest')) {
-        return 'activity-text-zonetest'; // Pink
+    if (type === 'long run') { // Specific check for "long run"
+        return 'activity-text-long-run'; // New purple class
+    } else if (type === 'easy run' || type === 'easy') {
+        return 'activity-text-easy';
+    } else if (type === 'recovery') {
+        return 'activity-text-recovery';
+    } else if (type === 'base' || type === 'base run') {
+        return 'activity-text-base';
+    } else if (type === 'tempo' || type === 'tempo run') {
+        return 'activity-text-tempo';
+    } else if (type === 'interval' || type === 'intervals') {
+        return 'activity-text-interval';
+    } else if (type === 'fartlek') {
+        return 'activity-text-fartlek';
+    } else if (type === 'strides/hills' || type === 'str' || type === 'hills') {
+        return 'activity-text-str-hills';
+    } else if (type === 'rest') {
+        return 'activity-text-rest';
+    } else if (type === 'zone test' || type === 'zonetest') {
+        return 'activity-text-zonetest';
+    } else if (type === 'race' || type === 'race day' || type === 'race pace') { // Consolidate race types
+        return 'activity-text-race'; // Fuchsia color
+    } else if (type === 'zone') { // General zone type if no other specific match
+        return 'activity-text-zone-race'; // Original violet for general "Zone"
+    } else if (type === 'double') {
+        return 'activity-text-double';
+    } else if (type === 'mobility') {
+        return 'activity-text-mobility';
     }
-    // Check for "race" but not as part of "zone pace" or "highlight-zone-pace" to avoid conflict with purple
-    // A simple check for "race" alone, or "race day" might be:
-    if (activityString.includes('race') && !activityString.includes('zone')) {
-        // This is a basic check; more specific keywords like "Race Day" or "Goal Race" might be better.
-        // For now, any "race" not part of "zone" will be fuchsia.
-        return 'activity-text-race';     // Fuchsia
-    }
-
-    // Fallback to first word logic for existing types if needed, or refine this section
-    const firstWord = activityString.split(" ")[0].replace(/:$/, ''); // get first word
-    switch (firstWord) {
+    // Add a fallback for unrecognized first words from the old logic if necessary,
+    // or return a default class. For now, return empty if no match.
+    const firstWordOfType = type.split(" ")[0];
+    switch (firstWordOfType) {
+        // Keep a minimal switch for very generic single-word types if the above if/else if doesn't catch them
+        // This is mostly a safety net now.
         case 'easy': return 'activity-text-easy';
-        case 'recovery': return 'activity-text-recovery';
         case 'base': return 'activity-text-base';
         case 'tempo': return 'activity-text-tempo';
         case 'interval': case 'intervals': return 'activity-text-interval';
         case 'fartlek': return 'activity-text-fartlek';
-        case 'str': case 'hills': return 'activity-text-str-hills'; // Assuming this class exists for --activity-text-str-hills
         case 'rest': return 'activity-text-rest';
-        case 'zone': return 'activity-text-zone-race'; // Original purple for generic "Zone" or "Zone Pace"
-        // Note: if activityString was "Race Pace" and didn't hit the "race" condition above, it might hit "zone" if "Pace" is stripped.
-        // The order of checks and keyword specificity is important.
-        case 'double': return 'activity-text-double';
-        case 'mobility': return 'activity-text-mobility';
-        default: return '';
+        default: return ''; // Default if no specific class
     }
 }
 
