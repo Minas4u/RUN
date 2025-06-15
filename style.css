@@ -171,9 +171,9 @@
     --toggle-button-hover-bg: #0369a1;
     --toggle-button-hover-border: #d97706;
 
-    --activity-text-easy: #16a34a;
-    --activity-text-recovery: #075985;
-    --activity-text-base: #1e40af;
+    --activity-text-easy: #16a34a; /* Green */
+    --activity-text-recovery: var(--activity-text-easy); /* Changed to use easy's green */
+    --activity-text-base: #1e40af; /* Blue */
     --activity-text-tempo: #b45309;
     --activity-text-interval: #991b1b;
     --activity-text-fartlek: #831843;
@@ -991,7 +991,7 @@ body.dark-mode #darkModeToggle:focus {
 
 /* Today's Training Card - Activity Text Color Classes */
 .activity-text-easy, .pace-text-easy { color: var(--activity-text-easy) !important; }
-.activity-text-recovery, .pace-text-recovery { color: var(--activity-text-recovery) !important; }
+.activity-text-recovery, .pace-text-recovery { color: var(--activity-text-recovery) !important; } /* This will now use the green from --activity-text-easy */
 .activity-text-base, .pace-text-base { color: var(--activity-text-base) !important; }
 .activity-text-tempo, .pace-text-tempo { color: var(--activity-text-tempo) !important; }
 .activity-text-interval, .activity-text-intervals, .pace-text-interval, .pace-text-intervals { color: var(--activity-text-interval) !important; }
@@ -1002,24 +1002,36 @@ body.dark-mode #darkModeToggle:focus {
 .activity-text-double, .pace-text-double { color: var(--activity-text-double) !important; }
 .activity-text-mobility, .pace-text-mobility { color: var(--activity-text-mobility) !important; }
 
-body.dark-mode .activity-text-easy, body.dark-mode .pace-text-easy { color: #4ade80 !important; } /* green-400 */
-body.dark-mode .activity-text-recovery, body.dark-mode .pace-text-recovery { color: #7dd3fc !important; } /* sky-300 */
-body.dark-mode .activity-text-base, body.dark-mode .pace-text-base { color: #93c5fd !important; } /* blue-300 */
-body.dark-mode .activity-text-tempo, body.dark-mode .pace-text-tempo { color: #fdba74 !important; } /* orange-300 */
+body.dark-mode .activity-text-easy, body.dark-mode .pace-text-easy { color: var(--activity-text-easy) !important; } /* Will use the dark mode overridden --activity-text-easy */
+body.dark-mode .activity-text-recovery, body.dark-mode .pace-text-recovery { color: var(--activity-text-easy) !important; } /* Explicitly use easy's dark mode green */
+body.dark-mode .activity-text-base, body.dark-mode .pace-text-base { color: var(--activity-text-base) !important; } /* Will use the dark mode overridden --activity-text-base */
+body.dark-mode .activity-text-tempo, body.dark-mode .pace-text-tempo { color: var(--activity-text-tempo) !important; } /* Will use the dark mode overridden --activity-text-tempo */
 body.dark-mode .activity-text-interval, body.dark-mode .activity-text-intervals, body.dark-mode .pace-text-interval, body.dark-mode .pace-text-intervals { color: #fca5a5 !important; } /* red-300 */
 body.dark-mode .activity-text-fartlek, body.dark-mode .pace-text-fartlek { color: #f9a8d4 !important; } /* pink-300 */
 body.dark-mode .activity-text-str, body.dark-mode .activity-text-hills, body.dark-mode .pace-text-str, body.dark-mode .pace-text-hills { color: #d4af80 !important; } /* custom brown-ish */
 body.dark-mode .activity-text-rest, body.dark-mode .pace-text-rest { color: #9ca3af !important; } /* gray-400 */
 body.dark-mode .activity-text-zone, body.dark-mode .activity-text-race, body.dark-mode .pace-text-zone, body.dark-mode .pace-text-race { color: #c4b5fd !important; } /* violet-300 */
 body.dark-mode .activity-text-double, body.dark-mode .pace-text-double { color: #fcd34d !important; } /* amber-300 */
-body.dark-mode .activity-text-mobility, body.dark-mode .pace-text-mobility { color: #d4af80 !important; } /* custom brown-ish */
+body.dark-mode .activity-text-mobility, body.dark-mode .pace-text-mobility { color: var(--activity-text-mobility) !important; }
 
-    /* Dark mode overrides for new activity types */
-    --activity-text-race: #f0abfc;    /* Fuchsia 400 */
-    --activity-text-zonetest: #f9a8d4; /* Pink 400 */
+    /* Dark mode overrides for new activity types are already here */
+    /* --activity-text-race: #f0abfc;    /* Fuchsia 400 */
+    /* --activity-text-zonetest: #f9a8d4; /* Pink 400 */
+    /* And now the main activity text variables are redefined for dark mode */
+    --activity-text-easy: #4ade80;    /* green-400 */
+    --activity-text-recovery: var(--activity-text-easy); /* Ensures recovery is green in dark mode too */
+    --activity-text-base: #93c5fd;    /* blue-300 */
+    --activity-text-tempo: #fdba74;   /* orange-300 */
+    --activity-text-interval: #fca5a5; /* red-300 */
+    --activity-text-fartlek: #f9a8d4;  /* pink-300 */
+    --activity-text-str-hills: #d4af80; /* custom brown-ish */
+    --activity-text-rest: #9ca3af;     /* gray-400 */
+    --activity-text-zone-race: #c4b5fd; /* violet-300 */
+    --activity-text-double: #fcd34d;   /* amber-300 */
+    --activity-text-mobility: #d4af80; /* custom brown-ish */
 }
 
-/* New CSS rules for activity text colors */
+/* New CSS rules for activity text colors (already added previously, verified) */
 .activity-text-race, .pace-text-race {
     color: var(--activity-text-race) !important;
 }

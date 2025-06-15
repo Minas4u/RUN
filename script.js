@@ -918,29 +918,74 @@ function renderTodaysTraining() {
     }
 
     if (todaysActivity) {
-        const activityTextForDisplay = todaysActivity.activity.replace(/^[^:]+:\s*/, '');
-        const activityDescriptionOnly = todaysActivity.activity.replace(/^[^:]+:\s*/, '').trim();
-        const firstWordLower = activityDescriptionOnly.split(" ")[0].toLowerCase().replace(/:$/, '');
-        const colorClass = getActivityTextColorClass(firstWordLower);
+        const fullActivityString = todaysActivity.activity;
+        let primaryKeyword = '';
+        let displayText = fullActivityString; // Default display text
 
-        // Icon logic
-        let matchedKey = null;
-        if (activityIconMap[firstWordLower]) {
-            matchedKey = firstWordLower;
-        } else { // Fallback for multi-word keys or common variations
-            const activityDescLower = activityDescriptionOnly.toLowerCase();
-            if (activityDescLower.includes('long run')) matchedKey = 'long run';
-            else if (activityDescLower.includes('interval')) matchedKey = 'interval';
-            // Add more specific fallbacks if needed e.g. "recovery run" -> "recovery"
+        // Known prefixes that directly define the activity type
+        const knownPrefixTypes = ['base', 'easy', 'tempo', 'interval', 'intervals', 'fartlek', 'long', 'rest', 'recovery', 'race', 'zonetest', 'zone test', 'str', 'hills', 'double', 'mobility'];
+
+        const parts = fullActivityString.split(/:(.*)/s);
+        if (parts.length > 1) {
+            const prefix = parts[0].trim().toLowerCase();
+            // Check if the prefix is a known, direct activity type keyword
+            if (knownPrefixTypes.includes(prefix)) {
+                primaryKeyword = prefix;
+            }
+            displayText = parts[1].trim(); // Text after the colon for display
+        } else {
+            displayText = fullActivityString.trim(); // No colon, use the whole string for display and keyword search
         }
-        const iconPath = matchedKey ? activityIconMap[matchedKey] : null;
+
+        const lowerDisplayText = displayText.toLowerCase(); // Used for includes() checks
+
+        if (!primaryKeyword) { // If prefix didn't set it, try includes() on display text
+            if (lowerDisplayText.includes('long run')) primaryKeyword = 'long';
+            else if (lowerDisplayText.includes('easy run')) primaryKeyword = 'easy';
+            else if (lowerDisplayText.includes('recovery run') || lowerDisplayText === 'recovery') primaryKeyword = 'recovery'; // More specific for recovery
+            else if (lowerDisplayText.includes('base run') || lowerDisplayText.includes('basebuild')) primaryKeyword = 'base';
+            else if (lowerDisplayText.includes('interval')) primaryKeyword = 'interval'; // Catches "intervals"
+            else if (lowerDisplayText.includes('fartlek')) primaryKeyword = 'fartlek';
+            else if (lowerDisplayText.includes('tempo')) primaryKeyword = 'tempo';
+            else if (lowerDisplayText.includes('rest')) primaryKeyword = 'rest';
+            else if (lowerDisplayText.includes('zone test') || lowerDisplayText.includes('zonetest')) primaryKeyword = 'zonetest';
+            else if (lowerDisplayText.includes('race') && !lowerDisplayText.includes('zone test') && !lowerDisplayText.includes('zonetest')) primaryKeyword = 'race';
+            else if (lowerDisplayText.includes('strides') || lowerDisplayText.includes('hills') || lowerDisplayText.includes('str')) primaryKeyword = 'str';
+            else if (lowerDisplayText.includes('double')) primaryKeyword = 'double';
+            else if (lowerDisplayText.includes('mobility')) primaryKeyword = 'mobility';
+            else { // Fallback to the first word of the display text if still nothing
+                primaryKeyword = lowerDisplayText.split(" ")[0].replace(/:$/, '');
+            }
+        }
+
+        // Normalize primaryKeyword
+        if (primaryKeyword === 'intervals') primaryKeyword = 'interval';
+        if (primaryKeyword === 'recovery') primaryKeyword = 'easy'; // Standardize recovery to use easy assets
+        if (primaryKeyword === 'basebuild') primaryKeyword = 'base';
+        if (primaryKeyword === 'hills' || primaryKeyword === 'strides') primaryKeyword = 'str'; // Consolidate str/hills
+        if (primaryKeyword === 'zone test') primaryKeyword = 'zonetest';
+
+
+        // Determine colorClass using the potentially modified displayText (lowercase)
+        // getActivityTextColorClass itself will handle internal logic based on the string passed
+        const colorClass = getActivityTextColorClass(lowerDisplayText);
+                                                    // or pass primaryKeyword if getActivityTextColorClass expects a keyword
+                                                    // Based on previous updates, it expects a full string.
+
+        // Determine activityKey for icons and tips (this IS our primaryKeyword)
+        const activityKey = primaryKeyword;
+
+        // Generate iconHtml using activityKey
+        iconHtml = ''; // Already initialized at the top of renderTodaysTraining
+        const iconPath = (typeof activityIconMap === 'object' && activityIconMap[activityKey]) ? activityIconMap[activityKey] : null;
         if (iconPath) {
-            iconHtml = `<img src="${iconPath}" alt="${matchedKey} icon" class="training-activity-icon ml-2">`; // Added ml-2 for spacing
+            iconHtml = `<img src="${iconPath}" alt="${activityKey} icon" class="training-activity-icon ml-2">`;
         }
+
+        const activityTextForDisplay = displayText; // Use the processed display text
 
         const lt2PaceString = marathonPlan?.settings?.defaultLt2Speed || "N/A";
-        const paceString = getPaceStringForActivity(todaysActivity.activity, lt2PaceString);
-        // Removed ${colorClass} and added static-dark-pace-text
+        const paceString = getPaceStringForActivity(fullActivityString, lt2PaceString); // Use full original string for pace calculation
         let paceHtml = paceString ? `<p class="pace-text text-lg font-semibold mt-1 static-dark-pace-text">Pace: ${paceString}</p>` : '';
 
         activityContentHtml = `
@@ -1854,28 +1899,30 @@ function getActivityTextColorClass(activityString) { // Expects the full activit
     if (activityString.includes('zone test') || activityString.includes('zonetest')) {
         return 'activity-text-zonetest'; // Pink
     }
-    // Check for "race" but not as part of "zone pace" or "highlight-zone-pace" to avoid conflict with purple
-    // A simple check for "race" alone, or "race day" might be:
-    if (activityString.includes('race') && !activityString.includes('zone')) {
-        // This is a basic check; more specific keywords like "Race Day" or "Goal Race" might be better.
-        // For now, any "race" not part of "zone" will be fuchsia.
+    // Prioritize "race" unless it's part of "zone test"
+    if (activityString.includes('race') && !(activityString.includes('zone test') || activityString.includes('zonetest'))) {
         return 'activity-text-race';     // Fuchsia
     }
+    if (activityString.includes('easy run') || activityString.includes('recovery')) { // Group easy and recovery
+        return 'activity-text-easy';     // Green
+    }
+    if (activityString.includes('base run') || activityString.includes('basebuild')) { // common alternative for Base
+        return 'activity-text-base';     // Blue
+    }
 
-    // Fallback to first word logic for existing types if needed, or refine this section
-    const firstWord = activityString.split(" ")[0].replace(/:$/, ''); // get first word
+    // Fallback to first word for remaining specific cases
+    const firstWord = activityString.split(" ")[0].replace(/:$/, '');
     switch (firstWord) {
-        case 'easy': return 'activity-text-easy';
-        case 'recovery': return 'activity-text-recovery';
-        case 'base': return 'activity-text-base';
+        // 'easy' and 'base' will be caught here if the string is just "Easy" or "Base" (and not "Easy Run" / "Base Run")
+        case 'easy': return 'activity-text-easy'; // Green
+        case 'base': return 'activity-text-base'; // Blue
         case 'tempo': return 'activity-text-tempo';
         case 'interval': case 'intervals': return 'activity-text-interval';
         case 'fartlek': return 'activity-text-fartlek';
-        case 'str': case 'hills': return 'activity-text-str-hills'; // Assuming this class exists for --activity-text-str-hills
+        case 'str': case 'hills':
+            return 'activity-text-str-hills';
         case 'rest': return 'activity-text-rest';
-        case 'zone': return 'activity-text-zone-race'; // Original purple for generic "Zone" or "Zone Pace"
-        // Note: if activityString was "Race Pace" and didn't hit the "race" condition above, it might hit "zone" if "Pace" is stripped.
-        // The order of checks and keyword specificity is important.
+        case 'zone': return 'activity-text-zone-race'; // Original purple for generic "Zone" (if not 'zone test')
         case 'double': return 'activity-text-double';
         case 'mobility': return 'activity-text-mobility';
         default: return '';
