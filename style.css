@@ -1898,6 +1898,41 @@ body.dark-mode #runners-list li {
     animation-play-state: paused;
 }
 
+/* --- Daily Tip Container Styles --- */
+#daily-tip-container {
+    padding: 0.85rem 1rem;
+    background-color: var(--content-card-bg);
+    border: 1px solid var(--overview-section-card-border-l); /* Using sky blue from overview cards */
+    border-radius: var(--border-radius-medium);
+    margin-top: 1rem; /* Overrides/sets top margin from Tailwind's mt-3 if JS adds it */
+}
+
+#daily-tip-container p.daily-tip-text {
+    font-size: 0.9rem;
+    color: var(--text-color);
+    font-style: italic;
+    text-align: center;
+    line-height: 1.5; /* For better readability */
+}
+
+#daily-tip-container p.daily-tip-text strong { /* For the "Tip:" prefix */
+    font-style: normal; /* Override italic for the "Tip:" prefix */
+    font-weight: 600; /* semibold */
+    color: var(--title-project-text); /* Use an accent color (amber) */
+}
+
+body.dark-mode #daily-tip-container {
+    background-color: var(--dm-content-card-bg);
+    /* Assuming --overview-section-card-border-l is updated for dark mode,
+       or use a specific dark mode border variable if available.
+       Using a fallback for demonstration if --dm-overview-section-card-border-l is not defined. */
+    border-color: var(--dm-overview-section-card-border-l, var(--dm-title-marathon-text));
+}
+
+body.dark-mode #daily-tip-container p.daily-tip-text strong {
+    color: var(--dm-title-project-text); /* Ensure accent color for "Tip:" is also theme-aware */
+}
+
 /* --- Login Page Layout Adjustments --- */
 #login-layout-wrapper {
     /* This ID is on the div that has Tailwind's md:flex.
