@@ -918,6 +918,7 @@ function renderTodaysTraining() {
     }
 
     if (todaysActivity) {
+        // ----- START OF REPLACEMENT BLOCK in renderTodaysTraining -----
         const fullActivityString = todaysActivity.activity;
         let primaryKeyword = '';
         let displayText = fullActivityString; // Default display text
@@ -928,61 +929,80 @@ function renderTodaysTraining() {
         const parts = fullActivityString.split(/:(.*)/s);
         if (parts.length > 1) {
             const prefix = parts[0].trim().toLowerCase();
-            // Check if the prefix is a known, direct activity type keyword
             if (knownPrefixTypes.includes(prefix)) {
                 primaryKeyword = prefix;
             }
-            displayText = parts[1].trim(); // Text after the colon for display
+            displayText = parts[1].trim();
         } else {
-            displayText = fullActivityString.trim(); // No colon, use the whole string for display and keyword search
+            displayText = fullActivityString.trim();
         }
 
-        const lowerDisplayText = displayText.toLowerCase(); // Used for includes() checks
+        const lowerDisplayTextForMatching = displayText.toLowerCase();
+        const lowerFullActivityString = fullActivityString.toLowerCase();
 
-        if (!primaryKeyword) { // If prefix didn't set it, try includes() on display text
-            if (lowerDisplayText.includes('long run')) primaryKeyword = 'long';
-            else if (lowerDisplayText.includes('easy run')) primaryKeyword = 'easy';
-            else if (lowerDisplayText.includes('recovery run') || lowerDisplayText === 'recovery') primaryKeyword = 'recovery'; // More specific for recovery
-            else if (lowerDisplayText.includes('base run') || lowerDisplayText.includes('basebuild')) primaryKeyword = 'base';
-            else if (lowerDisplayText.includes('interval')) primaryKeyword = 'interval'; // Catches "intervals"
-            else if (lowerDisplayText.includes('fartlek')) primaryKeyword = 'fartlek';
-            else if (lowerDisplayText.includes('tempo')) primaryKeyword = 'tempo';
-            else if (lowerDisplayText.includes('rest')) primaryKeyword = 'rest';
-            else if (lowerDisplayText.includes('zone test') || lowerDisplayText.includes('zonetest')) primaryKeyword = 'zonetest';
-            else if (lowerDisplayText.includes('race') && !lowerDisplayText.includes('zone test') && !lowerDisplayText.includes('zonetest')) primaryKeyword = 'race';
-            else if (lowerDisplayText.includes('strides') || lowerDisplayText.includes('hills') || lowerDisplayText.includes('str')) primaryKeyword = 'str';
-            else if (lowerDisplayText.includes('double')) primaryKeyword = 'double';
-            else if (lowerDisplayText.includes('mobility')) primaryKeyword = 'mobility';
-            else { // Fallback to the first word of the display text if still nothing
-                primaryKeyword = lowerDisplayText.split(" ")[0].replace(/:$/, '');
+        if (!primaryKeyword) {
+            if (lowerFullActivityString.includes('long run')) primaryKeyword = 'long';
+            else if (lowerFullActivityString.includes('easy run')) primaryKeyword = 'easy';
+            else if (lowerFullActivityString.includes('recovery run') || lowerFullActivityString === 'recovery') primaryKeyword = 'recovery';
+            else if (lowerFullActivityString.includes('base run') || lowerFullActivityString.includes('basebuild')) primaryKeyword = 'base';
+            else if (lowerFullActivityString.includes('interval training') || lowerFullActivityString.includes('intervals:') || lowerDisplayTextForMatching.includes('interval')) primaryKeyword = 'interval';
+            else if (lowerFullActivityString.includes('fartlek')) primaryKeyword = 'fartlek';
+            else if (lowerFullActivityString.includes('tempo run') || lowerFullActivityString.includes('tempo:')) primaryKeyword = 'tempo';
+            else if (lowerFullActivityString.includes('rest day') || lowerFullActivityString.startsWith('rest:')) primaryKeyword = 'rest';
+            else if (lowerFullActivityString.includes('zone test') || lowerFullActivityString.includes('zonetest')) primaryKeyword = 'zonetest';
+            else if (lowerFullActivityString.includes('race pace') || lowerFullActivityString.includes('race simulation') || lowerFullActivityString.includes('race day') || (lowerFullActivityString.includes('race') && !lowerFullActivityString.includes('zone'))) primaryKeyword = 'race';
+            else if (lowerFullActivityString.includes('strides') || lowerFullActivityString.includes('hills') || lowerFullActivityString.includes('str')) primaryKeyword = 'str';
+            else if (lowerFullActivityString.includes('double')) primaryKeyword = 'double';
+            else if (lowerFullActivityString.includes('mobility')) primaryKeyword = 'mobility';
+            else if (lowerFullActivityString.includes('zone') && !lowerFullActivityString.includes('test')) primaryKeyword = 'zone';
+            else {
+                primaryKeyword = lowerDisplayTextForMatching.split(" ")[0].replace(/:$/, '');
             }
         }
 
         // Normalize primaryKeyword
-        if (primaryKeyword === 'intervals') primaryKeyword = 'interval';
-        if (primaryKeyword === 'recovery') primaryKeyword = 'easy'; // Standardize recovery to use easy assets
-        if (primaryKeyword === 'basebuild') primaryKeyword = 'base';
-        if (primaryKeyword === 'hills' || primaryKeyword === 'strides') primaryKeyword = 'str'; // Consolidate str/hills
+        if (primaryKeyword === 'intervals' || primaryKeyword === 'interval training') primaryKeyword = 'interval';
+        if (primaryKeyword === 'recovery run' || primaryKeyword === 'recovery') primaryKeyword = 'easy';
+        if (primaryKeyword === 'basebuild' || primaryKeyword === 'base run') primaryKeyword = 'base';
+        if (primaryKeyword === 'hills' || primaryKeyword === 'strides') primaryKeyword = 'str';
         if (primaryKeyword === 'zone test') primaryKeyword = 'zonetest';
+        if (primaryKeyword === 'race day' || primaryKeyword === 'race pace' || primaryKeyword === 'race simulation') primaryKeyword = 'race';
+        if (primaryKeyword === 'long run') primaryKeyword = 'long';
+        if (primaryKeyword === 'easy run') primaryKeyword = 'easy';
+        if (primaryKeyword === 'tempo run') primaryKeyword = 'tempo';
+        if (primaryKeyword === 'rest day') primaryKeyword = 'rest';
 
 
-        // Determine colorClass using the potentially modified displayText (lowercase)
-        // getActivityTextColorClass itself will handle internal logic based on the string passed
-        const colorClass = getActivityTextColorClass(lowerDisplayText);
-                                                    // or pass primaryKeyword if getActivityTextColorClass expects a keyword
-                                                    // Based on previous updates, it expects a full string.
-
-        // Determine activityKey for icons and tips (this IS our primaryKeyword)
+        const colorClass = getActivityTextColorClass(lowerFullActivityString);
         const activityKey = primaryKeyword;
 
-        // Generate iconHtml using activityKey
-        iconHtml = ''; // Already initialized at the top of renderTodaysTraining
-        const iconPath = (typeof activityIconMap === 'object' && activityIconMap[activityKey]) ? activityIconMap[activityKey] : null;
+        iconHtml = '';
+        let iconPath = null;
+        if (typeof activityIconMap === 'object') {
+            if (activityIconMap[activityKey]) {
+                iconPath = activityIconMap[activityKey];
+            } else {
+                 if (activityKey === 'long' && activityIconMap['long run']) iconPath = activityIconMap['long run'];
+                 else if (activityKey === 'easy' && activityIconMap['easy run']) iconPath = activityIconMap['easy run'];
+                 else if (activityKey === 'interval' && activityIconMap['intervals']) iconPath = activityIconMap['intervals'];
+            }
+        }
         if (iconPath) {
             iconHtml = `<img src="${iconPath}" alt="${activityKey} icon" class="training-activity-icon ml-2">`;
         }
 
-        const activityTextForDisplay = displayText; // Use the processed display text
+        dailyTipHtml = '';
+        if (typeof activityTips === 'object' && activityTips[activityKey] && activityTips[activityKey].length > 0) {
+            const tipsForActivity = activityTips[activityKey];
+            const randomTip = tipsForActivity[Math.floor(Math.random() * tipsForActivity.length)];
+            dailyTipHtml = `
+                <div id="daily-tip-container" class="mt-3">
+                    <p class="daily-tip-text"><strong>Tip:</strong> ${randomTip}</p>
+                </div>`;
+        }
+
+        const activityTextForDisplay = displayText;
+        // ----- END OF REPLACEMENT BLOCK -----
 
         const lt2PaceString = marathonPlan?.settings?.defaultLt2Speed || "N/A";
         const paceString = getPaceStringForActivity(fullActivityString, lt2PaceString); // Use full original string for pace calculation
@@ -1891,40 +1911,68 @@ function renderInfoTab() {
 }
 
 // --- PACE CALCULATOR FUNCTIONS ---
-// (These are called from within renderTodaysTraining, which is part of OVERVIEW TAB)
+function getActivityTextColorClass(activityString) { // Expects a processed string, typically lowercased
+    if (!activityString) return '';
 
-function getActivityTextColorClass(activityString) { // Expects the full activity string, lowercased
-    if (!activityString) return ''; // Handle null or undefined input
+    const lowerActivityString = activityString.toLowerCase().trim(); // Ensure it's lowercase and trimmed
 
-    if (activityString.includes('zone test') || activityString.includes('zonetest')) {
+    // Prioritized specific phrase matching
+    if (lowerActivityString.includes('zone test') || lowerActivityString.includes('zonetest')) {
         return 'activity-text-zonetest'; // Pink
     }
     // Prioritize "race" unless it's part of "zone test"
-    if (activityString.includes('race') && !(activityString.includes('zone test') || activityString.includes('zonetest'))) {
+    if (lowerActivityString.includes('race') && !(lowerActivityString.includes('zone test') || lowerActivityString.includes('zonetest'))) {
         return 'activity-text-race';     // Fuchsia
     }
-    if (activityString.includes('easy run') || activityString.includes('recovery')) { // Group easy and recovery
-        return 'activity-text-easy';     // Green
+    if (lowerActivityString.includes('easy run') || lowerActivityString.includes('recovery run') || lowerActivityString === 'recovery') {
+        return 'activity-text-easy';     // Green (handles "easy run", "recovery run", "recovery")
     }
-    if (activityString.includes('base run') || activityString.includes('basebuild')) { // common alternative for Base
+    if (lowerActivityString.includes('base run') || lowerActivityString.includes('basebuild')) {
         return 'activity-text-base';     // Blue
     }
+    if (lowerActivityString.includes('long run')) { // Specific check for "long run"
+        return 'activity-text-long-run'; // Assuming this new specific purple class exists (from main)
+                                         // If not, it should be 'activity-text-long' or similar existing class
+    }
+    if (lowerActivityString.includes('tempo run') || lowerActivityString.includes('tempo:')) { // From main
+        return 'activity-text-tempo';
+    }
+    if (lowerActivityString.includes('interval training') || lowerActivityString.includes('intervals:')) { // From main
+        return 'activity-text-interval';
+    }
+     if (lowerActivityString.includes('strides') || lowerActivityString.includes('hills') || lowerActivityString.includes('str')) { // Consolidating str/hills
+        return 'activity-text-str-hills'; // Assuming this class exists
+    }
+    if (lowerActivityString.includes('rest day') || lowerActivityString.startsWith('rest:')) { // From main
+        return 'activity-text-rest';
+    }
+     if (lowerActivityString.includes('fartlek')) { // This was missing from main's direct checks, but good to have
+        return 'activity-text-fartlek';
+    }
+    if (lowerActivityString.includes('zone') && !lowerActivityString.includes('test')) { // General zone (from main), ensure not zone test
+        return 'activity-text-zone-race'; // Original purple for general "Zone"
+    }
+    if (lowerActivityString.includes('double')) { // From main
+        return 'activity-text-double';
+    }
+    if (lowerActivityString.includes('mobility')) { // From main
+        return 'activity-text-mobility';
+    }
 
-    // Fallback to first word for remaining specific cases
-    const firstWord = activityString.split(" ")[0].replace(/:$/, '');
+    // Fallback to first word for remaining specific cases if no includes() matched above
+    const firstWord = lowerActivityString.split(" ")[0].replace(/:$/, '');
     switch (firstWord) {
-        // 'easy' and 'base' will be caught here if the string is just "Easy" or "Base" (and not "Easy Run" / "Base Run")
-        case 'easy': return 'activity-text-easy'; // Green
-        case 'base': return 'activity-text-base'; // Blue
+        case 'easy': return 'activity-text-easy';
+        case 'base': return 'activity-text-base';
         case 'tempo': return 'activity-text-tempo';
         case 'interval': case 'intervals': return 'activity-text-interval';
         case 'fartlek': return 'activity-text-fartlek';
-        case 'str': case 'hills':
-            return 'activity-text-str-hills';
+        case 'str': case 'hills': return 'activity-text-str-hills';
         case 'rest': return 'activity-text-rest';
-        case 'zone': return 'activity-text-zone-race'; // Original purple for generic "Zone" (if not 'zone test')
+        case 'zone': return 'activity-text-zone-race'; // Fallback for just "zone"
         case 'double': return 'activity-text-double';
         case 'mobility': return 'activity-text-mobility';
+        case 'long': return 'activity-text-long-run'; // Fallback if it's just "Long"
         default: return '';
     }
 }
