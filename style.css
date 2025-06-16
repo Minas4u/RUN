@@ -87,7 +87,7 @@
     --input-userid-border: #f59e0b;
     --input-userid-focus-border: #d97706;
     --input-userid-focus-shadow: rgba(245, 158, 11, 0.3);
-    --label-userid-border-l: #0284c7;
+    /* --label-userid-border-l: #0284c7; /* Unused */
     --input-focus-border: #0ea5e9;
     --input-focus-shadow: rgba(14, 165, 233, 0.3);
 
@@ -361,9 +361,9 @@
     --border-radius-medium: 0.5rem; /* 8px */
     --border-radius-large: 0.75rem; /* 12px */
     --border-radius-xl: 1rem;       /* 16px */
-    --border-radius-xxl: 1.25rem;   /* 20px */
+    /* --border-radius-xxl: 1.25rem;   /* 20px */ /* Unused */
     --border-radius-pill: 9999px;
-    --border-radius-circle: 50%;
+    /* --border-radius-circle: 50%; */ /* Unused */
 }
 
 body {
@@ -524,23 +524,36 @@ body.dark-mode {
     transform: translateY(-1px) scale(1.02); /* Enhanced lift and pop */
 }
 
-.nav-button.active-overview { background-color: var(--nav-button-active-overview-bg); color: var(--nav-button-active-overview-text); box-shadow: var(--shadow-elevation-medium); transform: translateY(-1px) scale(1.02); }
-.nav-button.active-overview:hover, .nav-button.active-overview:focus { background-color: var(--nav-button-active-overview-hover-bg); box-shadow: var(--shadow-elevation-high); transform: translateY(-2px) scale(1.03); }
+/* Common styles for active nav buttons */
+.nav-button.active {
+    color: white; /* All active text colors are white */
+    box-shadow: var(--shadow-elevation-medium);
+    transform: translateY(-1px) scale(1.02);
+}
+.nav-button.active:hover,
+.nav-button.active:focus {
+    box-shadow: var(--shadow-elevation-high);
+    transform: translateY(-2px) scale(1.03);
+}
 
-.nav-button.active-plan { background-color: var(--nav-button-active-plan-bg); color: var(--nav-button-active-plan-text); box-shadow: var(--shadow-elevation-medium); transform: translateY(-1px) scale(1.02); }
-.nav-button.active-plan:hover, .nav-button.active-plan:focus { background-color: var(--nav-button-active-plan-hover-bg); box-shadow: var(--shadow-elevation-high); transform: translateY(-2px) scale(1.03); }
+/* Specific background colors for each active state */
+.nav-button.active-overview { background-color: var(--nav-button-active-overview-bg); }
+.nav-button.active-overview:hover, .nav-button.active-overview:focus { background-color: var(--nav-button-active-overview-hover-bg); }
 
-.nav-button.active-calendar { background-color: var(--nav-button-active-calendar-bg); color: var(--nav-button-active-calendar-text); box-shadow: var(--shadow-elevation-medium); transform: translateY(-1px) scale(1.02); }
-.nav-button.active-calendar:hover, .nav-button.active-calendar:focus { background-color: var(--nav-button-active-calendar-hover-bg); box-shadow: var(--shadow-elevation-high); transform: translateY(-2px) scale(1.03); }
+.nav-button.active-plan { background-color: var(--nav-button-active-plan-bg); }
+.nav-button.active-plan:hover, .nav-button.active-plan:focus { background-color: var(--nav-button-active-plan-hover-bg); }
 
-.nav-button.active-race { background-color: var(--nav-button-active-race-bg); color: var(--nav-button-active-race-text); box-shadow: var(--shadow-elevation-medium); transform: translateY(-1px) scale(1.02); }
-.nav-button.active-race:hover, .nav-button.active-race:focus { background-color: var(--nav-button-active-race-hover-bg); box-shadow: var(--shadow-elevation-high); transform: translateY(-2px) scale(1.03); }
+.nav-button.active-calendar { background-color: var(--nav-button-active-calendar-bg); }
+.nav-button.active-calendar:hover, .nav-button.active-calendar:focus { background-color: var(--nav-button-active-calendar-hover-bg); }
 
-.nav-button.active-info { background-color: var(--nav-button-active-info-bg); color: var(--nav-button-active-info-text); box-shadow: var(--shadow-elevation-medium); transform: translateY(-1px) scale(1.02); }
-.nav-button.active-info:hover, .nav-button.active-info:focus { background-color: var(--nav-button-active-info-hover-bg); box-shadow: var(--shadow-elevation-high); transform: translateY(-2px) scale(1.03); }
+.nav-button.active-race { background-color: var(--nav-button-active-race-bg); }
+.nav-button.active-race:hover, .nav-button.active-race:focus { background-color: var(--nav-button-active-race-hover-bg); }
 
-.nav-button.active-companion { background-color: var(--nav-button-active-companion-bg); color: var(--nav-button-active-companion-text); box-shadow: var(--shadow-elevation-medium); transform: translateY(-1px) scale(1.02); }
-.nav-button.active-companion:hover, .nav-button.active-companion:focus { background-color: var(--nav-button-active-companion-hover-bg); box-shadow: var(--shadow-elevation-high); transform: translateY(-2px) scale(1.03); }
+.nav-button.active-info { background-color: var(--nav-button-active-info-bg); }
+.nav-button.active-info:hover, .nav-button.active-info:focus { background-color: var(--nav-button-active-info-hover-bg); }
+
+.nav-button.active-companion { background-color: var(--nav-button-active-companion-bg); }
+.nav-button.active-companion:hover, .nav-button.active-companion:focus { background-color: var(--nav-button-active-companion-hover-bg); }
 
 
 .phase-button {
@@ -663,16 +676,11 @@ body.dark-mode .content-card {
     box-shadow: 0 0 0 3px var(--input-userid-focus-shadow);
 }
 label[for="userIdInput"] {
-    /* border-left-width: 4px; */ /* REMOVED for top alignment */
-    /* border-color: var(--label-userid-border-l); */ /* REMOVED */
-    /* padding-left: 0.5rem; */ /* REMOVED */
-
     /* Ensure consistent alignment with the input field below it */
     display: block; /* Reinforces Tailwind 'block' class */
     max-width: 320px; /* Match the #userIdInput max-width */
     margin-left: auto;
     margin-right: auto;
-    /* margin-bottom: 0.25rem; /* Tailwind 'mb-1' already handles this */
     text-align: left; /* Default, explicitly stated for clarity */
 }
 #loginButton {
