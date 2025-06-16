@@ -52,22 +52,14 @@ const marathonGreats = [
  * @param {Array} array The array to shuffle.
  */
 function shuffleArray(array) {
-    // Loop from the last element down to the second element
     for (let i = array.length - 1; i > 0; i--) {
-        // Pick a random index from 0 to i (inclusive)
         const j = Math.floor(Math.random() * (i + 1));
-        // Swap elements array[i] and array[j]
-        [array[i], array[j]] = [array[j], array[i]];
+        [array[i], array[j]] = [array[j], array[i]]; // Swap elements
     }
 }
 
 shuffleArray(marathonGreats); // Shuffle the list on script load
 
-/**
- * @typedef {Object.<string, string[]>} ActivityTips
- * Each key is an activity type (e.g., 'base', 'easy'), and the value is an array of tip strings.
- */
-/** @const {ActivityTips} activityTips - Object containing arrays of tips for different activity types. */
 const activityTips = {
     base: [
         "Keep it Conversational: You should be able to hold a full conversation without gasping for air.",
@@ -278,16 +270,17 @@ const activityIconMap = {
 
 /**
  * @typedef {Object} ActivityMatcher
- * @property {string} match - The string to match (prefix or phrase).
- * @property {'prefix'|'includes'} type - The type of matching to perform.
- * @property {string} canonical - The canonical activity type to assign if matched.
- * @property {(function(string): boolean)|undefined} [condition] - Optional function to further refine a match.
- * @property {boolean|undefined} [lastResortIncludes] - Optional flag for 'includes' type, if true, only applies if no other type determined yet.
+ * @property {string} match - The string to match (e.g., "easy:", "long run").
+ * @property {'prefix'|'includes'} type - The matching strategy ('prefix' or 'includes').
+ * @property {string} canonical - The standardized activity type (e.g., "easy", "long").
+ * @property {(function(string): boolean)?} condition - Optional function for conditional matching.
+ * @property {boolean?} lastResortIncludes - If true for 'includes' type, match only if no type is found yet.
  */
 /**
- * @const {ActivityMatcher[]} activityMatchers - Defines rules for determining activity type from a string.
- * Order matters: Prefixes are checked first, then phrase inclusions.
- * `lastResortIncludes` for 'zone' ensures it's only picked if nothing else matches.
+ * @const {ActivityMatcher[]} activityMatchers - An array of matcher objects used by `getActivityProperties`
+ * to determine the canonical type of an activity based on its description.
+ * The order of matchers is important as they are evaluated sequentially.
+ * More specific matchers (especially prefixes) should generally come before broader ones.
  */
 const activityMatchers = [
     // Prefixes (highest priority)
@@ -335,8 +328,9 @@ const activityMatchers = [
 ];
 
 /**
- * @const {Object.<string, string>} fallbackTypeMapping - Maps fallback activity types if no specific prefix or phrase match is found.
- * Used when an activity string might be simple like "Easy" or "Base" after splitting by ':'.
+ * @const {Object.<string, string>} fallbackTypeMapping - A mapping for activity types derived from
+ * simple colon-prefixed strings (e.g., "Easy: Some description") if no other specific
+ * prefix or phrase match from `activityMatchers` is found. The key is the part before the colon (lowercased).
  */
 const fallbackTypeMapping = {
     'easy': 'easy', 'easy run': 'easy',
@@ -357,19 +351,22 @@ const fallbackTypeMapping = {
 };
 
 /**
- * @const {string[]} knownTypes - List of all known canonical activity types. Used for final validation.
- * 'unknown' is a valid type for activities that don't map to a known one.
+ * @const {string[]} knownTypes - A list of all recognized canonical activity types.
+ * This array is used to validate if a derived `canonicalType` is known;
+ * if not, it defaults to 'unknown'.
  */
 const knownTypes = ['easy', 'base', 'long', 'tempo', 'interval', 'fartlek', 'rest', 'recovery', 'strides_hills', 'zone_test', 'race', 'mobility', 'double', 'zone', 'unknown'];
 
 /**
- * Determines the canonical type, icon, and color class for a given activity string.
- * This function processes the activity string through a series of matchers and fallbacks
- * to categorize the activity and provide properties for UI display.
+ * Determines the canonical type, icon path, and CSS color class for a given activity string.
+ * It processes the `activityString` using `activityMatchers` and `fallbackTypeMapping`
+ * to standardize the activity type and retrieve associated display properties.
  *
- * @param {string} activityString The full description of the activity.
- * @returns {{type: string, icon: string|null, colorClass: string}} An object containing the canonical type,
- * icon path (or null if not applicable), and CSS color class.
+ * @param {string} activityString - The raw activity description string.
+ * @returns {{type: string, icon: (string|null), colorClass: string}} An object containing:
+ *  - `type`: The determined canonical activity type (e.g., "easy", "long", "unknown").
+ *  - `icon`: The path to the activity's icon, or null if no specific icon is mapped.
+ *  - `colorClass`: The CSS class name for styling the activity text.
  */
 function getActivityProperties(activityString) {
     let canonicalType = 'unknown';
@@ -445,8 +442,8 @@ function getActivityProperties(activityString) {
         canonicalType = 'unknown';
     }
 
-    // 4. Icon Mapping (based on canonicalType) - Kept as is
-    const iconMap = {
+    // 4. Icon Mapping (based on canonicalType)
+    const iconMap = { // This map uses the canonicalType
         'base': 'icons/base_run.svg',
         'easy': 'icons/easy_run.svg',
         'fartlek': 'icons/fartlek_run.svg',
@@ -463,7 +460,8 @@ function getActivityProperties(activityString) {
     }
 
     // 5. Color Class Mapping (based on canonicalType)
-    // This uses a direct switch statement as the color classes are specific and don't follow a simple pattern from the type itself.
+    // The color class is determined by a switch statement, as the class names
+    // don't always directly correspond to the canonical type name in a predictable way.
     switch (canonicalType) {
         case 'long': colorClass = 'activity-text-long-run'; break;
         case 'easy': colorClass = 'activity-text-easy'; break;
@@ -476,7 +474,7 @@ function getActivityProperties(activityString) {
         case 'rest': colorClass = 'activity-text-rest'; break;
         case 'zone_test': colorClass = 'activity-text-zonetest'; break;
         case 'race': colorClass = 'activity-text-race'; break;
-        case 'zone': colorClass = 'activity-text-zone-race'; break; // General 'zone' activities map to this
+        case 'zone': colorClass = 'activity-text-zone-race'; break;
         case 'double': colorClass = 'activity-text-double'; break;
         case 'mobility': colorClass = 'activity-text-mobility'; break;
         default: colorClass = ''; // For 'unknown' or any other unmapped type
@@ -537,7 +535,6 @@ const companionLoadingMessage = document.getElementById('companion-loading-messa
 const companionErrorMessage = document.getElementById('companion-error-message');
 const companionNavigation = document.getElementById('companion-navigation');
 const companionContent = document.getElementById('companion-content');
-const loginButtonWrapper = document.getElementById('loginButtonWrapper'); // Added for consistency
 
 
 // --- UTILITY FUNCTIONS ---
@@ -863,7 +860,7 @@ async function handleLogin() {
     loginLoadingMessageDiv.classList.remove('hidden');
     currentWebAppUrl = userSpecificDataSources[userId];
 
-    // const loginButtonWrapper = document.getElementById('loginButtonWrapper'); // Use global const
+    const loginButtonWrapper = document.getElementById('loginButtonWrapper'); // Get the wrapper
 
     if (currentWebAppUrl) {
         localStorage.setItem('lastUserID', userId); // Remember user for next visit.
@@ -915,7 +912,6 @@ async function fetchMarathonPlan(webAppUrlToUse) {
             throw new Error(`Network response not ok: ${response.status} ${response.statusText}. Details: ${errorText}`);
         }
         const data = await response.json();
-        // console.log("Fetched marathon plan data:", data); // Example of a debug log to remove or keep conditional
         if (data.error) {
             throw new Error(`Error from Google Sheet App: ${data.error}`);
         }
@@ -1105,9 +1101,48 @@ function _buildTodaysTrainingTitleHtml(displayDate, titleText) {
         </div>`;
 }
 
+/**
+ * Builds the HTML for the main activity display in the "Today's Training" card.
+ * @param {object} todaysActivity - The activity object for the day.
+ * @param {object} activityProps - Properties derived from `getActivityProperties`.
+ * @param {string} paceString - The formatted pace string for the activity.
+ * @returns {string} HTML string for the activity content.
+ */
 function _buildTodaysActivityHtml(todaysActivity, activityProps, paceString) {
     if (todaysActivity) {
-        const activityTextForDisplay = todaysActivity.activity.replace(/^[^:]+:\s*/, '');
+        let activityTextForDisplay = todaysActivity.activity.replace(/^[^:]+:\s*/, '').trim();
+
+        // If the description is empty after stripping prefix (e.g. "Easy:"), use a fallback display name.
+        if (!activityTextForDisplay && todaysActivity.activity.includes(':')) {
+            const type = activityProps.type;
+            const fallbackDisplayNames = {
+                'easy': 'Easy Run',
+                'base': 'Base Run',
+                'long': 'Long Run',
+                'tempo': 'Tempo Run',
+                'interval': 'Interval Training',
+                'fartlek': 'Fartlek',
+                'recovery': 'Recovery Run',
+                'strides_hills': 'Strides / Hills',
+                'rest': 'Rest Day',
+                'zone_test': 'Zone Test',
+                'race': 'Race',
+                'mobility': 'Mobility',
+                'double': 'Double Run',
+                'zone': 'Zone Run',
+                'unknown': 'General Workout'
+            };
+            if (fallbackDisplayNames[type]) {
+                activityTextForDisplay = fallbackDisplayNames[type];
+            } else if (type && type !== 'unknown') {
+                // Default fallback: Capitalize the type itself
+                activityTextForDisplay = type.charAt(0).toUpperCase() + type.slice(1);
+            } else {
+                activityTextForDisplay = "Workout"; // Ultimate fallback
+            }
+        }
+
+
         const colorClass = activityProps.colorClass;
         let iconHtml = '';
         if (activityProps.icon) {
@@ -1243,7 +1278,7 @@ function renderTodaysTraining() {
 
     // Add event listeners for new navigation arrows
     const prevDayBtn = document.getElementById('todayPrevDay'); // Re-fetch after innerHTML update
-    const nextDayBtn = document.getElementById('todayNextDay'); // Re-fetch after innerHTML update
+    const nextDayBtn = document.getElementById('todayNextDay');
 
     if (prevDayBtn) {
         prevDayBtn.addEventListener('click', () => {
@@ -1252,7 +1287,7 @@ function renderTodaysTraining() {
                 firstPlanDate.setHours(0,0,0,0);
                 if (!isSameDay(currentTodayViewDate, firstPlanDate)) {
                     currentTodayViewDate = addDays(currentTodayViewDate, -1);
-                    renderTodaysTraining(); // Re-render the component
+                    renderTodaysTraining();
                 }
             }
         });
@@ -1264,7 +1299,7 @@ function renderTodaysTraining() {
                 lastPlanDate.setHours(0,0,0,0);
                 if (!isSameDay(currentTodayViewDate, lastPlanDate)) {
                     currentTodayViewDate = addDays(currentTodayViewDate, +1);
-                    renderTodaysTraining(); // Re-render the component
+                    renderTodaysTraining();
                 }
             }
         });
@@ -1303,85 +1338,37 @@ function renderTodaysTraining() {
     }
 }
 
-// --- Helper function for renderThisWeeksPlan ---
-function _buildThisWeeksTableHtml(currentWeekActivities, weekNotes) {
-    if (!currentWeekActivities || currentWeekActivities.length === 0) {
-        return '<p class="text-stone-600 text-center">No training scheduled for this week.</p>';
-    }
-
-    const dayColors = ['bg-red-50', 'bg-orange-50', 'bg-amber-50', 'bg-yellow-50', 'bg-lime-50', 'bg-green-50', 'bg-emerald-50'];
-    const tableRowsHtml = currentWeekActivities.map((dayEntry, index) => {
-        const bgColor = dayColors[index % dayColors.length];
-        return `<tr class="${bgColor}">
-                    <td class="p-3 font-bold text-stone-800">${dayEntry.dayName}</td>
-                    <td class="p-3 text-stone-700">${dayEntry.activity}</td>
-                </tr>`;
-    }).join('');
-
-    const notesHtml = weekNotes ? `<p class="text-sm italic mt-3 p-3 bg-stone-100 rounded-md"><strong class="text-black text-xs">Weekly Notes:</strong> <span class="text-stone-800 text-sm">${weekNotes}</span></p>` : '';
-
-    return `
-        <div class="overflow-x-auto rounded-lg border border-stone-200">
-            <table class="schedule-table min-w-full">
-                <thead>
-                    <tr>
-                        <th class="p-3 text-left text-xs font-semibold uppercase tracking-wider text-stone-600 bg-stone-100">Day</th>
-                        <th class="p-3 text-left text-xs font-semibold uppercase tracking-wider text-stone-600 bg-stone-100">Activity</th>
-                    </tr>
-                </thead>
-                <tbody class="divide-y divide-stone-200">
-                    ${tableRowsHtml}
-                </tbody>
-            </table>
-        </div>
-        ${notesHtml}
-    `;
-}
-
-
 function renderThisWeeksPlan() {
-    const container = document.getElementById('this-weeks-plan-content');
+    const container = document.getElementById('this-weeks-plan-content'); // Re-fetch
     if (!container || !marathonPlan || !marathonPlan.uiText || !marathonPlan.uiText.overview) {
         if(container) container.innerHTML = "<p>Loading this week's plan...</p>";
         return;
     }
     const thisWeeksPlanTitle = marathonPlan.uiText.overview.thisWeeksPlanTitle || "This Week";
-
-    // Ensure datedTrainingPlan is populated if possible
-    if (datedTrainingPlan.length === 0 && marathonPlan.settings.planStartDate && marathonPlan.phases) {
+    if (datedTrainingPlan.length === 0 && marathonPlan.settings.planStartDate && marathonPlan) {
         const planStartDate = new Date(marathonPlan.settings.planStartDate + "T00:00:00");
         let totalDaysInPlan = 0;
-        marathonPlan.phases.forEach(phase => {
-            if (phase.weeks && Array.isArray(phase.weeks)) {
-                phase.weeks.forEach(week => {
-                    if (week.days && Array.isArray(week.days)) {
-                        totalDaysInPlan += week.days.length;
-                    }
-                });
-            }
-        });
+        marathonPlan.phases.forEach(phase => phase.weeks.forEach(week => totalDaysInPlan += week.days.length));
         if (totalDaysInPlan > 0 && isValidDate(planStartDate)) {
             const planEndDate = addDays(new Date(planStartDate), totalDaysInPlan - 1);
             calculateAndStoreDatedTrainingPlan(planEndDate);
         }
     }
-
     if (datedTrainingPlan.length === 0) {
-        container.innerHTML = `<h3 class="text-2xl font-semibold text-green-700 mb-1 text-center">${thisWeeksPlanTitle}</h3><p class="text-stone-600 text-center">Training plan not loaded or is empty.</p>`;
+         container.innerHTML = `<h3 class="text-2xl font-semibold text-green-700 mb-1 text-center">${thisWeeksPlanTitle}</h3><p class="text-stone-600 text-center">Training plan not loaded or is empty.</p>`;
         return;
     }
 
-    const thisWeeksCard = document.getElementById('this-weeks-plan-card');
+    const thisWeeksCard = document.getElementById('this-weeks-plan-card'); // Re-fetch
     if (thisWeeksCard) {
         thisWeeksCard.classList.add('custom-rect-border-this-week');
     }
 
     const today = new Date();
-    const dayOfWeek = today.getDay(); // Sunday - 0, Monday - 1, ..., Saturday - 6
-    const startOfWeekOffset = dayOfWeek === 0 ? -6 : 1 - dayOfWeek; // Calculate offset to get to Monday
+    const dayOfWeek = today.getDay();
+    const startOfWeekOffset = dayOfWeek === 0 ? -6 : 1 - dayOfWeek;
     const monday = new Date(new Date().setDate(today.getDate() + startOfWeekOffset));
     monday.setHours(0, 0, 0, 0);
-
     const currentWeekActivities = [];
     let weekNotes = "";
     let weekInfoFound = false;
@@ -1399,25 +1386,23 @@ function renderThisWeeksPlan() {
         let activityDescription;
 
         if (activityForDay) {
-            if (!weekInfoFound) { // Capture notes from the first day of the week that has them
+            if (!weekInfoFound) {
                 weekNotes = activityForDay.notes || "";
                 weekInfoFound = true;
             }
             const activityString = activityForDay.activity;
-            // Attempt to extract a short day name if prefixed like "Mon: ..." or "Day 1: ..."
             const dayPrefixMatch = activityString.match(/^(\w{3,4}(\s\d{1,2})?):\s*(.*)/s);
             if (dayPrefixMatch && dayPrefixMatch[1] && dayPrefixMatch[3]) {
-                displayDayName = dayPrefixMatch[1].trim(); // Use "Mon" or "Day 1"
-                activityDescription = dayPrefixMatch[3].trim(); // The rest of the activity
+                displayDayName = dayPrefixMatch[1].trim();
+                activityDescription = dayPrefixMatch[3].trim();
             } else {
-                activityDescription = activityString.trim(); // Full activity string if no recognized prefix
+                activityDescription = activityString.trim();
             }
         } else {
             activityDescription = "Rest or Unscheduled";
         }
 
-        // Format activity: bold the type if a colon is present
-        const activityParts = activityDescription.split(/:(.*)/s); // Split on the first colon only
+        const activityParts = activityDescription.split(/:(.*)/s);
         let formattedActivity = (activityParts.length > 1 && activityParts[0].trim() !== "")
             ? `<strong>${activityParts[0].trim()}</strong>: ${activityParts[1] ? activityParts[1].trim() : ''}`
             : activityDescription;
@@ -1425,26 +1410,47 @@ function renderThisWeeksPlan() {
         currentWeekActivities.push({ dayName: displayDayName, activity: formattedActivity });
     }
 
-    const tableHtml = _buildThisWeeksTableHtml(currentWeekActivities, weekNotes);
+    if (currentWeekActivities.length > 0) {
+        const dayColors = ['bg-red-50', 'bg-orange-50', 'bg-amber-50', 'bg-yellow-50', 'bg-lime-50', 'bg-green-50', 'bg-emerald-50'];
+        let tableRowsHtml = currentWeekActivities.map((dayEntry, index) => {
+            const bgColor = dayColors[index % dayColors.length];
+            return `<tr class="${bgColor}">
+                        <td class="p-3 font-bold text-stone-800">${dayEntry.dayName}</td>
+                        <td class="p-3 text-stone-700">${dayEntry.activity}</td>
+                    </tr>`;
+        }).join('');
 
-    container.innerHTML = `
-        <div class="flex items-center mb-2">
-            <div class="flex-grow text-center">
-                <h3 class="text-2xl font-semibold text-green-700">${thisWeeksPlanTitle}</h3>
+        container.innerHTML = `
+            <div class="flex items-center mb-2">
+                <div class="flex-grow text-center">
+                    <h3 class="text-2xl font-semibold text-green-700">${thisWeeksPlanTitle}</h3>
+                </div>
+                <button id="printWeekPdfBtn" class="pdf-button ml-auto no-print">
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" class="w-4 h-4"><path fill-rule="evenodd" d="M5 2.5A2.5 2.5 0 0 1 7.5 0h5A2.5 2.5 0 0 1 15 2.5V5h-2.55a3 3 0 0 0-4.9 0H5V2.5zM10 6a2 2 0 0 0-1.936 1.5H5V15a2 2 0 0 0 2 2h6a2 2 0 0 0 2-2V7.5h-3.064A2 2 0 0 0 10 6zm0 2a.75.75 0 0 1 .75.75v.032l1.533.306a.75.75 0 0 1-.293 1.455l-1.68-.335a.75.75 0 0 1-.59-.518L9.25 8.75A.75.75 0 0 1 10 8z" clip-rule="evenodd" /></svg>
+                    PDF
+                </button>
             </div>
-            <button id="printWeekPdfBtn" class="pdf-button ml-auto no-print">
-                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" class="w-4 h-4"><path fill-rule="evenodd" d="M5 2.5A2.5 2.5 0 0 1 7.5 0h5A2.5 2.5 0 0 1 15 2.5V5h-2.55a3 3 0 0 0-4.9 0H5V2.5zM10 6a2 2 0 0 0-1.936 1.5H5V15a2 2 0 0 0 2 2h6a2 2 0 0 0 2-2V7.5h-3.064A2 2 0 0 0 10 6zm0 2a.75.75 0 0 1 .75.75v.032l1.533.306a.75.75 0 0 1-.293 1.455l-1.68-.335a.75.75 0 0 1-.59-.518L9.25 8.75A.75.75 0 0 1 10 8z" clip-rule="evenodd" /></svg>
-                PDF
-            </button>
-        </div>
-        <div id="this-weeks-plan-printable-area" class="printable-area">
-            ${tableHtml}
-        </div>
-    `;
-
-    const pdfBtn = document.getElementById('printWeekPdfBtn'); // Re-fetch after innerHTML update
-    if (pdfBtn) {
-        pdfBtn.addEventListener('click', () => printSelectedWeekToPdf('this-weeks-plan-printable-area'));
+            <div id="this-weeks-plan-printable-area" class="printable-area">
+                <div class="overflow-x-auto rounded-lg border border-stone-200">
+                    <table class="schedule-table min-w-full">
+                        <thead>
+                            <tr>
+                                <th class="p-3 text-left text-xs font-semibold uppercase tracking-wider text-stone-600 bg-stone-100">Day</th>
+                                <th class="p-3 text-left text-xs font-semibold uppercase tracking-wider text-stone-600 bg-stone-100">Activity</th>
+                            </tr>
+                        </thead>
+                        <tbody class="divide-y divide-stone-200">
+                            ${tableRowsHtml}
+                        </tbody>
+                    </table>
+                </div>
+                ${weekNotes ? `<p class="text-sm italic mt-3 p-3 bg-stone-100 rounded-md"><strong class="text-black text-xs">Weekly Notes:</strong> <span class="text-stone-800 text-sm">${weekNotes}</span></p>` : ''}
+            </div>
+        `;
+        const pdfBtn = document.getElementById('printWeekPdfBtn'); // Re-fetch
+        if (pdfBtn) pdfBtn.addEventListener('click', () => printSelectedWeekToPdf('this-weeks-plan-printable-area'));
+    } else {
+        container.innerHTML = `<h3 class="text-2xl font-semibold text-green-700 mb-1 text-center">${thisWeeksPlanTitle}</h3><p class="text-stone-600 text-center">No training scheduled for this week or plan not loaded.</p>`;
     }
 }
 
@@ -1582,13 +1588,16 @@ function renderPhaseDetails(phaseIndex) {
     if (!phase) {
         currentPhaseDetailsDiv.innerHTML = '<p class="text-red-500">Error: Could not load phase details.</p>'; return;
     }
-    currentWeekDetailsContainer.innerHTML = ''; // Clear previous week's details
-
+    currentWeekDetailsContainer.innerHTML = '';
     const phaseTitleColorClass = getPhaseTitleTextColorClass(phase.name);
     const phaseBorderColor = getPhaseTitleBorderColor(phase.name);
-    const uiSelectWeekTitle = marathonPlan.uiText.plan.selectWeekTitle || "Select a Week:";
 
-    const weekButtonsSectionHtml = _buildPhaseWeekButtonsHtml(phase, phaseIndex, uiSelectWeekTitle);
+    const selectWeekTitle = marathonPlan.uiText.plan.selectWeekTitle || "Select a Week:";
+    const weekButtonsHtml = (phase.weeks && Array.isArray(phase.weeks)) ? phase.weeks.map((week, index) => {
+        const weekDateRange = getWeekDateRangeString(week, phase.name);
+        const weekButtonTextColorClass = getPhaseTextColorClass(phase.name);
+        return `<button class="week-button ${weekButtonTextColorClass}" data-phase-index="${phaseIndex}" data-week-index="${index}">${weekDateRange}</button>`
+    }).join('') : '<p>No weeks available for this phase.</p>';
 
     currentPhaseDetailsDiv.innerHTML = `
         <div class="content-card">
@@ -1596,10 +1605,10 @@ function renderPhaseDetails(phaseIndex) {
             <hr class="border-t-2 mb-2" style="border-color: ${phaseBorderColor};">
             <p class="text-sm text-stone-600 mb-1"><strong>Goal:</strong> ${phase.goal || 'N/A'}</p>
             <p class="text-sm text-stone-600 mb-3"><strong>Mileage Range:</strong> ${phase.mileageRange || 'N/A'}</p>
-            ${weekButtonsSectionHtml}
+            <h4 class="text-md font-medium text-stone-700 mb-2">${selectWeekTitle}</h4>
+            <div id="week-navigation-${phaseIndex}" class="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-5 lg:grid-cols-7 gap-2">${weekButtonsHtml}</div>
         </div>`;
 
-    // Add event listeners to the newly rendered week buttons
     document.querySelectorAll(`#week-navigation-${phaseIndex} .week-button`).forEach(button => {
         button.addEventListener('click', (e) => {
             document.querySelectorAll(`#week-navigation-${phaseIndex} .week-button`).forEach(btn => {
@@ -1651,13 +1660,16 @@ function getDisplayKm(totalKmString) {
     return totalKmString;
 }
 
-// --- Helper function for renderWeekDetails ---
-function _buildWeekDetailsTableHtml(weekDays) {
-    if (!weekDays || !Array.isArray(weekDays) || weekDays.length === 0) {
-        return '<tr><td colspan="2" class="p-3 text-stone-500">No daily schedule available for this week.</td></tr>';
+function renderWeekDetails(phaseIndex, weekIndex) {
+    const currentWeekDetailsContainer = document.getElementById('week-details-container'); // Re-fetch
+    if (!marathonPlan || !currentWeekDetailsContainer) return;
+    const week = marathonPlan.phases[phaseIndex]?.weeks[weekIndex];
+    if (!week) {
+        currentWeekDetailsContainer.innerHTML = '<p class="text-red-500">Error: Could not load week details.</p>'; return;
     }
     const dayColors = ['bg-red-50', 'bg-orange-50', 'bg-amber-50', 'bg-yellow-50', 'bg-lime-50', 'bg-green-50', 'bg-emerald-50'];
-    return weekDays.map((day, index) => {
+
+    let tableRowsHtml = (week.days && Array.isArray(week.days)) ? week.days.map((day, index) => {
         const parts = day.split(/:(.*)/s);
         const dayName = parts[0] ? parts[0].trim() : "";
         let activityText = parts[1] ? parts[1].trim() : day;
@@ -1669,18 +1681,8 @@ function _buildWeekDetailsTableHtml(weekDays) {
             activityText = `<strong>${activityText}</strong>`;
         }
         return `<tr class="${dayColors[index % dayColors.length]}"><td class="p-3 font-medium text-stone-800">${dayName}</td><td class="p-3 text-stone-700">${activityText}</td></tr>`;
-    }).join('');
-}
+    }).join('') : '<tr><td colspan="2" class="p-3 text-stone-500">No daily schedule available.</td></tr>';
 
-function renderWeekDetails(phaseIndex, weekIndex) {
-    const currentWeekDetailsContainer = document.getElementById('week-details-container');
-    if (!marathonPlan || !currentWeekDetailsContainer) return;
-    const week = marathonPlan.phases[phaseIndex]?.weeks[weekIndex];
-    if (!week) {
-        currentWeekDetailsContainer.innerHTML = '<p class="text-red-500">Error: Could not load week details.</p>'; return;
-    }
-
-    const tableRowsHtml = _buildWeekDetailsTableHtml(week.days);
     const weekDetailsId = `week-details-printable-${phaseIndex}-${weekIndex}`;
 
     const paceGuideHtml = `<div class="content-card overview-section-card mt-6">
@@ -1770,81 +1772,42 @@ function renderCalendarTab() {
     renderSelectedCalendarDayDetails(new Date());
 }
 
-// --- Helper function for renderCalendarGrid ---
-function _buildCalendarDayCellHtml(day, currentDateInLoop, activityForDay, today) {
-    const cell = document.createElement('div');
-    cell.className = 'calendar-day';
-
-    if (isSameDay(currentDateInLoop, today)) {
-        cell.classList.add('is-today');
-    }
-
-    let activityHtml = '';
-    if (activityForDay) {
-        cell.classList.add('has-activity');
-        let activityText = activityForDay.activity.replace(/^[^:]+:\s*/, '');
-        let thumbnailClass = getActivityThumbnailClass(activityText); // Assumes getActivityThumbnailClass is globally available
-        cell.classList.add(thumbnailClass);
-        cell.addEventListener('click', () => renderSelectedCalendarDayDetails(currentDateInLoop)); // Assumes renderSelectedCalendarDayDetails is globally available
-        activityHtml = `<span class="activity-thumbnail ${thumbnailClass}">${activityText.substring(0,12)}${activityText.length > 12 ? '...' : ''}</span>`;
-    }
-    cell.innerHTML = `<span class="day-number">${day}</span>` + activityHtml;
-    return cell;
-}
-
 function renderCalendarGrid() {
-    const grid = document.getElementById('calendar-grid-container');
-    const monthYearDisp = document.getElementById('currentMonthYearCalendar');
+    const grid = document.getElementById('calendar-grid-container'); // Re-fetch
+    const monthYearDisp = document.getElementById('currentMonthYearCalendar'); // Re-fetch
     if (!grid || !monthYearDisp) return;
-
-    grid.innerHTML = ''; // Clear previous grid content
-
-    const year = calendarCurrentDisplayDate.getFullYear();
-    const month = calendarCurrentDisplayDate.getMonth();
+    grid.innerHTML = '';
+    const year = calendarCurrentDisplayDate.getFullYear(); const month = calendarCurrentDisplayDate.getMonth();
     monthYearDisp.textContent = calendarCurrentDisplayDate.toLocaleDateString(undefined, { month: 'long', year: 'numeric' });
-
-    const firstDayOfMonth = new Date(year, month, 1);
-    const lastDayOfMonth = new Date(year, month + 1, 0);
+    const firstDayOfMonth = new Date(year, month, 1); const lastDayOfMonth = new Date(year, month + 1, 0);
     const daysInMonth = lastDayOfMonth.getDate();
-    let startingDayOfWeek = firstDayOfMonth.getDay(); // 0 (Sun) - 6 (Sat)
-    if (startingDayOfWeek === 0) startingDayOfWeek = 6; // Adjust Sunday to be the 6th day of the week (0-indexed) for Mon start
-    else startingDayOfWeek--; // Adjust other days to be 0 (Mon) - 5 (Sat)
-
-    // Add day headers
+    let startingDayOfWeek = firstDayOfMonth.getDay(); if (startingDayOfWeek === 0) startingDayOfWeek = 6; else startingDayOfWeek--; // Monday as start of week.
     const dayHeaders = ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"];
-    dayHeaders.forEach(header => {
-        const headerCell = document.createElement('div');
-        headerCell.className = 'calendar-header';
-        headerCell.textContent = header;
-        grid.appendChild(headerCell);
-    });
-
-    // Add empty cells for days before the first day of the month
-    for (let i = 0; i < startingDayOfWeek; i++) {
-        const emptyCell = document.createElement('div');
-        emptyCell.className = 'calendar-day other-month';
-        grid.appendChild(emptyCell);
-    }
-
-    const today = new Date();
-    today.setHours(0,0,0,0);
-
-    // Add cells for each day of the month
+    dayHeaders.forEach(header => { const hc = document.createElement('div'); hc.className = 'calendar-header'; hc.textContent = header; grid.appendChild(hc); });
+    for (let i = 0; i < startingDayOfWeek; i++) { const ec = document.createElement('div'); ec.className = 'calendar-day other-month'; grid.appendChild(ec); }
+    const today = new Date(); today.setHours(0,0,0,0);
     for (let day = 1; day <= daysInMonth; day++) {
-        const currentDateInLoop = new Date(year, month, day);
-        currentDateInLoop.setHours(0,0,0,0); // Normalize time for comparison
-
+        const cell = document.createElement('div'); cell.className = 'calendar-day';
+        const currentDateInLoop = new Date(year, month, day); currentDateInLoop.setHours(0,0,0,0);
         const activityForDay = datedTrainingPlan.find(item => {
             const itemDate = new Date(item.date);
-            itemDate.setHours(0,0,0,0); // Normalize time for comparison
+            itemDate.setHours(0,0,0,0);
             return isSameDay(itemDate, currentDateInLoop);
         });
-
-        const cellElement = _buildCalendarDayCellHtml(day, currentDateInLoop, activityForDay, today);
-        grid.appendChild(cellElement);
+        if (isSameDay(currentDateInLoop, today)) cell.classList.add('is-today');
+        let activityHtml = '';
+        if (activityForDay) {
+            cell.classList.add('has-activity');
+            let activityText = activityForDay.activity.replace(/^[^:]+:\s*/, '');
+            let thumbnailClass = getActivityThumbnailClass(activityText);
+            cell.classList.add(thumbnailClass);
+            cell.addEventListener('click', () => renderSelectedCalendarDayDetails(currentDateInLoop));
+            activityHtml = `<span class="activity-thumbnail ${thumbnailClass}">${activityText.substring(0,12)}${activityText.length > 12 ? '...' : ''}</span>`;
+        }
+        cell.innerHTML = `<span class="day-number">${day}</span>` + activityHtml;
+        grid.appendChild(cell);
     }
 }
-
 
 function renderSelectedCalendarDayDetails(date) {
     const detailsCont = document.getElementById('calendar-day-details-content'); // Re-fetch
@@ -1894,13 +1857,33 @@ function renderRaceTab() {
     const raceDateFormatted = currentRaceDate ? formatDate(currentRaceDate) : "N/A (Set Plan Start Date)";
     const raceDistance = marathonPlan.settings.raceDistanceKm || "N/A";
 
-    const raceDetailsHtml = _buildRaceDetailsHtml(raceName, raceDateFormatted, raceDistance, uiTextRace);
-    const tacticsSecHtml = _buildRaceTacticsHtml(marathonPlan.raceTactics, uiTextRace);
+    let tacticsHtml = `<h3 class="text-xl font-semibold text-violet-700 mb-3">${uiTextRace.tacticsTitle || "Race Strategy & Tactics"}</h3>`;
+    if (marathonPlan.raceTactics) {
+        if (marathonPlan.raceTactics.pacing && Array.isArray(marathonPlan.raceTactics.pacing) && marathonPlan.raceTactics.pacing.length > 0) {
+            tacticsHtml += `<div class="mb-4"><h4 class="text-lg font-medium text-violet-600 mb-1">${uiTextRace.pacingSectionTitle || "Pacing Strategy"}</h4>${createHtmlList(marathonPlan.raceTactics.pacing)}</div>`;
+        }
+        if (marathonPlan.raceTactics.nutrition && Array.isArray(marathonPlan.raceTactics.nutrition) && marathonPlan.raceTactics.nutrition.length > 0) {
+            tacticsHtml += `<div class="mb-4"><h4 class="text-lg font-medium text-violet-600 mb-1">${uiTextRace.nutritionSectionTitle || "Nutrition & Hydration Plan"}</h4>${createHtmlList(marathonPlan.raceTactics.nutrition)}</div>`;
+        }
+        if (marathonPlan.raceTactics.mentalPrep && Array.isArray(marathonPlan.raceTactics.mentalPrep) && marathonPlan.raceTactics.mentalPrep.length > 0) {
+            tacticsHtml += `<div class="mb-4"><h4 class="text-lg font-medium text-violet-600 mb-1">${uiTextRace.mentalPrepSectionTitle || "Mental Preparation"}</h4>${createHtmlList(marathonPlan.raceTactics.mentalPrep)}</div>`;
+        }
+         if (marathonPlan.raceTactics.gear && Array.isArray(marathonPlan.raceTactics.gear) && marathonPlan.raceTactics.gear.length > 0) {
+            tacticsHtml += `<div class="mb-4"><h4 class="text-lg font-medium text-violet-600 mb-1">${uiTextRace.gearChecklistTitle || "Gear Checklist"}</h4>${createHtmlList(marathonPlan.raceTactics.gear)}</div>`;
+        }
+    } else {
+        tacticsHtml += "<p class='text-stone-500 italic'>Race tactics templates will appear here. Configure in 'Plan Overview' sheet.</p>";
+    }
 
     raceSection.innerHTML = `
         <div class="content-card race-section-card">
             <h2 class="text-2xl sm:text-3xl font-bold text-violet-700 mb-3 text-center">${uiTextRace.mainTitle || "Race Day Hub"}</h2>
-            ${raceDetailsHtml}
+            <div class="mb-6 p-4 bg-violet-50 rounded-lg shadow race-section-card">
+                <h3 class="text-xl font-semibold text-violet-600 mb-2 pb-1 border-b-2 border-violet-500">${uiTextRace.raceDetailsTitle || "Race Details"}</h3>
+                <p class="text-lg"><strong class="text-violet-600 font-semibold">${uiTextRace.raceNameLabel || "Race:"}</strong> <span class="text-stone-700 font-bold">${raceName}</span></p>
+                <p class="text-lg"><strong class="text-violet-600 font-semibold">${uiTextRace.raceDateLabel || "Date:"}</strong> <span class="text-stone-700 font-bold">${raceDateFormatted}</span> (Plan End Date)</p>
+                <p class="text-lg"><strong class="text-violet-600 font-semibold">${uiTextRace.raceDistanceLabel || "Distance:"}</strong> <span class="text-stone-700 font-bold">${raceDistance} km</span></p>
+            </div>
             <div class="mb-6" id="raceElevationChartContainer">
                 <h3 class="text-xl font-semibold text-violet-600 mb-2">${uiTextRace.elevationProfileTitle || "Elevation Profile (per km)"}</h3>
                 <div class="chart-container bg-white p-2 rounded-md shadow">
@@ -1909,48 +1892,12 @@ function renderRaceTab() {
                 <p class="text-xs text-stone-500 mt-2 text-center">Elevation gain per kilometer of the race course.</p>
             </div>
             <div class="race-section-card p-4 rounded-lg bg-white shadow">
-                ${tacticsSecHtml}
+                ${tacticsHtml}
             </div>
         </div>
     `;
     appContent.appendChild(raceSection);
     renderRaceElevationChart();
-}
-
-// --- Helper functions for renderRaceTab ---
-function _buildRaceDetailsHtml(raceName, raceDateFormatted, raceDistance, uiTextRace) {
-    return `
-        <div class="mb-6 p-4 bg-violet-50 rounded-lg shadow race-section-card">
-            <h3 class="text-xl font-semibold text-violet-600 mb-2 pb-1 border-b-2 border-violet-500">${uiTextRace.raceDetailsTitle || "Race Details"}</h3>
-            <p class="text-lg"><strong class="text-violet-600 font-semibold">${uiTextRace.raceNameLabel || "Race:"}</strong> <span class="text-stone-700 font-bold">${raceName}</span></p>
-            <p class="text-lg"><strong class="text-violet-600 font-semibold">${uiTextRace.raceDateLabel || "Date:"}</strong> <span class="text-stone-700 font-bold">${raceDateFormatted}</span> (Plan End Date)</p>
-            <p class="text-lg"><strong class="text-violet-600 font-semibold">${uiTextRace.raceDistanceLabel || "Distance:"}</strong> <span class="text-stone-700 font-bold">${raceDistance} km</span></p>
-        </div>`;
-}
-
-function _buildRaceTacticsHtml(raceTactics, uiTextRace) {
-    let tacticsHtml = `<h3 class="text-xl font-semibold text-violet-700 mb-3">${uiTextRace.tacticsTitle || "Race Strategy & Tactics"}</h3>`;
-    if (raceTactics) {
-        if (raceTactics.pacing && Array.isArray(raceTactics.pacing) && raceTactics.pacing.length > 0) {
-            tacticsHtml += `<div class="mb-4"><h4 class="text-lg font-medium text-violet-600 mb-1">${uiTextRace.pacingSectionTitle || "Pacing Strategy"}</h4>${createHtmlList(raceTactics.pacing)}</div>`;
-        }
-        if (raceTactics.nutrition && Array.isArray(raceTactics.nutrition) && raceTactics.nutrition.length > 0) {
-            tacticsHtml += `<div class="mb-4"><h4 class="text-lg font-medium text-violet-600 mb-1">${uiTextRace.nutritionSectionTitle || "Nutrition & Hydration Plan"}</h4>${createHtmlList(raceTactics.nutrition)}</div>`;
-        }
-        if (raceTactics.mentalPrep && Array.isArray(raceTactics.mentalPrep) && raceTactics.mentalPrep.length > 0) {
-            tacticsHtml += `<div class="mb-4"><h4 class="text-lg font-medium text-violet-600 mb-1">${uiTextRace.mentalPrepSectionTitle || "Mental Preparation"}</h4>${createHtmlList(raceTactics.mentalPrep)}</div>`;
-        }
-         if (raceTactics.gear && Array.isArray(raceTactics.gear) && raceTactics.gear.length > 0) {
-            tacticsHtml += `<div class="mb-4"><h4 class="text-lg font-medium text-violet-600 mb-1">${uiTextRace.gearChecklistTitle || "Gear Checklist"}</h4>${createHtmlList(raceTactics.gear)}</div>`;
-        }
-        // If after checking all sub-properties, nothing was added beyond the title, and there's no general fallback text in raceTactics itself.
-        if (tacticsHtml === `<h3 class="text-xl font-semibold text-violet-700 mb-3">${uiTextRace.tacticsTitle || "Race Strategy & Tactics"}</h3>`) {
-             tacticsHtml += "<p class='text-stone-500 italic'>Race tactics information will appear here. Configure in the 'Plan Overview' sheet.</p>";
-        }
-    } else {
-        tacticsHtml += "<p class='text-stone-500 italic'>Race tactics not available. Configure in the 'Plan Overview' sheet.</p>";
-    }
-    return tacticsHtml;
 }
 
 function renderRaceElevationChart() {
