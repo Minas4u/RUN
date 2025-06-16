@@ -923,64 +923,103 @@ function renderTodaysTraining() {
         let activityTypeForClass = '';
         const fullActivityDescriptionLower = todaysActivity.activity.toLowerCase(); // Use the full original activity string
 
-        if (fullActivityDescriptionLower.includes('easy run')) {
-            activityTypeForClass = 'easy';
-        } else if (fullActivityDescriptionLower.includes('long run')) {
-            activityTypeForClass = 'long';
-        } else if (fullActivityDescriptionLower.includes('recovery run') || fullActivityDescriptionLower.includes('recovery')) {
-            activityTypeForClass = 'recovery'; // Already good
-        } else if (fullActivityDescriptionLower.includes('base run')) {
-            activityTypeForClass = 'base'; // Already good
-        } else if (fullActivityDescriptionLower.includes('tempo run') || fullActivityDescriptionLower.includes('tempo:')) {
-            activityTypeForClass = 'tempo';
-        } else if (fullActivityDescriptionLower.includes('interval training') || fullActivityDescriptionLower.includes('intervals:')) {
-            activityTypeForClass = 'interval';
-        } else if (fullActivityDescriptionLower.includes('fartlek')) {
-            activityTypeForClass = 'fartlek'; // Already good
-        } else if (fullActivityDescriptionLower.includes('strides') || fullActivityDescriptionLower.includes('hills')) {
-            activityTypeForClass = 'strides_hills';
-        } else if (fullActivityDescriptionLower.includes('rest day') || fullActivityDescriptionLower.startsWith('rest:')) {
-            activityTypeForClass = 'rest'; // Already good
-        } else if (fullActivityDescriptionLower.includes('zone test') || fullActivityDescriptionLower.includes('zonetest')) {
-            activityTypeForClass = 'zone_test';
-        } else if (fullActivityDescriptionLower.includes('race pace') || fullActivityDescriptionLower.includes('race simulation') || fullActivityDescriptionLower.includes('race day')) {
-            activityTypeForClass = 'race';
-        } else if (fullActivityDescriptionLower.includes('zone')) { // General zone as a lower priority
-            activityTypeForClass = 'zone'; // Already good
-        } else if (fullActivityDescriptionLower.includes('double')) {
-            activityTypeForClass = 'double'; // Already good
-        } else if (fullActivityDescriptionLower.includes('mobility')) {
-            activityTypeForClass = 'mobility'; // Already good
-        } else {
-            const parts = todaysActivity.activity.split(':');
-            let preliminaryActivityType = '';
-            if (parts.length > 0) {
-                preliminaryActivityType = parts[0].trim().toLowerCase();
-            } else {
-                preliminaryActivityType = fullActivityDescriptionLower;
+        // 1. Prefix-based Identification
+        const prefixMap = {
+            'easy:': 'easy',
+            'base:': 'base',
+            'long:': 'long',
+            'tempo:': 'tempo',
+            'recovery:': 'recovery',
+            'intervals:': 'interval',
+            'interval training:': 'interval',
+            'fartlek:': 'fartlek',
+            'strides:': 'strides_hills',
+            'hills:': 'strides_hills',
+            'rest:': 'rest',
+            'zone test:': 'zone_test',
+            'zonetest:': 'zone_test',
+            'race pace:': 'race',
+            'race simulation:': 'race',
+            'race day:': 'race',
+            'mobility:': 'mobility',
+            'double:': 'double'
+        };
+
+        let prefixMatched = false;
+        for (const prefix in prefixMap) {
+            if (fullActivityDescriptionLower.startsWith(prefix)) {
+                activityTypeForClass = prefixMap[prefix];
+                prefixMatched = true;
+                break;
             }
+        }
 
-            // Mapping for fallback logic
-            const fallbackMapping = {
-                'easy run': 'easy',
-                'long run': 'long',
-                'recovery run': 'recovery',
-                'base run': 'base',
-                'tempo run': 'tempo',
-                'interval training': 'interval',
-                'intervals': 'interval',
-                'strides': 'strides_hills',
-                'hills': 'strides_hills',
-                'rest day': 'rest',
-                'zone test': 'zone_test',
-                'zonetest': 'zone_test',
-                'race pace': 'race',
-                'race simulation': 'race',
-                'race day': 'race'
-                // Add other direct mappings if 'parts[0]' could be them
-            };
+        // 2. Specific Phrase includes() Checks (if no prefix matched)
+        if (!prefixMatched) {
+            if (fullActivityDescriptionLower.includes('long run')) {
+                activityTypeForClass = 'long';
+            } else if (fullActivityDescriptionLower.includes('easy run')) {
+                activityTypeForClass = 'easy';
+            } else if (fullActivityDescriptionLower.includes('base run')) {
+                activityTypeForClass = 'base';
+            } else if (fullActivityDescriptionLower.includes('recovery run')) {
+                activityTypeForClass = 'recovery';
+            } else if (fullActivityDescriptionLower.includes('tempo run')) {
+                activityTypeForClass = 'tempo';
+            } else if (fullActivityDescriptionLower.includes('interval training')) { // Could be 'intervals' as well, but prefix "intervals:" should catch it
+                activityTypeForClass = 'interval';
+            } else if (fullActivityDescriptionLower.includes('fartlek')) {
+                activityTypeForClass = 'fartlek';
+            } else if (fullActivityDescriptionLower.includes('strides')) {
+                activityTypeForClass = 'strides_hills';
+            } else if (fullActivityDescriptionLower.includes('hills')) {
+                activityTypeForClass = 'strides_hills';
+            } else if (fullActivityDescriptionLower.includes('rest day')) {
+                activityTypeForClass = 'rest';
+            } else if (fullActivityDescriptionLower.includes('zone test') || fullActivityDescriptionLower.includes('zonetest')) { // 'zonetest' might be redundant if prefix caught it
+                activityTypeForClass = 'zone_test';
+            } else if (fullActivityDescriptionLower.includes('race pace') || fullActivityDescriptionLower.includes('race simulation') || fullActivityDescriptionLower.includes('race day')) {
+                activityTypeForClass = 'race';
+            } else if (fullActivityDescriptionLower.includes('double')) {
+                activityTypeForClass = 'double';
+            } else if (fullActivityDescriptionLower.includes('mobility')) {
+                activityTypeForClass = 'mobility';
+            } else if (fullActivityDescriptionLower.includes('zone')) { // Lowest priority 'includes' check
+                activityTypeForClass = 'zone';
+            } else {
+                // 3. Final Fallback
+                const parts = todaysActivity.activity.split(':');
+                let preliminaryActivityType = '';
+                if (parts.length > 0) {
+                    preliminaryActivityType = parts[0].trim().toLowerCase();
+                } else {
+                    preliminaryActivityType = fullActivityDescriptionLower; // Should be rare now
+                }
 
-            activityTypeForClass = fallbackMapping[preliminaryActivityType] || preliminaryActivityType;
+                const fallbackMapping = {
+                    'easy run': 'easy',
+                    'long run': 'long',
+                    'recovery run': 'recovery',
+                    'base run': 'base',
+                    'tempo run': 'tempo',
+                    'interval training': 'interval',
+                    'intervals': 'interval', // Keep for fallback just in case
+                    'strides': 'strides_hills',
+                    'hills': 'strides_hills',
+                    'rest day': 'rest',
+                    'zone test': 'zone_test',
+                    'zonetest': 'zone_test',
+                    'race pace': 'race',
+                    'race simulation': 'race',
+                    'race day': 'race'
+                    // 'double' and 'mobility' are less likely to be structured like "Double: ..." or as just "Double"
+                };
+                activityTypeForClass = fallbackMapping[preliminaryActivityType] || preliminaryActivityType;
+            }
+        }
+        // Ensure activityTypeForClass has a value, default to 'unknown' or keep as '' if preferred by downstream logic
+        if (!activityTypeForClass) {
+            activityTypeForClass = 'unknown'; // Or some default/generic key
         }
 
         const colorClass = getActivityTextColorClass(activityTypeForClass);
