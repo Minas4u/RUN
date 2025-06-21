@@ -733,7 +733,7 @@ body.dark-mode input[type="date"] {
 
 /* Updated styles for .image-logo-dna when part of .logo-title-container */
 .logo-title-container .image-logo-dna {
-    height: 2rem;   /* Significantly smaller for inline look, base for mobile */
+    height: 3.2rem;   /* 2rem * 1.6, base for mobile */
     width: auto;    /* Maintain aspect ratio */
     margin-bottom: 0; /* Vertical alignment handled by flex, remove bottom margin */
     display: block; /* Keep as block, flex item properties will manage layout */
@@ -741,7 +741,7 @@ body.dark-mode input[type="date"] {
 
 @media (min-width: 640px) {
     .logo-title-container .image-logo-dna {
-        height: 2.5rem; /* Slightly larger for desktop */
+        height: 4rem; /* 2.5rem * 1.6, slightly larger for desktop */
     }
     /* The h1 title already has sm:text-4xl, which increases its size on desktop */
 }
