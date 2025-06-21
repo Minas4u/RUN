@@ -741,8 +741,8 @@ body.dark-mode input[type="date"] {
 
 @media (min-width: 640px) {
     .logo-title-container .image-logo-dna {
-        height: 7rem;
-        width: 7rem;
+        height: 9rem;
+        width: 9rem;
     }
     /* The h1 title already has sm:text-4xl, which increases its size on desktop */
 }
