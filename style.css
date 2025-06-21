@@ -722,7 +722,30 @@ body.dark-mode input[type="date"] {
     border-radius: var(--border-radius-medium); /* Ensure consistency in dark mode */
 }
 
+/* Styles for the new image logo */
+.image-logo-dna {
+    display: block; /* Changed from inline-block to work with mx-auto */
+    /* The old logo's height was roughly font-size + (padding-top + padding-bottom) + (border-top + border-bottom)
+       Small: 3.75rem + (0.5rem * 2) + (3px * 2) = 3.75rem + 1rem + 6px
+       Large: 4.5rem + (1rem * 2) + (3px * 2) = 4.5rem + 2rem + 6px
+       Let's use height for simplicity and adjust. The image has its own aspect ratio.
+       Approximate height of the text logo area was around 5rem for small and 6.75rem for large.
+       The png itself is 200x200. We need to scale it down considerably.
+    */
+    height: 4.25rem; /* Adjusted height based on visual comparison after testing */
+    width: auto; /* Maintain aspect ratio */
+    margin-bottom: 0.75rem; /* Same as old logo */
+    /* mx-auto class in HTML handles horizontal centering */
+}
 
+@media (min-width: 640px) {
+    .image-logo-dna {
+        height: 5.5rem; /* Adjusted height based on visual comparison after testing */
+    }
+}
+
+/* Comment out or remove old .css-logo-dna styles */
+/*
 .css-logo-dna {
     font-family: 'Ubuntu', sans-serif;
     font-weight: 700;
@@ -756,6 +779,7 @@ body.dark-mode input[type="date"] {
 .css-logo-dna .logo-a {
     color: var(--logo-a-text);
 }
+*/
 
 ::-webkit-scrollbar { width: 8px; }
 ::-webkit-scrollbar-track { background: var(--scrollbar-track-bg); border-radius: 10px; }
