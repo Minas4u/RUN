@@ -722,28 +722,50 @@ body.dark-mode input[type="date"] {
     border-radius: var(--border-radius-medium); /* Ensure consistency in dark mode */
 }
 
-/* Styles for the new image logo */
+/* New container for positioning logo and title together */
+.logo-title-container {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.75rem; /* Spacing between logo and title */
+    margin-bottom: 0.75rem; /* Replaces individual margin on logo/title for the unit */
+}
+
+/* Updated styles for .image-logo-dna when part of .logo-title-container */
+.logo-title-container .image-logo-dna {
+    height: 2rem;   /* Significantly smaller for inline look, base for mobile */
+    width: auto;    /* Maintain aspect ratio */
+    margin-bottom: 0; /* Vertical alignment handled by flex, remove bottom margin */
+    display: block; /* Keep as block, flex item properties will manage layout */
+}
+
+@media (min-width: 640px) {
+    .logo-title-container .image-logo-dna {
+        height: 2.5rem; /* Slightly larger for desktop */
+    }
+    /* The h1 title already has sm:text-4xl, which increases its size on desktop */
+}
+
+/* Comment out or remove old .image-logo-dna styles if they are no longer needed,
+   or ensure they don't conflict. For now, the specific context above handles it.
+   If .image-logo-dna can exist outside .logo-title-container, these would be fallbacks.
+   For this task, we assume all logos are now inside .logo-title-container.
+*/
+/*
 .image-logo-dna {
-    display: block; /* Changed from inline-block to work with mx-auto */
-    /* The old logo's height was roughly font-size + (padding-top + padding-bottom) + (border-top + border-bottom)
-       Small: 3.75rem + (0.5rem * 2) + (3px * 2) = 3.75rem + 1rem + 6px
-       Large: 4.5rem + (1rem * 2) + (3px * 2) = 4.5rem + 2rem + 6px
-       Let's use height for simplicity and adjust. The image has its own aspect ratio.
-       Approximate height of the text logo area was around 5rem for small and 6.75rem for large.
-       The png itself is 200x200. We need to scale it down considerably.
-    */
-    height: 4.4625rem; /* 4.25rem * 1.05 */
-    width: 5.44425rem; /* 4.4625rem * 1.22 */
-    margin-bottom: 0.75rem; /* Same as old logo */
-    /* mx-auto class in HTML handles horizontal centering */
+    display: block;
+    height: 4.4625rem;
+    width: 5.44425rem;
+    margin-bottom: 0.75rem;
 }
 
 @media (min-width: 640px) {
     .image-logo-dna {
-        height: 5.775rem; /* 5.5rem * 1.05 */
-        width: 7.0455rem; /* 5.775rem * 1.22 */
+        height: 5.775rem;
+        width: 7.0455rem;
     }
 }
+*/
 
 /* Comment out or remove old .css-logo-dna styles */
 /*
