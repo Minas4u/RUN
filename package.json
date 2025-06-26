@@ -1,7 +1,7 @@
 {
-  "name": "project-marathon",
-  "version": "1.0.0",
-  "description": "An interactive guide to marathon training.",
+  "name": "DNA",
+  "version": "1.0.2",
+  "description": "Distance Advisor.",
   "main": "script.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
