@@ -630,10 +630,10 @@ document.addEventListener('DOMContentLoaded', () => {
             if (deferredInstallPrompt) {
                 deferredInstallPrompt.prompt();
                 const { outcome } = await deferredInstallPrompt.userChoice;
-                console.log(`User response to the install prompt: ${outcome}`);
+                // console.log(`User response to the install prompt: ${outcome}`);
                 deferredInstallPrompt = null;
             } else {
-                console.log("PWA install prompt not available.");
+                // console.log("PWA install prompt not available.");
             }
         });
     }
@@ -643,7 +643,7 @@ document.addEventListener('DOMContentLoaded', () => {
             installPwaButton.classList.add('hidden');
         }
         deferredInstallPrompt = null;
-        console.log('PWA was installed');
+        // console.log('PWA was installed');
     });
 
     // Pre-fill the User ID input if it was stored previously.
@@ -899,7 +899,7 @@ async function handleLogin() {
  */
 async function fetchMarathonPlan(webAppUrlToUse) {
     if (!webAppUrlToUse) {
-        console.error("No Web App URL for fetching plan.");
+        // console.error("No Web App URL for fetching plan."); // Keep error for actual issues
         if(loginErrorMessageDiv) loginErrorMessageDiv.textContent = "Config error: Web App URL missing.";
         if(loginErrorMessageDiv) loginErrorMessageDiv.classList.remove('hidden');
         if(loginLoadingMessageDiv) loginLoadingMessageDiv.classList.add('hidden');
@@ -931,7 +931,7 @@ async function fetchMarathonPlan(webAppUrlToUse) {
             !Array.isArray(data.raceElevationData) ||
             !data.raceTactics || typeof data.raceTactics !== 'object'
             ) {
-            console.error("Fetched data structure validation failed. Data:", data);
+            // console.error("Fetched data structure validation failed. Data:", data); // Important for debugging data issues
             throw new Error("Fetched data incomplete or malformed. Check Apps Script doGet & Sheet structure. Ensure 'newsSection' is an array and 'planStartDate' is present.");
         }
         marathonPlan = data;
