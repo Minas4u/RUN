@@ -1,0 +1,20 @@
+{
+  "name": "project-marathon",
+  "version": "1.0.0",
+  "description": "An interactive guide to marathon training.",
+  "main": "script.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Minas4u/RUN.git"
+  },
+  "keywords": ["marathon", "training", "running"],
+  "author": "Minas4u",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/Minas4u/RUN/issues"
+  },
+  "homepage": "https://github.com/Minas4u/RUN#readme"
+}
