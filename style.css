@@ -137,6 +137,7 @@
     --activity-thumb-race-bg: #fce7f3; --activity-thumb-race-text: #be185d;
     --activity-thumb-rest-bg: #f1f5f9; --activity-thumb-rest-text: #475569;
     --activity-thumb-default-bg: #e0f2fe; --activity-thumb-default-text: #0c4a6e;
+    --activity-thumb-threshold-bg: #fff3e0; --activity-thumb-threshold-text: #e65100; /* Light orange bg, dark orange text */
 
     --custom-rect-nav-border-t: #f59e0b;
     --custom-rect-nav-border-r: #0284c7;
@@ -183,6 +184,7 @@
     --activity-text-double: #78350f;
     --activity-text-mobility: #713f12;
     --activity-text-long-run-purple: #6d28d9; /* Example: violet-700 for light mode */
+    --activity-text-threshold-color: #FF4500; /* Blood Orange */
 
     --activity-text-race: #d946ef;    /* Fuchsia 500 */
     --activity-text-zonetest: #ec4899; /* Pink 500 */
@@ -349,12 +351,16 @@
     --dm-mobile-calendar-day-race-bg: #86198f; --dm-mobile-calendar-day-race-text: #fce7f3;
     --dm-mobile-calendar-day-rest-bg: #374151; --dm-mobile-calendar-day-rest-text: #f1f5f9;
     --dm-mobile-calendar-day-default-bg: #0c4a6e; --dm-mobile-calendar-day-default-text: #e0f2fe;
+    --dm-mobile-calendar-day-threshold-bg: var(--dm-activity-thumb-threshold-bg); --dm-mobile-calendar-day-threshold-text: var(--dm-activity-thumb-threshold-text);
     --dm-mobile-calendar-day-today-number-text: #a7f3d0; /* green-200 */
 
     /* New Elevation Shadows - Dark Mode */
     --dm-shadow-elevation-low: 0 1px 2px 0 rgba(0,0,0,0.2), 0 1px 1px 0 rgba(0,0,0,0.15);
     --dm-shadow-elevation-medium: 0 3px 5px -1px rgba(0,0,0,0.25), 0 2px 3px -1px rgba(0,0,0,0.2);
     --dm-shadow-elevation-high: 0 8px 12px -4px rgba(0,0,0,0.25), 0 3px 5px -2px rgba(0,0,0,0.2);
+
+    --dm-activity-text-threshold-color: #FF7043; /* Lighter Blood Orange for dark mode */
+    --dm-activity-thumb-threshold-bg: #4a2511; --dm-activity-thumb-threshold-text: #ffccbc; /* Dark orange bg, light orange text for dark mode */
 
     /* New Border Radius Variables */
     --border-radius-small: 0.25rem;  /* 4px */
@@ -419,6 +425,7 @@ body.dark-mode {
     --activity-thumb-race-bg: var(--dm-activity-thumb-race-bg); --activity-thumb-race-text: var(--dm-activity-thumb-race-text);
     --activity-thumb-rest-bg: var(--dm-activity-thumb-rest-bg); --activity-thumb-rest-text: var(--dm-activity-thumb-rest-text);
     --activity-thumb-default-bg: var(--dm-activity-thumb-default-bg); --activity-thumb-default-text: var(--dm-activity-thumb-default-text);
+    --dm-activity-thumb-threshold-bg: var(--dm-activity-thumb-threshold-bg); --dm-activity-thumb-threshold-text: var(--dm-activity-thumb-threshold-text);
     --title-project-text: var(--dm-title-project-text);
     --title-marathon-text: var(--dm-title-marathon-text);
     --loader-border: var(--dm-loader-border);
@@ -871,6 +878,8 @@ body.dark-mode .calendar-day.is-today .day-number { color: var(--dm-text-color);
 .activity-thumbnail-race { background-color: var(--activity-thumb-race-bg); color: var(--activity-thumb-race-text); }
 .activity-thumbnail-rest { background-color: var(--activity-thumb-rest-bg); color: var(--activity-thumb-rest-text); }
 .activity-thumbnail-default { background-color: var(--activity-thumb-default-bg); color: var(--activity-thumb-default-text); }
+.activity-thumbnail-threshold { background-color: var(--activity-thumb-threshold-bg); color: var(--activity-thumb-threshold-text); }
+
 
 .custom-rect-border-nav { /* For nav tabs */
     border-top: 3px solid var(--custom-rect-nav-border-t);
@@ -1063,6 +1072,8 @@ body.dark-mode .activity-text-rest, body.dark-mode .pace-text-rest { color: #9ca
 body.dark-mode .activity-text-zone, body.dark-mode .activity-text-race, body.dark-mode .pace-text-zone, body.dark-mode .pace-text-race { color: #c4b5fd !important; } /* violet-300 */
 body.dark-mode .activity-text-double, body.dark-mode .pace-text-double { color: #fcd34d !important; } /* amber-300 */
 body.dark-mode .activity-text-mobility, body.dark-mode .pace-text-mobility { color: #d4af80 !important; } /* custom brown-ish */
+    body.dark-mode .activity-text-threshold, body.dark-mode .pace-text-threshold { color: var(--dm-activity-text-threshold-color) !important; }
+
 
     /* Dark mode overrides for new activity types */
     --activity-text-race: #f0abfc;    /* Fuchsia 400 */
@@ -1075,6 +1086,9 @@ body.dark-mode .activity-text-mobility, body.dark-mode .pace-text-mobility { col
 }
 .activity-text-zonetest, .pace-text-zonetest {
     color: var(--activity-text-zonetest) !important;
+}
+.activity-text-threshold, .pace-text-threshold {
+    color: var(--activity-text-threshold-color) !important;
 }
 
 .activity-text-long-run, .pace-text-long-run {
@@ -1525,6 +1539,7 @@ body.dark-mode .todays-weekly-notes-box p, body.dark-mode .todays-weekly-notes-b
     .calendar-day.activity-thumbnail-race { background-color: var(--mobile-calendar-day-race-bg); color: var(--mobile-calendar-day-race-text) !important; }
     .calendar-day.activity-thumbnail-rest { background-color: var(--mobile-calendar-day-rest-bg); color: var(--mobile-calendar-day-rest-text) !important; }
     .calendar-day.activity-thumbnail-default { background-color: var(--mobile-calendar-day-default-bg); color: var(--mobile-calendar-day-default-text) !important; }
+    .calendar-day.activity-thumbnail-threshold { background-color: var(--mobile-calendar-day-threshold-bg); color: var(--mobile-calendar-day-threshold-text) !important; }
 
     .calendar-day.is-today .day-number {
         color: var(--mobile-calendar-day-today-number-text);
