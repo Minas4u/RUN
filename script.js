@@ -228,6 +228,13 @@ const activityTips = {
         "Listen to Your Body's Need for Recovery: It's when you get stronger.",
         "Active Recovery is an Option: Gentle activities like walking or yoga are beneficial.",
         "Stay Hydrated: Drink plenty of water to aid muscle repair.",
+    ],
+    threshold: [
+        "Maintain a 'comfortably hard' effort, similar to your 1-hour race pace.",
+        "Focus on sustained effort rather than exact pace.",
+        "Warm-up thoroughly before starting your threshold intervals.",
+        "Cool-down with easy jogging after the threshold portion.",
+        "These runs improve your lactate threshold and endurance at faster speeds."
         "Focus on Nutritious Food: Eat a balanced diet to replenish your energy stores.",
         "Get Plenty of Sleep: Aim for 7-9 hours of quality sleep.",
         "Stretch and Foam Roll: Gently release muscle tension and improve flexibility.",
@@ -260,6 +267,7 @@ const activityIconMap = {
     'interval': 'icons/interval_run.svg', // Now the single key for interval types
     'long': 'icons/long_run.svg',       // Now the single key for long run types
     'rest': 'icons/rest_day.svg',
+    'threshold': 'icons/threshold_run.svg',
     'recovery': 'icons/easy_run.svg'    // 'recovery' is the canonical key
     // For new canonical types like 'strides_hills', 'zone_test', 'race',
     // 'zone', 'double', 'mobility', no specific icons are added here as per instructions.
@@ -288,6 +296,7 @@ const activityMatchers = [
     { match: 'base:', type: 'prefix', canonical: 'base' },
     { match: 'long:', type: 'prefix', canonical: 'long' },
     { match: 'tempo:', type: 'prefix', canonical: 'tempo' },
+    { match: 'threshold:', type: 'prefix', canonical: 'threshold' },
     { match: 'recovery:', type: 'prefix', canonical: 'recovery' },
     { match: 'intervals:', type: 'prefix', canonical: 'interval' },
     { match: 'interval training:', type: 'prefix', canonical: 'interval' },
@@ -309,6 +318,7 @@ const activityMatchers = [
     { match: 'base run', type: 'includes', canonical: 'base' },
     { match: 'recovery run', type: 'includes', canonical: 'recovery' },
     { match: 'tempo run', type: 'includes', canonical: 'tempo' },
+    { match: 'threshold run', type: 'includes', canonical: 'threshold' },
     { match: 'interval training', type: 'includes', canonical: 'interval' },
     { match: 'intervals', type: 'includes', canonical: 'interval' },
     { match: 'fartlek', type: 'includes', canonical: 'fartlek' },
@@ -337,6 +347,7 @@ const fallbackTypeMapping = {
     'base': 'base', 'base run': 'base',
     'long': 'long', 'long run': 'long',
     'tempo': 'tempo', 'tempo run': 'tempo',
+    'threshold': 'threshold', 'threshold run': 'threshold',
     'recovery': 'recovery', 'recovery run': 'recovery',
     'interval': 'interval', 'intervals': 'interval', 'interval training': 'interval',
     'fartlek': 'fartlek',
@@ -355,7 +366,7 @@ const fallbackTypeMapping = {
  * This array is used to validate if a derived `canonicalType` is known;
  * if not, it defaults to 'unknown'.
  */
-const knownTypes = ['easy', 'base', 'long', 'tempo', 'interval', 'fartlek', 'rest', 'recovery', 'strides_hills', 'zone_test', 'race', 'mobility', 'double', 'zone', 'unknown'];
+const knownTypes = ['easy', 'base', 'long', 'tempo', 'threshold', 'interval', 'fartlek', 'rest', 'recovery', 'strides_hills', 'zone_test', 'race', 'mobility', 'double', 'zone', 'unknown'];
 
 /**
  * Determines the canonical type, icon path, and CSS color class for a given activity string.
@@ -448,6 +459,7 @@ function getActivityProperties(activityString) {
         'easy': 'icons/easy_run.svg',
         'fartlek': 'icons/fartlek_run.svg',
         'tempo': 'icons/tempo_run.svg',
+        'threshold': 'icons/threshold_run.svg',
         'interval': 'icons/interval_run.svg',
         'long': 'icons/long_run.svg',
         'rest': 'icons/rest_day.svg',
@@ -468,6 +480,7 @@ function getActivityProperties(activityString) {
         case 'base': colorClass = 'activity-text-base'; break;
         case 'recovery': colorClass = 'activity-text-recovery'; break;
         case 'tempo': colorClass = 'activity-text-tempo'; break;
+        case 'threshold': colorClass = 'activity-text-threshold'; break;
         case 'interval': colorClass = 'activity-text-interval'; break;
         case 'fartlek': colorClass = 'activity-text-fartlek'; break;
         case 'strides_hills': colorClass = 'activity-text-str-hills'; break;
@@ -1120,6 +1133,7 @@ function _buildTodaysActivityHtml(todaysActivity, activityProps, paceString) {
                 'base': 'Base Run',
                 'long': 'Long Run',
                 'tempo': 'Tempo Run',
+                'threshold': 'Threshold Run',
                 'interval': 'Interval Training',
                 'fartlek': 'Fartlek',
                 'recovery': 'Recovery Run',
@@ -1182,6 +1196,7 @@ function _buildDailyTipHtml(todaysActivity) {
         else if (activityDescLower.includes('interval')) activityKey = 'interval';
         else if (activityDescLower.includes('fartlek')) activityKey = 'fartlek';
         else if (activityDescLower.includes('tempo')) activityKey = 'tempo';
+        else if (activityDescLower.includes('threshold')) activityKey = 'threshold';
         else if (activityDescLower.includes('rest')) activityKey = 'rest';
         else {
             activityKey = activityDescLower.split(" ")[0].replace(/:$/, '');
@@ -2118,6 +2133,7 @@ function getActivityTextColorClass(canonicalActivityType) {
         case 'base': return 'activity-text-base';
         case 'recovery': return 'activity-text-recovery';
         case 'tempo': return 'activity-text-tempo';
+        case 'threshold': return 'activity-text-threshold';
         case 'interval': return 'activity-text-interval';
         case 'fartlek': return 'activity-text-fartlek';
         case 'strides_hills': return 'activity-text-str-hills';
@@ -2198,7 +2214,7 @@ function renderTodayPaces(lt2PaceString, todaysActivityForHighlight) {
         { name: "Z1", descriptor: "Easy/Rec", lowPaceFactor: 1.54, highPaceFactor: 1.33, colorClass: "text-green-600" },
         { name: "Z2", descriptor: "Aerobic", lowPaceFactor: 1.32, highPaceFactor: 1.16, colorClass: "text-sky-600" },
         { name: "Z3", descriptor: "Tempo/MP", lowPaceFactor: 1.15, highPaceFactor: 1.01, colorClass: "text-lime-600" },
-        { name: "Z4", descriptor: "Threshold", lowPaceFactor: 1.00, highPaceFactor: 0.91, colorClass: "text-amber-500" },
+        { name: "Z4", descriptor: "Threshold", lowPaceFactor: 1.00, highPaceFactor: 0.91, colorClass: "text-orange-500" }, // Changed to text-orange-500 for threshold
         { name: "Z5", descriptor: "VO2 Max", lowPaceFactor: 0.90, highPaceFactor: 0.83, colorClass: "text-red-600" }
     ];
     let zonesTableHtml = `<table id="today-zones-table" class="today-pace-table hidden"><thead><tr>
@@ -2313,6 +2329,7 @@ function getActivityThumbnailClass(activityText) {
     if (lowerActivity.includes("race day")) return "activity-thumbnail-race";
     if (lowerActivity.startsWith("rest") || lowerActivity.includes("active recovery")) return "activity-thumbnail-rest";
     if (lowerActivity.startsWith("tempo")) return "activity-thumbnail-tempo";
+    if (lowerActivity.startsWith("threshold")) return "activity-thumbnail-threshold";
     if (lowerActivity.startsWith("long run")) return "activity-thumbnail-long";
     return "activity-thumbnail-default";
 }
